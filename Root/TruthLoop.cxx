@@ -87,7 +87,6 @@ EL::StatusCode TRTLite::TruthLoop::execute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_CHECK(TRTLite::LoopAlg::execute());
 
-  m_eventInfo = eventInfo();
   bool isMC = false;
   if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) ) {
     isMC = true;

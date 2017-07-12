@@ -79,6 +79,7 @@ EL::StatusCode TRTLite::LoopAlg::execute() {
 
   m_event = wk()->xaodEvent();
   m_store = wk()->xaodStore();
+  m_eventInfo = eventInfo();
 
   return EL::StatusCode::SUCCESS;
 }

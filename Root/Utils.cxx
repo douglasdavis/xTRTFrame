@@ -1,72 +1,12 @@
 #include <TRTLite/LoopAlg.h>
 
-void TRTLite::LoopAlg::buildTrackContainer() {
-  if ( m_trackContainer ) return;
-
-  const xAOD::TrackParticleContainer* trackContainerPtr = nullptr;
-  if ( m_event->retrieve(trackContainerPtr,"InDetTrackParticles").isFailure() ) {
-    // error or warning message needed
-    return;
-  }
-  std::pair<xAOD::TrackParticleContainer*,xAOD::ShallowAuxContainer*> shallowCopy =
-    xAOD::shallowCopyContainer(*trackContainerPtr);
-  m_trackContainer = std::make_shared<xAOD::TrackParticleContainer>(shallowCopy.first->begin(),
-                                                                    shallowCopy.first->end(),
-                                                                    SG::VIEW_ELEMENTS);
-  if ( !m_store->record(shallowCopy.first, "ShallowTracks") ||
-       !m_store->record(shallowCopy.second,"ShallowTracksAux") ) {
-    // error or warning message needed
-    return;
-  }
-}
-
-void TRTLite::LoopAlg::buildElectronContainer() {
-  if ( m_electronContainer ) return;
-
-  const xAOD::ElectronContainer* electronContainerPtr = nullptr;
-  if ( m_event->retrieve(electronContainerPtr,"Electrons").isFailure() ) {
-    // error or warning message needed
-    return;
-  }
-  std::pair<xAOD::ElectronContainer*,xAOD::ShallowAuxContainer*> shallowCopy =
-    xAOD::shallowCopyContainer(*electronContainerPtr);
-  m_electronContainer = std::make_shared<xAOD::ElectronContainer>(shallowCopy.first->begin(),
-                                                                  shallowCopy.first->end(),
-                                                                  SG::VIEW_ELEMENTS);
-  if ( !m_store->record(shallowCopy.first, "ShallowElectrons") ||
-       !m_store->record(shallowCopy.second,"ShallowElectronsAux") ) {
-    // error or warning message needed
-    return;
-  }
-}
-
-void TRTLite::LoopAlg::buildMuonContainer() {
-  if ( m_muonContainer ) return;
-
-  const xAOD::MuonContainer* muonContainerPtr = nullptr;
-  if ( m_event->retrieve(muonContainerPtr,"Muons").isFailure() ) {
-    // error or warning message needed
-    return;
-  }
-  std::pair<xAOD::MuonContainer*,xAOD::ShallowAuxContainer*> shallowCopy =
-    xAOD::shallowCopyContainer(*muonContainerPtr);
-  m_muonContainer = std::make_shared<xAOD::MuonContainer>(shallowCopy.first->begin(),
-                                                          shallowCopy.first->end(),
-                                                          SG::VIEW_ELEMENTS);
-  if ( !m_store->record(shallowCopy.first, "ShallowMuons") ||
-       !m_store->record(shallowCopy.second,"ShallowMuonsAux") ) {
-    // error or warning message needed
-    return;
-  }
-}
+#include <xAODTracking/Vertex.h>
+#include <xAODTracking/TrackParticlexAODHelpers.h>
 
 const xAOD::TrackParticleContainer* TRTLite::LoopAlg::trackContainer() {
-  //buildTrackContainer();
-  //return m_trackContainer.get();
-
   const xAOD::TrackParticleContainer* trackContainerPtr = nullptr;
   if ( evtStore()->retrieve(trackContainerPtr,"InDetTrackParticles").isFailure() ) {
-    // error or warning message needed
+    ANA_MSG_WARNING("InDetTrackParticles unavailable!");
     return nullptr;
   }
   return trackContainerPtr;
@@ -74,12 +14,9 @@ const xAOD::TrackParticleContainer* TRTLite::LoopAlg::trackContainer() {
 }
 
 const xAOD::ElectronContainer* TRTLite::LoopAlg::electronContainer() {
-  //buildElectronContainer();
-  //return m_electronContainer.get();
-
   const xAOD::ElectronContainer* electronContainerPtr = nullptr;
-  if ( m_event->retrieve(electronContainerPtr,"Electrons").isFailure() ) {
-    // error or warning message needed
+  if ( evtStore()->retrieve(electronContainerPtr,"Electrons").isFailure() ) {
+    ANA_MSG_WARNING("Electrons unavailable!");
     return nullptr;
   }
   return electronContainerPtr;
@@ -87,12 +24,9 @@ const xAOD::ElectronContainer* TRTLite::LoopAlg::electronContainer() {
 }
 
 const xAOD::MuonContainer* TRTLite::LoopAlg::muonContainer() {
-  //buildMuonContainer();
-  //return m_muonContainer.get();
-
   const xAOD::MuonContainer* muonContainerPtr = nullptr;
-  if ( m_event->retrieve(muonContainerPtr,"Muons").isFailure() ) {
-    // error or warning message needed
+  if ( evtStore()->retrieve(muonContainerPtr,"Muons").isFailure() ) {
+    ANA_MSG_WARNING("Muons unavailable!");
     return nullptr;
   }
   return muonContainerPtr;
@@ -182,4 +116,42 @@ TRTLite::HitSummary TRTLite::LoopAlg::getHitSummary(const xAOD::TrackParticle* t
   }
 
   return hit;
+}
+
+uint8_t TRTLite::LoopAlg::nSilicon(const xAOD::TrackParticle* track) const {
+  uint8_t nPix = -1;
+  uint8_t nSCT = -1;
+  if ( !track->summaryValue(nPix,xAOD::numberOfPixelHits) ) ANA_MSG_ERROR("No Pix hits?");
+  if ( !track->summaryValue(nSCT,xAOD::numberOfSCTHits)   ) ANA_MSG_ERROR("No SCT hits?");
+  return (nPix + nSCT);
+}
+
+uint8_t TRTLite::LoopAlg::nSiliconHoles(const xAOD::TrackParticle* track) const {
+  uint8_t nPixHole = -1;
+  uint8_t nSCTHole = -1;
+  if ( !track->summaryValue(nPixHole,xAOD::numberOfPixelHoles) ) ANA_MSG_ERROR("No Pix holes?");
+  if ( !track->summaryValue(nSCTHole,xAOD::numberOfSCTHoles)   ) ANA_MSG_ERROR("No SCT holes?");
+  return (nPixHole + nSCTHole);
+}
+
+uint8_t TRTLite::LoopAlg::nSiliconShared(const xAOD::TrackParticle* track) const {
+  uint8_t nSCTSh = -1;
+  uint8_t nPixSh = -1;
+  if ( !track->summaryValue(nPixSh,xAOD::numberOfPixelSharedHits) ) ANA_MSG_ERROR("No Pix shared?");
+  if ( !track->summaryValue(nSCTSh,xAOD::numberOfSCTSharedHits)   ) ANA_MSG_ERROR("No SCT shared?");
+  return (nPixSh + nSCTSh);
+}
+
+float TRTLite::LoopAlg::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) const {
+  float delta_z0 = std::fabs(track->z0() + track->vz() - vtx->z());
+  float dz0sinth = std::fabs(delta_z0*std::sin(track->theta()));
+  return dz0sinth;
+}
+
+double TRTLite::LoopAlg::d0signif(const xAOD::TrackParticle *track) const {
+  double d0sig = xAOD::TrackingHelpers::d0significance(track,
+                                                       m_eventInfo->beamPosSigmaX(),
+                                                       m_eventInfo->beamPosSigmaY(),
+                                                       m_eventInfo->beamPosSigmaXY());
+  return d0sig;
 }

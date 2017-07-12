@@ -73,10 +73,6 @@ namespace TRTLite {
     xAOD::TEvent* m_event; //!
     xAOD::TStore* m_store; //!
 
-    std::shared_ptr<xAOD::TrackParticleContainer> m_trackContainer;    //!
-    std::shared_ptr<xAOD::ElectronContainer>      m_electronContainer; //!
-    std::shared_ptr<xAOD::MuonContainer>          m_muonContainer;     //!
-
     std::shared_ptr<TRTLite::ParticleIdSvc> m_pidSvc; //!
 
   protected:
@@ -117,9 +113,6 @@ namespace TRTLite {
 
     std::shared_ptr<TRTLite::ParticleIdSvc> particleIdSvc() const { return m_pidSvc; }
 
-    void buildTrackContainer();
-    void buildElectronContainer();
-    void buildMuonContainer();
     const xAOD::TrackParticleContainer* trackContainer();
     const xAOD::ElectronContainer*      electronContainer();
     const xAOD::MuonContainer*          muonContainer();
@@ -140,18 +133,6 @@ namespace TRTLite {
     // selection functions
     bool triggerPassed(const std::string trigName) const;
     bool triggersPassed(const std::vector<std::string>& trigNames) const;
-
-    // backup functions
-    // priority should be given to using the InDetTrackSelectionTool
-    bool passStandardTRTTrkSel(const xAOD::TrackParticle* track) const;
-    bool passLooseChargedPionTrkSel(const xAOD::TrackParticle* track) const;
-    bool passLoosePrimaryChargedPionTrkSel(const xAOD::TrackParticle* track) const;
-    bool passTightChargedPionTrkSel(const xAOD::TrackParticle* track) const;
-    bool passLooseMuonTrkSel(const xAOD::TrackParticle* track) const;
-    bool passLooseElectronTrkSel(const xAOD::TrackParticle* track) const;
-    bool passPionVtxSel(const xAOD::TrackParticle* track, const xAOD::Vertex* vtx) const;
-    bool passElectronVtxSel(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) const;
-    bool passMuonVtxSel(const xAOD::TrackParticle* track, const xAOD::Vertex* vtx) const;
 
     uint8_t nSilicon(const xAOD::TrackParticle* track) const;
     uint8_t nSiliconHoles(const xAOD::TrackParticle* track) const;
@@ -176,7 +157,7 @@ namespace TRTLite {
 
 inline const xAOD::EventInfo* TRTLite::LoopAlg::eventInfo() {
   const xAOD::EventInfo* evtinfo = nullptr;
-  if ( m_event->retrieve(evtinfo,"EventInfo").isFailure() ) {
+  if ( evtStore()->retrieve(evtinfo,"EventInfo").isFailure() ) {
     ANA_MSG_ERROR("Cannot retrieve EventInfo for some reason");
   }
   return evtinfo;
