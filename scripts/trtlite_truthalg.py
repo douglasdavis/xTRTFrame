@@ -45,8 +45,8 @@ def main():
     alg.setFillLeptonsOnly(args.leps_only)
     alg.setTreeOutputName("treeOutput")
 
+    sh = ROOT.SH.SampleHandler()
     if args.infilelist and args.outdir:
-        sh = ROOT.SH.SampleHandler()
         ROOT.SH.readFileList(sh, "sample", args.infilelist)
         sh.setMetaString("nc_tree","CollectionTree")
         sh.print()
@@ -58,10 +58,11 @@ def main():
         exit(0)
 
     elif args.gridDS and args.outDS:
-        sh = ROOT.SH.SampleHandler()
         ROOT.SH.scanRucio(sh, args.gridDS)
-        sh.setMetaString("nc_tree", "CollectionTree");
+        sh.setMetaString("nc_tree", "CollectionTree")
         sh.setMetaString("nc_grid_filter","*.root*")
+        sh.setMetaString("nc_cmtConfig", ROOT.gSystem.ExpandPathName("$AnalysisBase_PLATFORM"))
+
         sh.print()
         job.sampleHandler(sh)
 

@@ -62,15 +62,15 @@ EL::StatusCode TRTLite::TruthLoop::histInitialize() {
     itree->Branch("hit_bec",        &m_bec);
     itree->Branch("hit_layer",      &m_layer);
     itree->Branch("hit_strawlayer", &m_strawlayer);
-    //itree->Branch("hit_strawnumber",&m_strawnumber);
-    //itree->Branch("hit_drifttime",  &m_drifttime);
+    itree->Branch("hit_strawnumber",&m_strawnumber);
+    itree->Branch("hit_drifttime",  &m_drifttime);
     itree->Branch("hit_tot",        &m_tot);
-    //itree->Branch("hit_T0",         &m_T0);
-    //itree->Branch("hit_localTheta", &m_localTheta);
-    //itree->Branch("hit_localPhi",   &m_localPhi);
+    itree->Branch("hit_T0",         &m_T0);
+    itree->Branch("hit_localTheta", &m_localTheta);
+    itree->Branch("hit_localPhi",   &m_localPhi);
     itree->Branch("hit_HitZ",       &m_HitZ);
     itree->Branch("hit_HitR",       &m_HitR);
-    //itree->Branch("hit_rTrkWire",   &m_rTrkWire);
+    itree->Branch("hit_rTrkWire",   &m_rTrkWire);
     itree->Branch("hit_L",          &m_L);
   }
 
@@ -159,7 +159,6 @@ EL::StatusCode TRTLite::TruthLoop::execute() {
     m_dEdxNoHT  = get(TRT::Acc::ToT_dEdx_noHT_divByL,track);
     m_NhitsdEdx = get(TRT::Acc::ToT_usedHits_noHT_divByL,track);
 
-    /*
     const xAOD::TrackStateValidation* msos = nullptr;
     const xAOD::TrackMeasurementValidation* driftCircle = nullptr;
     if ( TRT::Acc::msosLink.isAvailable(*track) ) {
@@ -176,7 +175,6 @@ EL::StatusCode TRTLite::TruthLoop::execute() {
 
     m_NHThits = std::count_if(m_HTMB.begin(), m_HTMB.end(),
                               [](const int isHT) { return isHT == 1; });
-    */
 
     auto parent = truth->parent();
     if ( parent != nullptr ) {
