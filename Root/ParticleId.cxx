@@ -6,12 +6,21 @@
 
 TRTLite::ParticleIdSvc::ParticleIdSvc() {
   m_bbParams = {
+    -1.56411e-01,
+    -7.78249e+00,
+    -9.55779e-01,
+    1.16393e+00,
+    -2.03921e-02
+  };
+  /*
+  m_bbParams = {
     -0.192682,
     -6.956870,
     -0.974757,
     1.27633,
     -0.014986,
   };
+  */
   m_resParamsEle = {
     0.1606,
     -0.008239,
@@ -47,7 +56,8 @@ float TRTLite::ParticleIdSvc::ToT_getProbability(float dEdx, float trackP, TRTLi
   float res = 0.0;
   if ( hyp == TRTLite::Hyp::Electron ) {
     float factor  = 1.0;
-    float correct = 1+factor*(0.045*std::log10(trackP)+0.885-1);
+    //float correct = 1+factor*(0.045*std::log10(trackP)+0.885-1);
+    float correct = 1+factor*(0.025*std::log10(trackP)+0.885-1);
     dEdx_pred = dEdx_pred/correct;
 
     res = m_resParamsEle.at(0) + m_resParamsEle.at(1)*(nhits+0.5) +

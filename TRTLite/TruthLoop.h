@@ -11,6 +11,7 @@ namespace TRTLite {
   private:
 
     bool m_fillLeptonsOnly;
+    bool m_saveHits;
 
     TTree*      m_elTree; //!
     TTree*      m_muTree; //!
@@ -69,6 +70,7 @@ namespace TRTLite {
                                const xAOD::TrackMeasurementValidation* driftCircle);
 
     void setFillLeptonsOnly(bool var) { m_fillLeptonsOnly = var; }
+    void setSaveHits(bool var)        { m_saveHits        = var; }
 
     ClassDef(TruthLoop, 1);
 
