@@ -41,6 +41,7 @@ def main():
     job.algsAdd(ntuple)
 
     alg = ROOT.TRTLite.TruthLoop()
+
     job.algsAdd(alg)
     alg.useGRLTool(True)
     alg.setFillLeptonsOnly(args.leps_only)

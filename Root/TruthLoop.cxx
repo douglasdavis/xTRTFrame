@@ -57,6 +57,8 @@ EL::StatusCode TRTLite::TruthLoop::histInitialize() {
     itree->Branch("NHThits",    &m_NHThits);
     itree->Branch("dEdxNoHT",   &m_dEdxNoHT);
     itree->Branch("NhitsdEdx",  &m_NhitsdEdx);
+    itree->Branch("sumToT",     &m_sumToT);
+    itree->Branch("sumL",       &m_sumL);
 
     if ( m_saveHits ) {
       itree->Branch("hit_HTMB",       &m_HTMB);
@@ -127,11 +129,14 @@ EL::StatusCode TRTLite::TruthLoop::execute() {
     if ( failTrkSel ) continue;
 
     uint8_t ntrthits = -1;
-    uint8_t nhthits  = -1;
+    //uint8_t nhthits  = -1;
     track->summaryValue(ntrthits,xAOD::numberOfTRTHits);
-    track->summaryValue(nhthits, xAOD::numberOfTRTHighThresholdHitsTotal);
+    //track->summaryValue(nhthits, xAOD::numberOfTRTHighThresholdHitsTotal);
     m_NTRThits = ntrthits;
-    m_NHThits  = nhthits;
+    m_NHThits  = 0;
+    m_sumL     = 0.0;
+    m_sumToT   = 0.0;
+    //m_NHThits  = nhthits;
 
     // only take every 5th pion.
     if ( m_pdgId == 211 ) {
@@ -141,7 +146,6 @@ EL::StatusCode TRTLite::TruthLoop::execute() {
       }
     }
 
-    m_trkOcc    = -999;
     m_truthMass = truth->m();
     m_pT        = track->pt();
     m_p         = track->p4().P();
@@ -153,7 +157,7 @@ EL::StatusCode TRTLite::TruthLoop::execute() {
     m_eProbToT  = get(TRT::Acc::eProbabilityToT,track);
     m_eProbHT   = get(TRT::Acc::eProbabilityHT,track);
     m_eProbToT2 = particleIdSvc()->ToT_getTest(get(TRT::Acc::ToT_dEdx_noHT_divByL,track),
-                                               m_p, TRTLite::Hyp::Electron, TRTLite::Hyp::Pion,
+                                               m_p,TRTLite::Hyp::Electron,TRTLite::Hyp::Pion,
                                                get(TRT::Acc::ToT_usedHits_noHT_divByL,track));
 
     m_eProbComb  = combinedProb(m_eProbHT,m_eProbToT);
@@ -161,7 +165,6 @@ EL::StatusCode TRTLite::TruthLoop::execute() {
 
     m_dEdxNoHT  = get(TRT::Acc::ToT_dEdx_noHT_divByL,track);
     m_NhitsdEdx = get(TRT::Acc::ToT_usedHits_noHT_divByL,track);
-
 
     const xAOD::TrackStateValidation* msos = nullptr;
     const xAOD::TrackMeasurementValidation* driftCircle = nullptr;
@@ -176,9 +179,6 @@ EL::StatusCode TRTLite::TruthLoop::execute() {
         }
       }
     }
-
-    m_NHThits = std::count_if(m_HTMB.begin(), m_HTMB.end(),
-                              [](const int isHT) { return isHT == 1; });
 
     auto parent = truth->parent();
     if ( parent != nullptr ) {
@@ -210,6 +210,7 @@ bool TRTLite::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
   auto hit = getHitSummary(track,msos,driftCircle);
   if ( hit.tot < 0.005 ) return false;
   m_HTMB.push_back(hit.HTMB);
+  if ( hit.HTMB == 1 ) m_NHThits++;
   m_gasType.push_back(hit.gasType);
   m_bec.push_back(hit.bec);
   m_layer.push_back(hit.layer);
@@ -217,6 +218,7 @@ bool TRTLite::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
   m_strawnumber.push_back(hit.strawnumber);
   m_drifttime.push_back(hit.drifttime);
   m_tot.push_back(hit.tot);
+  m_sumToT += hit.tot;
   m_T0.push_back(hit.T0);
 
   m_localTheta.push_back(hit.localTheta);
@@ -225,6 +227,7 @@ bool TRTLite::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
   m_HitR.push_back(hit.HitR);
   m_rTrkWire.push_back(hit.rTrkWire);
   m_L.push_back(hit.L);
+  m_sumL += hit.L;
   return true;
 }
 

@@ -38,6 +38,8 @@ namespace TRTLite {
     int         m_NHThits;    //!
     float       m_dEdxNoHT;   //!
     int         m_NhitsdEdx;  //!
+    float       m_sumL;       //!
+    float       m_sumToT;     //!
 
     std::vector<int>   m_HTMB;        //!
     std::vector<int>   m_gasType;     //!
@@ -54,6 +56,7 @@ namespace TRTLite {
     std::vector<float> m_HitR;        //!
     std::vector<float> m_rTrkWire;    //!
     std::vector<float> m_L;           //!
+
 
   public:
 

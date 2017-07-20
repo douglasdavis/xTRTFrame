@@ -51,6 +51,7 @@ namespace TRTLite {
     bool m_useGRLTool;
     bool m_usePRWTool;
     bool m_useTrigTools;
+
     std::vector<std::string> m_JPsi_electronTriggers;
     std::vector<std::string> m_JPsi_muonTriggers;
 

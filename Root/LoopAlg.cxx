@@ -19,6 +19,7 @@ TRTLite::LoopAlg::LoopAlg() {
   m_useGRLTool   = false;
   m_usePRWTool   = false;
   m_useTrigTools = false;
+  m_pidSvc = std::make_shared<TRTLite::ParticleIdSvc>();
 }
 
 TRTLite::LoopAlg::~LoopAlg() {}
@@ -63,8 +64,6 @@ EL::StatusCode TRTLite::LoopAlg::initialize() {
   if ( m_useTrigTools ) ANA_CHECK(enableTriggerTools());
 
   ANA_CHECK(setupTrackSelectionTools());
-
-  m_pidSvc = std::make_shared<TRTLite::ParticleIdSvc>();
 
   return EL::StatusCode::SUCCESS;
 }
