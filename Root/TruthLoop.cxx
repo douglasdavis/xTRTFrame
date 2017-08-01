@@ -153,12 +153,21 @@ EL::StatusCode TRTLite::TruthLoop::execute() {
     m_phi       = track->phi();
     m_theta     = track->theta();
 
+    auto absEta = std::fabs(m_eta);
+    TRTLite::StrawType st;
+    if      ( absEta < 0.625 ) { st = TRTLite::StrawType::BRL; }
+    else if ( absEta < 1.070 ) { st = TRTLite::StrawType::NON; }
+    else if ( absEta < 1.304 ) { st = TRTLite::StrawType::ECA; }
+    else if ( absEta < 1.752 ) { st = TRTLite::StrawType::NON; }
+    else if ( absEta < 2.000 ) { st = TRTLite::StrawType::ECB; }
+    else                       { st = TRTLite::StrawType::NON; }
+
     m_trkOcc    = get(TRT::Acc::TRTTrackOccupancy,track);
     m_eProbToT  = get(TRT::Acc::eProbabilityToT,track);
     m_eProbHT   = get(TRT::Acc::eProbabilityHT,track);
     m_eProbToT2 = particleIdSvc()->ToT_getTest(get(TRT::Acc::ToT_dEdx_noHT_divByL,track),
                                                m_p,TRTLite::Hyp::Electron,TRTLite::Hyp::Pion,
-                                               get(TRT::Acc::ToT_usedHits_noHT_divByL,track));
+                                               get(TRT::Acc::ToT_usedHits_noHT_divByL,track), st);
 
     m_eProbComb  = combinedProb(m_eProbHT,m_eProbToT);
     m_eProbComb2 = combinedProb(m_eProbHT,m_eProbToT2);

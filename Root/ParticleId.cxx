@@ -6,22 +6,14 @@
 #include <iostream>
 
 TRTLite::ParticleIdSvc::ParticleIdSvc() {
-  /*
-  m_bbParams = {
-    -1.56411e-01,
-    -7.78249e+00,
-    -9.55779e-01,
-    1.16393e+00,
-    -2.03921e-02
-  };
-  */
-  m_bbParams = {
-    -0.192682,
-    -6.956870,
-    -0.974757,
-    1.27633,
-    -0.014986,
-  };
+
+  //m_bbParams = { -0.192682, -6.956870, -0.974757, 1.27633, -0.014986 }; // DEFAULT
+
+  m_bbParams     = { -1.54912e-01, -7.85175e+00, -9.56614e-01, 1.16500e+00, -2.04535e-02 };
+  m_bbParams_brl = { -3.78432e-01, -5.12826e+00, -9.76325e-01, 1.50707e+00, -6.70900e-03 };
+  m_bbParams_eca = { -1.98921e-01, -7.37192e+00, -9.93165e-01, 2.12850e+00, -1.27547e-02 };
+  m_bbParams_ecb = { -1.31162e-01, -9.41779e+00, -9.86885e-01, 1.44736e+00, -1.83808e-02 };
+
   m_resParamsEle = {
     0.1606,
     -0.008239,
@@ -39,9 +31,10 @@ TRTLite::ParticleIdSvc::ParticleIdSvc() {
 TRTLite::ParticleIdSvc::~ParticleIdSvc() {}
 
 float TRTLite::ParticleIdSvc::ToT_getTest(float dEdx, float trackP,
-                                          TRTLite::Hyp hyp, TRTLite::Hyp ahyp, int nhits) const {
-  double Pone = ToT_getProbability(dEdx, trackP, hyp,  nhits);
-  double Ptwo = ToT_getProbability(dEdx, trackP, ahyp, nhits);
+                                          TRTLite::Hyp hyp, TRTLite::Hyp ahyp, int nhits,
+                                          TRTLite::StrawType stype) const {
+  double Pone = ToT_getProbability(dEdx, trackP, hyp,  nhits, stype);
+  double Ptwo = ToT_getProbability(dEdx, trackP, ahyp, nhits, stype);
   if ( (Pone+Ptwo) != 0.0 ) {
     return Pone/(Pone+Ptwo);
   }
@@ -50,8 +43,9 @@ float TRTLite::ParticleIdSvc::ToT_getTest(float dEdx, float trackP,
   }
 }
 
-float TRTLite::ParticleIdSvc::ToT_getProbability(float dEdx, float trackP, TRTLite::Hyp hyp, int nhits) const {
-  float dEdx_pred = ToT_predictdEdx(trackP, hyp);
+float TRTLite::ParticleIdSvc::ToT_getProbability(float dEdx, float trackP,
+                                                 TRTLite::Hyp hyp, int nhits, TRTLite::StrawType stype) const {
+  float dEdx_pred = ToT_predictdEdx(trackP, hyp, stype);
   if ( dEdx_pred == 0.0 ) return 0.0;
 
   float res = 0.0;
@@ -72,7 +66,7 @@ float TRTLite::ParticleIdSvc::ToT_getProbability(float dEdx, float trackP, TRTLi
   return prob;
 }
 
-float TRTLite::ParticleIdSvc::ToT_predictdEdx(float trackP, TRTLite::Hyp hyp) const {
+float TRTLite::ParticleIdSvc::ToT_predictdEdx(float trackP, TRTLite::Hyp hyp, TRTLite::StrawType stype) const {
   float mass = 0.510998;
   if ( hyp == TRTLite::Hyp::Pion ) {
     mass = 139.98;
@@ -80,8 +74,14 @@ float TRTLite::ParticleIdSvc::ToT_predictdEdx(float trackP, TRTLite::Hyp hyp) co
   float bg = trackP/mass;
   if ( trackP < 100.0 ) return 0.0;
 
-  return m_bbParams.at(0) /
-    std::pow(std::sqrt((bg*bg)/(1.+(bg*bg))), m_bbParams.at(3)) * (m_bbParams.at(1) -
-     std::pow(std::sqrt( (bg*bg)/(1.+(bg*bg))), m_bbParams.at(3) ) -
-     std::log(m_bbParams.at(2)+1./( std::pow(bg,m_bbParams.at(4)))));
+  const std::array<float,5>* paramArr;
+  if      ( stype == TRTLite::StrawType::BRL ) { paramArr = &m_bbParams_brl; }
+  else if ( stype == TRTLite::StrawType::ECA ) { paramArr = &m_bbParams_eca; }
+  else if ( stype == TRTLite::StrawType::ECB ) { paramArr = &m_bbParams_ecb; }
+  else                                         { paramArr = &m_bbParams;     }
+
+  return paramArr->at(0) /
+    std::pow(std::sqrt((bg*bg)/(1.+(bg*bg))), paramArr->at(3)) * (paramArr->at(1) -
+     std::pow(std::sqrt( (bg*bg)/(1.+(bg*bg))), paramArr->at(3) ) -
+     std::log(paramArr->at(2)+1./( std::pow(bg,paramArr->at(4)))));
 }
