@@ -112,7 +112,7 @@ namespace TRTF {
     EL::StatusCode enablePRWTool();
     EL::StatusCode enableTriggerTools();
 
-    std::shared_ptr<TRTFrame::ParticleIdSvc> particleIdSvc() const { return m_pidSvc; }
+    std::shared_ptr<TRTF::ParticleIdSvc> particleIdSvc() const { return m_pidSvc; }
 
     const xAOD::TrackParticleContainer* trackContainer();
     const xAOD::ElectronContainer*      electronContainer();
