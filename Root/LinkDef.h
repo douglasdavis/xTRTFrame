@@ -1,7 +1,7 @@
 // -*- c++ -*-
 
-#include <TRTLite/LoopAlg.h>
-#include <TRTLite/TruthLoop.h>
+#include <TRTFrame/LoopAlg.h>
+#include <TRTFrame/TruthLoop.h>
 
 #ifdef __CINT__
 
@@ -13,6 +13,6 @@
 #endif
 
 #ifdef __CINT__
-#pragma link C++ class TRTLite::LoopAlg+;
-#pragma link C++ class TRTLite::TruthLoop+;
+#pragma link C++ class TRTF::LoopAlg+;
+#pragma link C++ class TRTF::TruthLoop+;
 #endif

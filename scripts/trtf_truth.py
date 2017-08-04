@@ -9,7 +9,7 @@ import time
 import datetime
 
 parser = argparse.ArgumentParser(
-    description='TRTLite python steering script'
+    description='TRTFrame python steering script'
 )
 
 ## i/o arguments
@@ -42,7 +42,7 @@ def main():
     ntuple = ROOT.EL.NTupleSvc("treeOutput")
     job.algsAdd(ntuple)
 
-    alg = ROOT.TRTLite.TruthLoop()
+    alg = ROOT.TRTF.TruthLoop()
 
     job.algsAdd(alg)
     alg.useGRLTool(True)
@@ -60,7 +60,7 @@ def main():
         driver = ROOT.EL.DirectDriver()
         outDir = args.outdir
         if outDir == 'ts':
-            outDir = 'TRTLite_TruthLoop_'+ts
+            outDir = 'TRTFrame_TruthLoop_'+ts
         driver.submit(job, outDir)
         exit(0)
 
@@ -74,7 +74,7 @@ def main():
 
         driver = ROOT.EL.PrunDriver()
         driver.options().setString("nc_outputSampleName", args.outDS)
-        driver.submitOnly(job, "runTRTLiteOnGrid_"+ts)
+        driver.submitOnly(job, "runTRTFrameOnGrid_"+ts)
         exit(0)
 
     else:

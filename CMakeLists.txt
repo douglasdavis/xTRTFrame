@@ -1,5 +1,5 @@
 # Declare the name of this package:
-atlas_subdir(TRTLite None)
+atlas_subdir(TRTFrame None)
 
 # This package depends on other packages:
 atlas_depends_on_subdirs(PUBLIC
@@ -28,14 +28,14 @@ find_package(ROOT REQUIRED COMPONENTS Core Gpad Tree Hist RIO MathCore Graf)
 add_definitions(-g -O3 -std=c++14)
 
 # Generate a CINT dictionary source file:
-atlas_add_root_dictionary(TRTLite _cintDictSource
+atlas_add_root_dictionary(TRTFrame _cintDictSource
   ROOT_HEADERS Root/LinkDef.h
   EXTERNAL_PACKAGES ROOT
   )
 
 # Build a library that other components can link against:
-atlas_add_library(TRTLite Root/*.cxx TRTLite/*.h TRTLite/*.hpp ${_cintDictSource}
-  PUBLIC_HEADERS TRTLite
+atlas_add_library(TRTFrame Root/*.cxx TRTFrame/*.h TRTFrame/*.hpp ${_cintDictSource}
+  PUBLIC_HEADERS TRTFrame
   LINK_LIBRARIES
   AsgTools
   GoodRunsListsLib
@@ -59,7 +59,7 @@ atlas_add_library(TRTLite Root/*.cxx TRTLite/*.h TRTLite/*.hpp ${_cintDictSource
 
 #atlas_add_executable(runLoopAlg
 #  util/runLoopAlg.cxx
-#  LINK_LIBRARIES ${ROOT_LIBRARIES} TRTLite
+#  LINK_LIBRARIES ${ROOT_LIBRARIES} TRTFrame
 #  )
 
 atlas_install_scripts(scripts/*.py)

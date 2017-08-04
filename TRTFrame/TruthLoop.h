@@ -1,12 +1,12 @@
-#ifndef TRTLite_TruthLoop_h
-#define TRTLite_TruthLoop_h
+#ifndef TRTFrame_TruthLoop_h
+#define TRTFrame_TruthLoop_h
 
-// TRTLite
-#include <TRTLite/LoopAlg.h>
+// TRTFrame
+#include <TRTFrame/LoopAlg.h>
 
-namespace TRTLite {
+namespace TRTF {
 
-  class TruthLoop : public TRTLite::LoopAlg {
+  class TruthLoop : public TRTF::LoopAlg {
 
   private:
 
@@ -75,7 +75,7 @@ namespace TRTLite {
     void setFillLeptonsOnly(bool var) { m_fillLeptonsOnly = var; }
     void setSaveHits(bool var)        { m_saveHits        = var; }
 
-    ClassDef(TRTLite::TruthLoop, 1);
+    ClassDef(TRTF::TruthLoop, 1);
 
   };
 

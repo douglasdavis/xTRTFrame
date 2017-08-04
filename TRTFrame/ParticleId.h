@@ -1,10 +1,10 @@
-#ifndef TRTLite_ParticleId_h
-#define TRTLite_ParticleId_h
+#ifndef TRTFrame_ParticleId_h
+#define TRTFrame_ParticleId_h
 
 // C++
 #include <array>
 
-namespace TRTLite {
+namespace TRTF {
   enum Hyp {
     Electron,
     Pion,
@@ -18,7 +18,7 @@ namespace TRTLite {
   };
 }
 
-namespace TRTLite {
+namespace TRTF {
 
   class ParticleIdSvc {
 
@@ -37,11 +37,11 @@ namespace TRTLite {
     ParticleIdSvc();
     virtual ~ParticleIdSvc();
 
-    float ToT_getTest(float dEdx, float trackP, TRTLite::Hyp hyp, TRTLite::Hyp ahyp,
-                      int nhits, TRTLite::StrawType stype) const;
-    float ToT_getProbability(float dEdx, float trackP, TRTLite::Hyp hyp,
-                             int nhits, TRTLite::StrawType stype) const;
-    float ToT_predictdEdx(float trackP, TRTLite::Hyp hyp, TRTLite::StrawType stype) const;
+    float ToT_getTest(float dEdx, float trackP, TRTF::Hyp hyp, TRTF::Hyp ahyp,
+                      int nhits, TRTF::StrawType stype) const;
+    float ToT_getProbability(float dEdx, float trackP, TRTF::Hyp hyp,
+                             int nhits, TRTF::StrawType stype) const;
+    float ToT_predictdEdx(float trackP, TRTF::Hyp hyp, TRTF::StrawType stype) const;
 
   };
 

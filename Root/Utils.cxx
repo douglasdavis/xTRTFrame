@@ -1,9 +1,9 @@
-#include <TRTLite/LoopAlg.h>
+#include <TRTFrame/LoopAlg.h>
 
 #include <xAODTracking/Vertex.h>
 #include <xAODTracking/TrackParticlexAODHelpers.h>
 
-const xAOD::TrackParticleContainer* TRTLite::LoopAlg::trackContainer() {
+const xAOD::TrackParticleContainer* TRTF::LoopAlg::trackContainer() {
   const xAOD::TrackParticleContainer* trackContainerPtr = nullptr;
   if ( evtStore()->retrieve(trackContainerPtr,"InDetTrackParticles").isFailure() ) {
     ANA_MSG_WARNING("InDetTrackParticles unavailable!");
@@ -12,7 +12,7 @@ const xAOD::TrackParticleContainer* TRTLite::LoopAlg::trackContainer() {
   return trackContainerPtr;
 }
 
-const xAOD::ElectronContainer* TRTLite::LoopAlg::electronContainer() {
+const xAOD::ElectronContainer* TRTF::LoopAlg::electronContainer() {
   const xAOD::ElectronContainer* electronContainerPtr = nullptr;
   if ( evtStore()->retrieve(electronContainerPtr,"Electrons").isFailure() ) {
     ANA_MSG_WARNING("Electrons unavailable!");
@@ -21,7 +21,7 @@ const xAOD::ElectronContainer* TRTLite::LoopAlg::electronContainer() {
   return electronContainerPtr;
 }
 
-const xAOD::MuonContainer* TRTLite::LoopAlg::muonContainer() {
+const xAOD::MuonContainer* TRTF::LoopAlg::muonContainer() {
   const xAOD::MuonContainer* muonContainerPtr = nullptr;
   if ( evtStore()->retrieve(muonContainerPtr,"Muons").isFailure() ) {
     ANA_MSG_WARNING("Muons unavailable!");
@@ -30,10 +30,10 @@ const xAOD::MuonContainer* TRTLite::LoopAlg::muonContainer() {
   return muonContainerPtr;
 }
 
-const xAOD::TruthParticle* TRTLite::LoopAlg::truthParticle(const xAOD::TrackParticle* track) {
+const xAOD::TruthParticle* TRTF::LoopAlg::truthParticle(const xAOD::TrackParticle* track) {
   const xAOD::TruthParticle* truthParticle = nullptr;
-  if ( TRT::Acc::truthParticleLink.isAvailable(*track) ) {
-    const auto truthLink = TRT::Acc::truthParticleLink(*track);
+  if ( TRTF::Acc::truthParticleLink.isAvailable(*track) ) {
+    const auto truthLink = TRTF::Acc::truthParticleLink(*track);
     if ( truthLink.isValid() ) {
       truthParticle = *truthLink;
     }
@@ -41,13 +41,13 @@ const xAOD::TruthParticle* TRTLite::LoopAlg::truthParticle(const xAOD::TrackPart
   return truthParticle;
 }
 
-bool TRTLite::LoopAlg::triggerPassed(const std::string trigName) const {
+bool TRTF::LoopAlg::triggerPassed(const std::string trigName) const {
   auto chainGroup = m_trigDecToolHandle->getChainGroup(trigName);
   auto passed = chainGroup->isPassed();
   return passed;
 }
 
-bool TRTLite::LoopAlg::triggersPassed(const std::vector<std::string>& trigNames) const {
+bool TRTF::LoopAlg::triggersPassed(const std::vector<std::string>& trigNames) const {
   for ( auto const& name : trigNames ) {
     auto chainGroup = m_trigDecToolHandle->getChainGroup(name);
     if ( chainGroup->isPassed() ) return true;
@@ -55,7 +55,7 @@ bool TRTLite::LoopAlg::triggersPassed(const std::vector<std::string>& trigNames)
   return false;
 }
 
-float TRTLite::LoopAlg::eventWeight() const {
+float TRTF::LoopAlg::eventWeight() const {
   if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) ) {
     auto weights = m_eventInfo->mcEventWeights();
     if ( !(weights.empty()) ) return weights.at(0);
@@ -64,7 +64,7 @@ float TRTLite::LoopAlg::eventWeight() const {
   return 1.0;
 }
 
-float TRTLite::LoopAlg::averageMu() {
+float TRTF::LoopAlg::averageMu() {
   if ( !(m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION)) && m_usePRWTool ) {
     return m_PRWToolHandle->getCorrectedAverageInteractionsPerCrossing(*m_eventInfo,true);
   }
@@ -73,28 +73,28 @@ float TRTLite::LoopAlg::averageMu() {
   }
 }
 
-TRTLite::HitSummary TRTLite::LoopAlg::getHitSummary(const xAOD::TrackParticle* track,
+TRTF::HitSummary TRTF::LoopAlg::getHitSummary(const xAOD::TrackParticle* track,
                                                     const xAOD::TrackStateValidation* msos,
                                                     const xAOD::TrackMeasurementValidation* driftCircle) {
-  TRTLite::HitSummary hit;
-  hit.HTMB        = (get(TRT::Acc::bitPattern, driftCircle,"bitPattern") & 131072) ? 1 : 0;
-  hit.tot         =  get(TRT::Acc::tot,        driftCircle,"tot");
-  hit.gasType     =  get(TRT::Acc::gasType,    driftCircle,"gasType");
-  hit.bec         =  get(TRT::Acc::bec,        driftCircle,"bec");
-  hit.layer       =  get(TRT::Acc::layer,      driftCircle,"layer");
-  hit.strawlayer  =  get(TRT::Acc::strawlayer, driftCircle,"strawlayer");
-  hit.strawnumber =  get(TRT::Acc::strawnumber,driftCircle,"strawnumber");
-  hit.drifttime   =  get(TRT::Acc::drifttime,  driftCircle,"drifttime");
-  hit.T0          =  get(TRT::Acc::T0,         driftCircle,"T0");
+  TRTF::HitSummary hit;
+  hit.HTMB        = (get(TRTF::Acc::bitPattern, driftCircle,"bitPattern") & 131072) ? 1 : 0;
+  hit.tot         =  get(TRTF::Acc::tot,        driftCircle,"tot");
+  hit.gasType     =  get(TRTF::Acc::gasType,    driftCircle,"gasType");
+  hit.bec         =  get(TRTF::Acc::bec,        driftCircle,"bec");
+  hit.layer       =  get(TRTF::Acc::layer,      driftCircle,"layer");
+  hit.strawlayer  =  get(TRTF::Acc::strawlayer, driftCircle,"strawlayer");
+  hit.strawnumber =  get(TRTF::Acc::strawnumber,driftCircle,"strawnumber");
+  hit.drifttime   =  get(TRTF::Acc::drifttime,  driftCircle,"drifttime");
+  hit.T0          =  get(TRTF::Acc::T0,         driftCircle,"T0");
 
-  hit.type       = get(TRT::Acc::type,      msos,"type");
-  hit.localX     = get(TRT::Acc::localX,    msos,"localX");
-  hit.localY     = get(TRT::Acc::localY,    msos,"localY");
-  hit.localTheta = get(TRT::Acc::localTheta,msos,"localTheta");
-  hit.localPhi   = get(TRT::Acc::localPhi,  msos,"localPhi");
-  hit.HitZ       = get(TRT::Acc::HitZ,      msos,"HitZ");
-  hit.HitR       = get(TRT::Acc::HitR,      msos,"HitR");
-  hit.rTrkWire   = get(TRT::Acc::rTrkWire,  msos,"rTrkWire");
+  hit.type       = get(TRTF::Acc::type,      msos,"type");
+  hit.localX     = get(TRTF::Acc::localX,    msos,"localX");
+  hit.localY     = get(TRTF::Acc::localY,    msos,"localY");
+  hit.localTheta = get(TRTF::Acc::localTheta,msos,"localTheta");
+  hit.localPhi   = get(TRTF::Acc::localPhi,  msos,"localPhi");
+  hit.HitZ       = get(TRTF::Acc::HitZ,      msos,"HitZ");
+  hit.HitR       = get(TRTF::Acc::HitR,      msos,"HitR");
+  hit.rTrkWire   = get(TRTF::Acc::rTrkWire,  msos,"rTrkWire");
 
   int part = 0; // 0: barrel ... 1: ECA ... 2: ECB
   if ( std::abs(hit.bec) == 2 ) {
@@ -118,7 +118,7 @@ TRTLite::HitSummary TRTLite::LoopAlg::getHitSummary(const xAOD::TrackParticle* t
   return hit;
 }
 
-uint8_t TRTLite::LoopAlg::nSilicon(const xAOD::TrackParticle* track) const {
+uint8_t TRTF::LoopAlg::nSilicon(const xAOD::TrackParticle* track) const {
   uint8_t nPix = -1;
   uint8_t nSCT = -1;
   if ( !track->summaryValue(nPix,xAOD::numberOfPixelHits) ) ANA_MSG_ERROR("No Pix hits?");
@@ -126,7 +126,7 @@ uint8_t TRTLite::LoopAlg::nSilicon(const xAOD::TrackParticle* track) const {
   return (nPix + nSCT);
 }
 
-uint8_t TRTLite::LoopAlg::nSiliconHoles(const xAOD::TrackParticle* track) const {
+uint8_t TRTF::LoopAlg::nSiliconHoles(const xAOD::TrackParticle* track) const {
   uint8_t nPixHole = -1;
   uint8_t nSCTHole = -1;
   if ( !track->summaryValue(nPixHole,xAOD::numberOfPixelHoles) ) ANA_MSG_ERROR("No Pix holes?");
@@ -134,7 +134,7 @@ uint8_t TRTLite::LoopAlg::nSiliconHoles(const xAOD::TrackParticle* track) const 
   return (nPixHole + nSCTHole);
 }
 
-uint8_t TRTLite::LoopAlg::nSiliconShared(const xAOD::TrackParticle* track) const {
+uint8_t TRTF::LoopAlg::nSiliconShared(const xAOD::TrackParticle* track) const {
   uint8_t nSCTSh = -1;
   uint8_t nPixSh = -1;
   if ( !track->summaryValue(nPixSh,xAOD::numberOfPixelSharedHits) ) ANA_MSG_ERROR("No Pix shared?");
@@ -142,13 +142,13 @@ uint8_t TRTLite::LoopAlg::nSiliconShared(const xAOD::TrackParticle* track) const
   return (nPixSh + nSCTSh);
 }
 
-float TRTLite::LoopAlg::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) const {
+float TRTF::LoopAlg::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) const {
   float delta_z0 = std::fabs(track->z0() + track->vz() - vtx->z());
   float dz0sinth = std::fabs(delta_z0*std::sin(track->theta()));
   return dz0sinth;
 }
 
-double TRTLite::LoopAlg::d0signif(const xAOD::TrackParticle *track) const {
+double TRTF::LoopAlg::d0signif(const xAOD::TrackParticle *track) const {
   double d0sig = xAOD::TrackingHelpers::d0significance(track,
                                                        m_eventInfo->beamPosSigmaX(),
                                                        m_eventInfo->beamPosSigmaY(),

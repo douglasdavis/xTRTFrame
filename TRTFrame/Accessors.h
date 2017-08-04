@@ -1,5 +1,5 @@
-#ifndef TRTLite_Accessors_h
-#define TRTLite_Accessors_h
+#ifndef TRTFrame_Accessors_h
+#define TRTFrame_Accessors_h
 
 // ATLAS
 #include <AthContainers/AuxElement.h>
@@ -8,7 +8,7 @@
 
 using uint = unsigned int;
 
-namespace TRT {
+namespace TRTF {
   namespace Acc {
 
     // Track

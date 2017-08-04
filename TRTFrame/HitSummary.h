@@ -1,7 +1,7 @@
-#ifndef TRTLite_Hit_h
-#define TRTLite_Hit_h
+#ifndef TRTFrame_Hit_h
+#define TRTFrame_Hit_h
 
-namespace TRTLite {
+namespace TRTF {
 
   struct HitSummary {
 

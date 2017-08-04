@@ -1,5 +1,5 @@
-#ifndef TRTLite_LoopAlg_h
-#define TRTLite_LoopAlg_h
+#ifndef TRTFrame_LoopAlg_h
+#define TRTFrame_LoopAlg_h
 
 // C++
 #include <memory>
@@ -33,16 +33,16 @@
 #include <xAODTracking/TrackStateValidationContainer.h>
 #include <xAODTracking/TrackParticlexAODHelpers.h>
 
-// TRTLite
-#include <TRTLite/Accessors.h>
-#include <TRTLite/HitSummary.h>
-#include <TRTLite/ParticleId.h>
+// TRTFrame
+#include <TRTFrame/Accessors.h>
+#include <TRTFrame/HitSummary.h>
+#include <TRTFrame/ParticleId.h>
 
 // ROOT
 #include <TH1F.h>
 #include <TTree.h>
 
-namespace TRTLite {
+namespace TRTF {
 
   class LoopAlg : public EL::Algorithm {
 
@@ -74,7 +74,7 @@ namespace TRTLite {
     xAOD::TEvent* m_event; //!
     xAOD::TStore* m_store; //!
 
-    std::shared_ptr<TRTLite::ParticleIdSvc> m_pidSvc; //!
+    std::shared_ptr<TRTF::ParticleIdSvc> m_pidSvc; //!
 
   protected:
 
@@ -112,7 +112,7 @@ namespace TRTLite {
     EL::StatusCode enablePRWTool();
     EL::StatusCode enableTriggerTools();
 
-    std::shared_ptr<TRTLite::ParticleIdSvc> particleIdSvc() const { return m_pidSvc; }
+    std::shared_ptr<TRTFrame::ParticleIdSvc> particleIdSvc() const { return m_pidSvc; }
 
     const xAOD::TrackParticleContainer* trackContainer();
     const xAOD::ElectronContainer*      electronContainer();
@@ -127,9 +127,9 @@ namespace TRTLite {
     xAOD::TStore* store() { return m_store; }
     const xAOD::EventInfo* eventInfo();
 
-    TRTLite::HitSummary getHitSummary(const xAOD::TrackParticle* track,
-				      const xAOD::TrackStateValidation* msos,
-				      const xAOD::TrackMeasurementValidation* driftCircle);
+    TRTF::HitSummary getHitSummary(const xAOD::TrackParticle* track,
+                                   const xAOD::TrackStateValidation* msos,
+                                   const xAOD::TrackMeasurementValidation* driftCircle);
 
     // selection functions
     bool triggerPassed(const std::string trigName) const;
@@ -150,13 +150,13 @@ namespace TRTLite {
       return 0;
     }
 
-    ClassDef(TRTLite::LoopAlg, 1);
+    ClassDef(TRTF::LoopAlg, 1);
 
   };
 
 }
 
-inline const xAOD::EventInfo* TRTLite::LoopAlg::eventInfo() {
+inline const xAOD::EventInfo* TRTF::LoopAlg::eventInfo() {
   const xAOD::EventInfo* evtinfo = nullptr;
   if ( evtStore()->retrieve(evtinfo,"EventInfo").isFailure() ) {
     ANA_MSG_ERROR("Cannot retrieve EventInfo for some reason");

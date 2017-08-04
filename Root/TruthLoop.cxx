@@ -9,21 +9,21 @@
 #include <TSystem.h>
 #include <TFile.h>
 
-// TRTLite
-#include <TRTLite/TruthLoop.h>
+// TRTFrame
+#include <TRTFrame/TruthLoop.h>
 
-ClassImp(TRTLite::TruthLoop)
+ClassImp(TRTF::TruthLoop)
 
-TRTLite::TruthLoop::TruthLoop() : TRTLite::LoopAlg() {
+TRTF::TruthLoop::TruthLoop() : TRTF::LoopAlg() {
   m_fillLeptonsOnly = false;
   m_saveHits        = false;
 }
 
-TRTLite::TruthLoop::~TruthLoop() {}
+TRTF::TruthLoop::~TruthLoop() {}
 
-EL::StatusCode TRTLite::TruthLoop::histInitialize() {
+EL::StatusCode TRTF::TruthLoop::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(TRTLite::LoopAlg::histInitialize());
+  ANA_CHECK(TRTF::LoopAlg::histInitialize());
 
   h_averageMu = new TH1F("h_averageMu","",70,-0.5,69.5);
   wk()->addOutput(h_averageMu);
@@ -82,15 +82,15 @@ EL::StatusCode TRTLite::TruthLoop::histInitialize() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode TRTLite::TruthLoop::initialize() {
+EL::StatusCode TRTF::TruthLoop::initialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(TRTLite::LoopAlg::initialize());
+  ANA_CHECK(TRTF::LoopAlg::initialize());
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode TRTLite::TruthLoop::execute() {
+EL::StatusCode TRTF::TruthLoop::execute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(TRTLite::LoopAlg::execute());
+  ANA_CHECK(TRTF::LoopAlg::execute());
 
   bool isMC = false;
   if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) ) {
@@ -152,31 +152,31 @@ EL::StatusCode TRTLite::TruthLoop::execute() {
     m_theta     = track->theta();
 
     auto absEta = std::fabs(m_eta);
-    TRTLite::StrawType st;
-    if      ( absEta < 0.625 ) { st = TRTLite::StrawType::BRL; }
-    else if ( absEta < 1.070 ) { st = TRTLite::StrawType::NON; }
-    else if ( absEta < 1.304 ) { st = TRTLite::StrawType::ECA; }
-    else if ( absEta < 1.752 ) { st = TRTLite::StrawType::NON; }
-    else if ( absEta < 2.000 ) { st = TRTLite::StrawType::ECB; }
-    else                       { st = TRTLite::StrawType::NON; }
+    TRTF::StrawType st;
+    if      ( absEta < 0.625 ) { st = TRTF::StrawType::BRL; }
+    else if ( absEta < 1.070 ) { st = TRTF::StrawType::NON; }
+    else if ( absEta < 1.304 ) { st = TRTF::StrawType::ECA; }
+    else if ( absEta < 1.752 ) { st = TRTF::StrawType::NON; }
+    else if ( absEta < 2.000 ) { st = TRTF::StrawType::ECB; }
+    else                       { st = TRTF::StrawType::NON; }
 
-    m_trkOcc    = get(TRT::Acc::TRTTrackOccupancy,track);
-    m_eProbToT  = get(TRT::Acc::eProbabilityToT,track);
-    m_eProbHT   = get(TRT::Acc::eProbabilityHT,track);
-    m_eProbToT2 = particleIdSvc()->ToT_getTest(get(TRT::Acc::ToT_dEdx_noHT_divByL,track),
-                                               m_p,TRTLite::Hyp::Electron,TRTLite::Hyp::Pion,
-                                               get(TRT::Acc::ToT_usedHits_noHT_divByL,track), st);
+    m_trkOcc    = get(TRTF::Acc::TRTTrackOccupancy,track);
+    m_eProbToT  = get(TRTF::Acc::eProbabilityToT,track);
+    m_eProbHT   = get(TRTF::Acc::eProbabilityHT,track);
+    m_eProbToT2 = particleIdSvc()->ToT_getTest(get(TRTF::Acc::ToT_dEdx_noHT_divByL,track),
+                                               m_p,TRTF::Hyp::Electron,TRTF::Hyp::Pion,
+                                               get(TRTF::Acc::ToT_usedHits_noHT_divByL,track), st);
 
     m_eProbComb  = combinedProb(m_eProbHT,m_eProbToT);
     m_eProbComb2 = combinedProb(m_eProbHT,m_eProbToT2);
 
-    m_dEdxNoHT  = get(TRT::Acc::ToT_dEdx_noHT_divByL,track);
-    m_NhitsdEdx = get(TRT::Acc::ToT_usedHits_noHT_divByL,track);
+    m_dEdxNoHT  = get(TRTF::Acc::ToT_dEdx_noHT_divByL,track);
+    m_NhitsdEdx = get(TRTF::Acc::ToT_usedHits_noHT_divByL,track);
 
     const xAOD::TrackStateValidation* msos = nullptr;
     const xAOD::TrackMeasurementValidation* driftCircle = nullptr;
-    if ( TRT::Acc::msosLink.isAvailable(*track) ) {
-      for ( auto trackMeasurement : TRT::Acc::msosLink(*track) ) {
+    if ( TRTF::Acc::msosLink.isAvailable(*track) ) {
+      for ( auto trackMeasurement : TRTF::Acc::msosLink(*track) ) {
         if ( trackMeasurement.isValid() ) {
           msos = *trackMeasurement;
           if ( msos->detType() != 3 ) continue; // TRT hits only.
@@ -211,7 +211,7 @@ EL::StatusCode TRTLite::TruthLoop::execute() {
   return EL::StatusCode::SUCCESS;
 }
 
-bool TRTLite::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
+bool TRTF::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
                                                const xAOD::TrackStateValidation* msos,
                                                const xAOD::TrackMeasurementValidation* driftCircle) {
   auto hit = getHitSummary(track,msos,driftCircle);
@@ -239,7 +239,7 @@ bool TRTLite::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
   return true;
 }
 
-void TRTLite::TruthLoop::clearVectors() {
+void TRTF::TruthLoop::clearVectors() {
   m_type       .clear();
   m_HTMB       .clear();
   m_gasType    .clear();
