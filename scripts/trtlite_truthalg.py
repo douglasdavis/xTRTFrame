@@ -28,6 +28,8 @@ if len(sys.argv) < 5:
     exit(0)
 
 def main():
+    ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d_%H.%M.%S')
+
     import ROOT
     ROOT.xAOD.Init().ignore()
 
@@ -56,20 +58,20 @@ def main():
         job.sampleHandler(sh)
 
         driver = ROOT.EL.DirectDriver()
-        submitDir = args.outdir
-        driver.submit(job, args.outdir)
+        outDir = args.outdir
+        if outDir == 'ts':
+            outDir = 'TRTLite_TruthLoop_'+ts
+        driver.submit(job, outDir)
         exit(0)
 
     elif args.gridDS and args.outDS:
         ROOT.SH.scanRucio(sh, args.gridDS)
         sh.setMetaString("nc_tree", "CollectionTree")
         sh.setMetaString("nc_grid_filter","*.root*")
-        sh.setMetaString("nc_cmtConfig", ROOT.gSystem.ExpandPathName("$AnalysisBase_PLATFORM"))
 
         sh.print()
         job.sampleHandler(sh)
 
-        ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d_%H.%M.%S')
         driver = ROOT.EL.PrunDriver()
         driver.options().setString("nc_outputSampleName", args.outDS)
         driver.submitOnly(job, "runTRTLiteOnGrid_"+ts)

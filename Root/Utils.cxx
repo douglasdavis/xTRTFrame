@@ -10,7 +10,6 @@ const xAOD::TrackParticleContainer* TRTLite::LoopAlg::trackContainer() {
     return nullptr;
   }
   return trackContainerPtr;
-
 }
 
 const xAOD::ElectronContainer* TRTLite::LoopAlg::electronContainer() {
@@ -20,7 +19,6 @@ const xAOD::ElectronContainer* TRTLite::LoopAlg::electronContainer() {
     return nullptr;
   }
   return electronContainerPtr;
-
 }
 
 const xAOD::MuonContainer* TRTLite::LoopAlg::muonContainer() {
@@ -30,7 +28,6 @@ const xAOD::MuonContainer* TRTLite::LoopAlg::muonContainer() {
     return nullptr;
   }
   return muonContainerPtr;
-
 }
 
 const xAOD::TruthParticle* TRTLite::LoopAlg::truthParticle(const xAOD::TrackParticle* track) {
@@ -77,8 +74,8 @@ float TRTLite::LoopAlg::averageMu() {
 }
 
 TRTLite::HitSummary TRTLite::LoopAlg::getHitSummary(const xAOD::TrackParticle* track,
-						    const xAOD::TrackStateValidation* msos,
-						    const xAOD::TrackMeasurementValidation* driftCircle) {
+                                                    const xAOD::TrackStateValidation* msos,
+                                                    const xAOD::TrackMeasurementValidation* driftCircle) {
   TRTLite::HitSummary hit;
   hit.HTMB        = (get(TRT::Acc::bitPattern, driftCircle,"bitPattern") & 131072) ? 1 : 0;
   hit.tot         =  get(TRT::Acc::tot,        driftCircle,"tot");
@@ -90,6 +87,9 @@ TRTLite::HitSummary TRTLite::LoopAlg::getHitSummary(const xAOD::TrackParticle* t
   hit.drifttime   =  get(TRT::Acc::drifttime,  driftCircle,"drifttime");
   hit.T0          =  get(TRT::Acc::T0,         driftCircle,"T0");
 
+  hit.type       = get(TRT::Acc::type,      msos,"type");
+  hit.localX     = get(TRT::Acc::localX,    msos,"localX");
+  hit.localY     = get(TRT::Acc::localY,    msos,"localY");
   hit.localTheta = get(TRT::Acc::localTheta,msos,"localTheta");
   hit.localPhi   = get(TRT::Acc::localPhi,  msos,"localPhi");
   hit.HitZ       = get(TRT::Acc::HitZ,      msos,"HitZ");

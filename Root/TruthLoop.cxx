@@ -129,9 +129,7 @@ EL::StatusCode TRTLite::TruthLoop::execute() {
     if ( failTrkSel ) continue;
 
     uint8_t ntrthits = -1;
-    //uint8_t nhthits  = -1;
     track->summaryValue(ntrthits,xAOD::numberOfTRTHits);
-    //track->summaryValue(nhthits, xAOD::numberOfTRTHighThresholdHitsTotal);
     m_NTRThits = ntrthits;
     m_NHThits  = 0;
     m_sumL     = 0.0;
@@ -218,6 +216,7 @@ bool TRTLite::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
                                                const xAOD::TrackMeasurementValidation* driftCircle) {
   auto hit = getHitSummary(track,msos,driftCircle);
   if ( hit.tot < 0.005 ) return false;
+  m_type.push_back(hit.type);
   m_HTMB.push_back(hit.HTMB);
   if ( hit.HTMB == 1 ) m_NHThits++;
   m_gasType.push_back(hit.gasType);
@@ -241,6 +240,7 @@ bool TRTLite::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
 }
 
 void TRTLite::TruthLoop::clearVectors() {
+  m_type       .clear();
   m_HTMB       .clear();
   m_gasType    .clear();
   m_bec        .clear();

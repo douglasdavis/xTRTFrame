@@ -38,6 +38,9 @@ namespace TRT {
     static const SG::AuxElement::ConstAccessor<float> T0          {"T0"};
 
     // MSOS
+    static const SG::AuxElement::ConstAccessor<int>   type       {"type"};
+    static const SG::AuxElement::ConstAccessor<float> localX     {"localX"};
+    static const SG::AuxElement::ConstAccessor<float> localY     {"localY"};
     static const SG::AuxElement::ConstAccessor<float> localTheta {"localTheta"};
     static const SG::AuxElement::ConstAccessor<float> localPhi   {"localPhi"};
     static const SG::AuxElement::ConstAccessor<float> HitZ       {"HitZ"};

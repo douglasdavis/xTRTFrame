@@ -146,11 +146,11 @@ namespace TRTLite {
       if ( acc.isAvailable(*cont) ) {
         return acc(*cont);
       }
-      ANA_MSG_WARNING("AuxElement: "+vn+" is not available!");
+      ANA_MSG_WARNING("AuxElement: " << vn << " is not available! Returning 0!");
       return 0;
     }
 
-    ClassDef(LoopAlg, 1);
+    ClassDef(TRTLite::LoopAlg, 1);
 
   };
 

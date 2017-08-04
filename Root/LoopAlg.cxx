@@ -29,7 +29,7 @@ EL::StatusCode TRTLite::LoopAlg::setupJob(EL::Job& job) {
   //setMsgLevel(MSG::DEBUG);
   job.options()->setDouble(EL::Job::optXAODSummaryReport, 0);
   job.useXAOD();
-  ANA_CHECK(xAOD::Init());
+  ANA_CHECK(xAOD::Init("TRTLite"));
 
   return EL::StatusCode::SUCCESS;
 }

@@ -50,13 +50,13 @@ namespace TRTLite {
     std::vector<float> m_drifttime;   //!
     std::vector<float> m_tot;         //!
     std::vector<float> m_T0;          //!
+    std::vector<int>   m_type;        //!
     std::vector<float> m_localTheta;  //!
     std::vector<float> m_localPhi;    //!
     std::vector<float> m_HitZ;        //!
     std::vector<float> m_HitR;        //!
     std::vector<float> m_rTrkWire;    //!
     std::vector<float> m_L;           //!
-
 
   public:
 
@@ -75,7 +75,7 @@ namespace TRTLite {
     void setFillLeptonsOnly(bool var) { m_fillLeptonsOnly = var; }
     void setSaveHits(bool var)        { m_saveHits        = var; }
 
-    ClassDef(TruthLoop, 1);
+    ClassDef(TRTLite::TruthLoop, 1);
 
   };
 

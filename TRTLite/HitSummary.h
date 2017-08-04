@@ -4,6 +4,7 @@
 namespace TRTLite {
 
   struct HitSummary {
+
     int   HTMB;
     int   gasType;
     int   bec;
@@ -13,12 +14,17 @@ namespace TRTLite {
     float drifttime;
     float tot;
     float T0;
+
+    int   type;
+    float localX;
+    float localY;
     float localTheta;
     float localPhi;
     float HitZ;
     float HitR;
     float rTrkWire;
     float L;
+
   };
 
 }
