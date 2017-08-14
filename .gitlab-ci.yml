@@ -1,0 +1,12 @@
+trtframe:
+  variables:
+    ATLAS_LOCAL_ROOT_BASE: /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
+  script:
+    - ls
+    - set +e
+    - source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh
+    - mkdir ../build
+    - cd ../build
+    - asetup AnalysisBase,21.2,latest,here
+    - cmake ../TRTFrame
+    - make
