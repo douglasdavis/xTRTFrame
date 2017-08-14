@@ -74,8 +74,8 @@ float TRTF::LoopAlg::averageMu() {
 }
 
 TRTF::HitSummary TRTF::LoopAlg::getHitSummary(const xAOD::TrackParticle* track,
-                                                    const xAOD::TrackStateValidation* msos,
-                                                    const xAOD::TrackMeasurementValidation* driftCircle) {
+                                              const xAOD::TrackStateValidation* msos,
+                                              const xAOD::TrackMeasurementValidation* driftCircle) {
   TRTF::HitSummary hit;
   hit.HTMB        = (get(TRTF::Acc::bitPattern, driftCircle,"bitPattern") & 131072) ? 1 : 0;
   hit.tot         =  get(TRTF::Acc::tot,        driftCircle,"tot");
