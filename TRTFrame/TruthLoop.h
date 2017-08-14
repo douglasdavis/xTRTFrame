@@ -34,10 +34,12 @@ namespace TRTF {
     float       m_eProbToT2;  //!
     float       m_eProbComb;  //!
     float       m_eProbComb2; //!
-    int         m_NTRThits;   //!
-    int         m_NHThits;    //!
+    int         m_nTRThits;   //!
+    int         m_nHThits;    //!
+    int         m_nArhits;    //!
+    int         m_nXehits;    //!
     float       m_dEdxNoHT;   //!
-    int         m_NhitsdEdx;  //!
+    int         m_nHitsdEdx;  //!
     float       m_sumL;       //!
     float       m_sumToT;     //!
 

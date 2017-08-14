@@ -13,6 +13,7 @@ parser = argparse.ArgumentParser(
 )
 
 ## i/o arguments
+parser.add_argument('-c','--config',     dest='config',    type=str, required=True)
 parser.add_argument('-i','--infile-list',dest='infilelist',type=str)
 parser.add_argument('-o','--out-dir',    dest='outdir',    type=str)
 parser.add_argument('--gridDS',          dest='gridDS',    type=str)
@@ -43,9 +44,10 @@ def main():
     job.algsAdd(ntuple)
 
     alg = ROOT.TRTF.TruthLoop()
+    alg.feedConfig(args.config)
 
     job.algsAdd(alg)
-    alg.useGRLTool(True)
+    #alg.useGRLTool(True)
     alg.setFillLeptonsOnly(args.leps_only)
     alg.setSaveHits(args.save_hits)
     alg.setTreeOutputName("treeOutput")

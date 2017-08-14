@@ -25,8 +25,7 @@ EL::StatusCode TRTF::TruthLoop::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_CHECK(TRTF::LoopAlg::histInitialize());
 
-  h_averageMu = new TH1F("h_averageMu","",70,-0.5,69.5);
-  wk()->addOutput(h_averageMu);
+  book(TH1F("h_averageMu","",70,-0.5,69.5));
 
   TFile *outFile = wk()->getOutputFile(m_outputName);
 
@@ -53,10 +52,12 @@ EL::StatusCode TRTF::TruthLoop::histInitialize() {
     itree->Branch("eProbToT2",  &m_eProbToT2);
     itree->Branch("eProbComb",  &m_eProbComb);
     itree->Branch("eProbComb2", &m_eProbComb2);
-    itree->Branch("NTRThits",   &m_NTRThits);
-    itree->Branch("NHThits",    &m_NHThits);
+    itree->Branch("nTRThits",   &m_nTRThits);
+    itree->Branch("nArhits",    &m_nArhits);
+    itree->Branch("nXehits",    &m_nXehits);
+    itree->Branch("nHThits",    &m_nHThits);
     itree->Branch("dEdxNoHT",   &m_dEdxNoHT);
-    itree->Branch("NhitsdEdx",  &m_NhitsdEdx);
+    itree->Branch("NhitsdEdx",  &m_nHitsdEdx);
     itree->Branch("sumToT",     &m_sumToT);
     itree->Branch("sumL",       &m_sumL);
 
@@ -96,18 +97,20 @@ EL::StatusCode TRTF::TruthLoop::execute() {
   if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) ) {
     isMC = true;
   }
-  if ( !isMC && m_useGRLTool ) {
+  if ( !isMC && config()->useGRL() ) {
     if ( !m_GRLToolHandle->passRunLB(*m_eventInfo) ) {
       return EL::StatusCode::SUCCESS;
     }
   }
 
   m_weight = eventWeight();
-  h_averageMu->Fill(averageMu(),m_weight);
+  hist("h_averageMu")->Fill(averageMu(),m_weight);
 
-  auto combinedProb = [](float pHT, float pToT) {
+  /*
+    auto combinedProb = [](float pHT, float pToT) {
     return pHT*pToT/(pHT*pToT+(1-pHT)*(1-pToT));
-  };
+    };
+  */
 
   auto tracks = trackContainer();
 
@@ -130,11 +133,11 @@ EL::StatusCode TRTF::TruthLoop::execute() {
 
     uint8_t ntrthits = -1;
     track->summaryValue(ntrthits,xAOD::numberOfTRTHits);
-    m_NTRThits = ntrthits;
-    m_NHThits  = 0;
+    m_nTRThits = ntrthits;
+    m_nHThits  = 0;
     m_sumL     = 0.0;
     m_sumToT   = 0.0;
-    //m_NHThits  = nhthits;
+    //m_nHThits  = nhthits;
 
     // only take every 5th pion.
     if ( m_pdgId == 211 ) {
@@ -151,27 +154,29 @@ EL::StatusCode TRTF::TruthLoop::execute() {
     m_phi       = track->phi();
     m_theta     = track->theta();
 
-    auto absEta = std::fabs(m_eta);
-    TRTF::StrawType st;
-    if      ( absEta < 0.625 ) { st = TRTF::StrawType::BRL; }
-    else if ( absEta < 1.070 ) { st = TRTF::StrawType::NON; }
-    else if ( absEta < 1.304 ) { st = TRTF::StrawType::ECA; }
-    else if ( absEta < 1.752 ) { st = TRTF::StrawType::NON; }
-    else if ( absEta < 2.000 ) { st = TRTF::StrawType::ECB; }
-    else                       { st = TRTF::StrawType::NON; }
+    /*
+      auto absEta = std::fabs(m_eta);
+      TRTF::StrawType st;
+      if      ( absEta < 0.625 ) { st = TRTF::StrawType::BRL; }
+      else if ( absEta < 1.070 ) { st = TRTF::StrawType::NON; }
+      else if ( absEta < 1.304 ) { st = TRTF::StrawType::ECA; }
+      else if ( absEta < 1.752 ) { st = TRTF::StrawType::NON; }
+      else if ( absEta < 2.000 ) { st = TRTF::StrawType::ECB; }
+      else                       { st = TRTF::StrawType::NON; }
+    */
 
     m_trkOcc    = get(TRTF::Acc::TRTTrackOccupancy,track);
     m_eProbToT  = get(TRTF::Acc::eProbabilityToT,track);
     m_eProbHT   = get(TRTF::Acc::eProbabilityHT,track);
-    m_eProbToT2 = particleIdSvc()->ToT_getTest(get(TRTF::Acc::ToT_dEdx_noHT_divByL,track),
-                                               m_p,TRTF::Hyp::Electron,TRTF::Hyp::Pion,
-                                               get(TRTF::Acc::ToT_usedHits_noHT_divByL,track), st);
+    m_eProbToT2 = 0; //particleIdSvc()->ToT_getTest(get(TRTF::Acc::ToT_dEdx_noHT_divByL,track),
+                     //                          m_p,TRTF::Hyp::Electron,TRTF::Hyp::Pion,
+                     //                          get(TRTF::Acc::ToT_usedHits_noHT_divByL,track), st);
 
-    m_eProbComb  = combinedProb(m_eProbHT,m_eProbToT);
-    m_eProbComb2 = combinedProb(m_eProbHT,m_eProbToT2);
+    m_eProbComb  = 0; //combinedProb(m_eProbHT,m_eProbToT);
+    m_eProbComb2 = 0; //combinedProb(m_eProbHT,m_eProbToT2);
 
     m_dEdxNoHT  = get(TRTF::Acc::ToT_dEdx_noHT_divByL,track);
-    m_NhitsdEdx = get(TRTF::Acc::ToT_usedHits_noHT_divByL,track);
+    m_nHitsdEdx = get(TRTF::Acc::ToT_usedHits_noHT_divByL,track);
 
     const xAOD::TrackStateValidation* msos = nullptr;
     const xAOD::TrackMeasurementValidation* driftCircle = nullptr;
@@ -212,13 +217,13 @@ EL::StatusCode TRTF::TruthLoop::execute() {
 }
 
 bool TRTF::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
-                                               const xAOD::TrackStateValidation* msos,
-                                               const xAOD::TrackMeasurementValidation* driftCircle) {
+                                            const xAOD::TrackStateValidation* msos,
+                                            const xAOD::TrackMeasurementValidation* driftCircle) {
   auto hit = getHitSummary(track,msos,driftCircle);
   if ( hit.tot < 0.005 ) return false;
   m_type.push_back(hit.type);
   m_HTMB.push_back(hit.HTMB);
-  if ( hit.HTMB == 1 ) m_NHThits++;
+  if ( hit.HTMB == 1 ) m_nHThits++;
   m_gasType.push_back(hit.gasType);
   m_bec.push_back(hit.bec);
   m_layer.push_back(hit.layer);

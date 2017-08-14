@@ -16,7 +16,7 @@
 ClassImp(TRTF::LoopAlg)
 
 TRTF::LoopAlg::LoopAlg() {
-  m_useGRLTool   = false;
+  SetName("TRTF::LoopAlg");
   m_usePRWTool   = false;
   m_useTrigTools = false;
   m_pidSvc = std::make_shared<TRTF::ParticleIdSvc>();
@@ -55,13 +55,13 @@ EL::StatusCode TRTF::LoopAlg::initialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   m_event = wk()->xaodEvent();
   m_store = wk()->xaodStore();
-  Info("initialize()", "Number of events = %lli", m_event->getEntries());
+  ATH_MSG_INFO("Number of events = " << m_event->getEntries());
 
   m_eventCounter = 0;
 
-  if ( m_usePRWTool   ) ANA_CHECK(enablePRWTool());
-  if ( m_useGRLTool   ) ANA_CHECK(enableGRLTool());
-  if ( m_useTrigTools ) ANA_CHECK(enableTriggerTools());
+  if ( m_usePRWTool       ) ANA_CHECK(enablePRWTool());
+  if ( config()->useGRL() ) ANA_CHECK(enableGRLTool());
+  if ( m_useTrigTools     ) ANA_CHECK(enableTriggerTools());
 
   ANA_CHECK(setupTrackSelectionTools());
 
@@ -72,7 +72,7 @@ EL::StatusCode TRTF::LoopAlg::execute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
 
   if ( m_eventCounter % 5000 == 0 ) {
-    Info("execute()", "Event number = %i", m_eventCounter);
+    ATH_MSG_INFO("Event number = " << m_eventCounter);
   }
   m_eventCounter++;
 

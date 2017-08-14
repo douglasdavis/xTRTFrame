@@ -17,7 +17,7 @@ EL::StatusCode TRTF::LoopAlg::setupTrackSelectionTools() {
 
   if ( !m_trackSelToolHandle.isUserConfigured() ) {
     SET_DUAL_TOOL(m_trackSelToolHandle, InDet::InDetTrackSelectionTool, "TrackSelTool");
-    ANA_CHECK(m_trackSelToolHandle.setProperty("CutLevel","LoosePrimary"));
+    ANA_CHECK(m_trackSelToolHandle.setProperty("CutLevel","TightPrimary"));
     ANA_CHECK(m_trackSelToolHandle.setProperty("maxAbsEta",2.0));
     ANA_CHECK(m_trackSelToolHandle.setProperty("maxTrtEtaAcceptance",0.0));
     ANA_CHECK(m_trackSelToolHandle.setProperty("maxEtaForTrtHitCuts",2.0));
@@ -50,14 +50,14 @@ EL::StatusCode TRTF::LoopAlg::setupTrackSelectionTools() {
 
 EL::StatusCode TRTF::LoopAlg::enableGRLTool() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  Info("enableGRLTools()","Setting up GRL tool");
+  ATH_MSG_INFO("Setting up GRL tool");
 
-  std::vector<std::string> grls;
-  grls.push_back(PathResolverFindCalibFile("GoodRunsLists/data15_13TeV/20160720/physics_25ns_20.7.xml"));
-  grls.push_back(PathResolverFindCalibFile("GoodRunsLists/data16_13TeV/20161101/physics_25ns_20.7.xml"));
+  for ( auto const& entry : config()->GRLFiles() ) {
+    ATH_MSG_INFO("GRL File: " << entry.c_str());
+  }
 
   SET_DUAL_TOOL(m_GRLToolHandle, GoodRunsListSelectionTool, "GRLTool");
-  ANA_CHECK(m_GRLToolHandle.setProperty("GoodRunsListVec", grls));
+  ANA_CHECK(m_GRLToolHandle.setProperty("GoodRunsListVec", config()->GRLFiles()));
   ANA_CHECK(m_GRLToolHandle.setProperty("PassThrough",     false));
   ANA_CHECK(m_GRLToolHandle.setProperty("OutputLevel",     msg().level()));
   ANA_CHECK(m_GRLToolHandle.retrieve());
@@ -66,22 +66,12 @@ EL::StatusCode TRTF::LoopAlg::enableGRLTool() {
 
 EL::StatusCode TRTF::LoopAlg::enablePRWTool() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  Info("enablePRWTools()","Setting up PRW tool");
+  ATH_MSG_INFO("Setting up PRW tool");
 
   if ( !m_PRWToolHandle.isUserConfigured() ) {
-    std::vector<std::string> file_conf;
-    for ( auto fc : m_PRWConfFiles ) {
-      Info("enablePRWTool()",std::string("Adding PRW conf file: "+fc).c_str());
-      file_conf.push_back(fc);
-    }
-    std::vector<std::string> file_ilumi;
-    for ( auto fl : m_PRWLumiCalcFiles ) {
-      Info("enablePRWTool()",std::string("Adding PRW ilumicalc file: "+fl).c_str());
-      file_ilumi.push_back(fl);
-    }
     SET_DUAL_TOOL(m_PRWToolHandle, CP::PileupReweightingTool, "PRWTool");
-    ANA_CHECK(m_PRWToolHandle.setProperty("ConfigFiles",        file_conf));
-    ANA_CHECK(m_PRWToolHandle.setProperty("LumiCalcFiles",      file_ilumi));
+    ANA_CHECK(m_PRWToolHandle.setProperty("ConfigFiles",        config()->PRWConfFiles()));
+    ANA_CHECK(m_PRWToolHandle.setProperty("LumiCalcFiles",      config()->PRWLumiFiles()));
     ANA_CHECK(m_PRWToolHandle.setProperty("DataScaleFactor",    1.0/1.09));
     ANA_CHECK(m_PRWToolHandle.setProperty("DataScaleFactorUP",  1.0));
     ANA_CHECK(m_PRWToolHandle.setProperty("DataScaleFactorDOWN",1.0/1.18));

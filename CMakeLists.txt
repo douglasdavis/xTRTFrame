@@ -24,6 +24,8 @@ atlas_depends_on_subdirs(PUBLIC
 # This package uses ROOT:
 find_package(ROOT REQUIRED COMPONENTS Core Gpad Tree Hist RIO MathCore Graf)
 
+find_package(yamlcpp REQUIRED)
+
 # Custom definitions needed for this package:
 add_definitions(-g -O3 -std=c++14)
 
@@ -54,7 +56,8 @@ atlas_add_library(TRTFrame Root/*.cxx TRTFrame/*.h TRTFrame/*.hpp ${_cintDictSou
   TriggerMatchingToolLib
   PathResolver
   ${ROOT_LIBRARIES}
-  INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}
+  ${YAMLCPP_LIBRARIES}
+  INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} ${YAMLCPP_INCLUDE_DIR}
   )
 
 #atlas_add_executable(runLoopAlg

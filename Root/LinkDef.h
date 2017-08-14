@@ -2,6 +2,7 @@
 
 #include <TRTFrame/LoopAlg.h>
 #include <TRTFrame/TruthLoop.h>
+#include <TRTFrame/Config.h>
 
 #ifdef __CINT__
 
@@ -13,6 +14,7 @@
 #endif
 
 #ifdef __CINT__
+#pragma link C++ class TRTF::Config+;
 #pragma link C++ class TRTF::LoopAlg+;
 #pragma link C++ class TRTF::TruthLoop+;
 #endif

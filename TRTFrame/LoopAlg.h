@@ -37,6 +37,7 @@
 #include <TRTFrame/Accessors.h>
 #include <TRTFrame/HitSummary.h>
 #include <TRTFrame/ParticleId.h>
+#include <TRTFrame/Config.h>
 
 // ROOT
 #include <TH1F.h>
@@ -48,7 +49,8 @@ namespace TRTF {
 
   protected:
 
-    bool m_useGRLTool;
+    std::unique_ptr<TRTF::Config> m_config;
+
     bool m_usePRWTool;
     bool m_useTrigTools;
 
@@ -80,8 +82,6 @@ namespace TRTF {
 
     std::string m_outputName;
 
-    TH1F* h_averageMu; //!
-
   public:
 
     // this is a standard constructor
@@ -89,10 +89,15 @@ namespace TRTF {
     virtual ~LoopAlg();
 
     // functions to configure the algorithm
+    void feedConfig(const std::string fileName) {
+      m_config = std::make_unique<TRTF::Config>();
+      m_config->parse(fileName);
+    }
+    TRTF::Config* config() { return m_config.get(); }
+
     void addPRWConfFile(const std::string& file)      { m_PRWConfFiles.push_back(file);     }
     void addPRWLumiCalcFile(const std::string& file)  { m_PRWLumiCalcFiles.push_back(file); }
     void usePRWTool(bool logic = true)                { m_usePRWTool   = logic; }
-    void useGRLTool(bool logic = true)                { m_useGRLTool   = logic; }
     void useTrigTools(bool logic = true)              { m_useTrigTools = logic; }
     void setTreeOutputName(const std::string name)    { m_outputName   = name;  }
 
