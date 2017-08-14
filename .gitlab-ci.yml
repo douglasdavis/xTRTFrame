@@ -8,5 +8,6 @@ trtframe:
     - mkdir ../build
     - cd ../build
     - asetup AnalysisBase,21.2,latest,here
-    - cmake ../TRTFrame
+    - lsetup 'sft releases/LCG_87/yamlcpp/0.5.1'
+    - cmake ../TRTFrame -DYAMLCPP_ROOT=$SFT_HOME_yamlcpp
     - make
