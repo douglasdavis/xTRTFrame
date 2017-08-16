@@ -1,0 +1,17 @@
+PRW:
+  Use: False
+  ConfFiles:
+    - "none"
+  LumiFiles:
+    - "none"
+
+GRL:
+  Use: True
+  XMLs:
+    - "GoodRunsLists/data15_13TeV/20160720/physics_25ns_20.7.xml"
+    - "GoodRunsLists/data16_13TeV/20161101/physics_25ns_20.7.xml"
+
+Custom:
+  LeptonsOnly: "1"
+  StoreHits: "1"
+  Type0HitOnly: "1"

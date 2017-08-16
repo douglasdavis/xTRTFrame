@@ -28,8 +28,10 @@ bool TRTF::Config::parse(const std::string fileName) {
     }
   }
 
-  for ( auto const& entry : this->GRLFiles() ) {
-    std::cout << "** " << entry << std::endl;
+  for ( auto const& custom : config["Custom"] ) {
+    auto key = custom.first.as<std::string>();
+    auto val = custom.second.as<std::string>();
+    m_customOptions.emplace(std::make_pair(key,val));
   }
 
   return true;

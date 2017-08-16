@@ -20,28 +20,32 @@ namespace TRTF {
     TTree*      m_zdTree; //!
     TTree*      m_jdTree; //!
 
-    float       m_weight;     //!
-    int         m_pdgId;      //!
-    float       m_trkOcc;     //!
-    float       m_pT;         //!
-    float       m_p;          //!
-    float       m_truthMass;  //!
-    float       m_eta;        //!
-    float       m_phi;        //!
-    float       m_theta;      //!
-    float       m_eProbHT;    //!
-    float       m_eProbToT;   //!
-    float       m_eProbToT2;  //!
-    float       m_eProbComb;  //!
-    float       m_eProbComb2; //!
-    int         m_nTRThits;   //!
-    int         m_nHThits;    //!
-    int         m_nArhits;    //!
-    int         m_nXehits;    //!
-    float       m_dEdxNoHT;   //!
-    int         m_nHitsdEdx;  //!
-    float       m_sumL;       //!
-    float       m_sumToT;     //!
+    float       m_weight;       //!
+    int         m_pdgId;        //!
+    float       m_trkOcc;       //!
+    float       m_pT;           //!
+    float       m_p;            //!
+    float       m_truthMass;    //!
+    float       m_eta;          //!
+    float       m_phi;          //!
+    float       m_theta;        //!
+    float       m_eProbHT;      //!
+    float       m_eProbToT;     //!
+    float       m_eProbToT2;    //!
+    float       m_eProbComb;    //!
+    float       m_eProbComb2;   //!
+    int         m_nTRThits;     //!
+    int         m_nTRThitsMan;  //!
+    int         m_nHThits;      //!
+    int         m_nHThitsMan;   //!
+    int         m_nArhits;      //!
+    int         m_nArhitsMan;   //!
+    int         m_nXehits;      //!
+    int         m_nXehitsMan;   //!
+    float       m_dEdxNoHT;     //!
+    int         m_nHitsdEdx;    //!
+    float       m_sumL;         //!
+    float       m_sumToT;       //!
 
     std::vector<int>   m_HTMB;        //!
     std::vector<int>   m_gasType;     //!
@@ -72,10 +76,8 @@ namespace TRTF {
     void clearVectors();
     bool fillHitBasedVariables(const xAOD::TrackParticle* track,
                                const xAOD::TrackStateValidation* msos,
-                               const xAOD::TrackMeasurementValidation* driftCircle);
-
-    void setFillLeptonsOnly(bool var) { m_fillLeptonsOnly = var; }
-    void setSaveHits(bool var)        { m_saveHits        = var; }
+                               const xAOD::TrackMeasurementValidation* driftCircle,
+                               const bool type0only);
 
     ClassDef(TRTF::TruthLoop, 1);
 

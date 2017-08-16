@@ -4,17 +4,14 @@
 // C++
 #include <array>
 
+// TRTFrame
+#include <TRTFrame/Helpers.h>
+
 namespace TRTF {
   enum Hyp {
     Electron,
     Pion,
     Muon
-  };
-  enum StrawType {
-    BRL = 0,
-    ECA = 1,
-    ECB = 2,
-    NON = 3
   };
 }
 
@@ -37,14 +34,20 @@ namespace TRTF {
     ParticleIdSvc();
     virtual ~ParticleIdSvc();
 
+    float combinedProb(float pHT, float pToT) const;
+
     float ToT_getTest(float dEdx, float trackP, TRTF::Hyp hyp, TRTF::Hyp ahyp,
-                      int nhits, TRTF::StrawType stype) const;
+                      int nhits, TRTF::StrawRegion stype) const;
     float ToT_getProbability(float dEdx, float trackP, TRTF::Hyp hyp,
-                             int nhits, TRTF::StrawType stype) const;
-    float ToT_predictdEdx(float trackP, TRTF::Hyp hyp, TRTF::StrawType stype) const;
+                             int nhits, TRTF::StrawRegion stype) const;
+    float ToT_predictdEdx(float trackP, TRTF::Hyp hyp, TRTF::StrawRegion stype) const;
 
   };
 
+}
+
+inline float TRTF::ParticleIdSvc::combinedProb(float pHT, float pToT) const {
+  return pHT*pToT/(pHT*pToT+(1-pHT)*(1-pToT));
 }
 
 #endif

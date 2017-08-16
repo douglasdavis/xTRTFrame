@@ -6,3 +6,7 @@ inline bool TRTF::Config::usePRW() const { return m_usePRW; }
 inline const std::vector<std::string>& TRTF::Config::GRLFiles()     const { return m_GRLFiles;     }
 inline const std::vector<std::string>& TRTF::Config::PRWConfFiles() const { return m_PRWConfFiles; }
 inline const std::vector<std::string>& TRTF::Config::PRWLumiFiles() const { return m_PRWLumiFiles; }
+
+inline const std::string& TRTF::Config::custom(const std::string& name) const {
+  return m_customOptions.at(name);
+}

@@ -32,7 +32,7 @@ TRTF::ParticleIdSvc::~ParticleIdSvc() {}
 
 float TRTF::ParticleIdSvc::ToT_getTest(float dEdx, float trackP,
                                           TRTF::Hyp hyp, TRTF::Hyp ahyp, int nhits,
-                                          TRTF::StrawType stype) const {
+                                          TRTF::StrawRegion stype) const {
   double Pone = ToT_getProbability(dEdx, trackP, hyp,  nhits, stype);
   double Ptwo = ToT_getProbability(dEdx, trackP, ahyp, nhits, stype);
   if ( (Pone+Ptwo) != 0.0 ) {
@@ -44,7 +44,7 @@ float TRTF::ParticleIdSvc::ToT_getTest(float dEdx, float trackP,
 }
 
 float TRTF::ParticleIdSvc::ToT_getProbability(float dEdx, float trackP,
-                                                 TRTF::Hyp hyp, int nhits, TRTF::StrawType stype) const {
+                                                 TRTF::Hyp hyp, int nhits, TRTF::StrawRegion stype) const {
   float dEdx_pred = ToT_predictdEdx(trackP, hyp, stype);
   if ( dEdx_pred == 0.0 ) return 0.0;
 
@@ -66,7 +66,7 @@ float TRTF::ParticleIdSvc::ToT_getProbability(float dEdx, float trackP,
   return prob;
 }
 
-float TRTF::ParticleIdSvc::ToT_predictdEdx(float trackP, TRTF::Hyp hyp, TRTF::StrawType stype) const {
+float TRTF::ParticleIdSvc::ToT_predictdEdx(float trackP, TRTF::Hyp hyp, TRTF::StrawRegion stype) const {
   float mass = 0.510998;
   if ( hyp == TRTF::Hyp::Pion ) {
     mass = 139.98;
@@ -75,10 +75,10 @@ float TRTF::ParticleIdSvc::ToT_predictdEdx(float trackP, TRTF::Hyp hyp, TRTF::St
   if ( trackP < 100.0 ) return 0.0;
 
   const std::array<float,5>* paramArr;
-  if      ( stype == TRTF::StrawType::BRL ) { paramArr = &m_bbParams_brl; }
-  else if ( stype == TRTF::StrawType::ECA ) { paramArr = &m_bbParams_eca; }
-  else if ( stype == TRTF::StrawType::ECB ) { paramArr = &m_bbParams_ecb; }
-  else                                         { paramArr = &m_bbParams;     }
+  if      ( stype == TRTF::StrawRegion::BRL ) { paramArr = &m_bbParams_brl; }
+  else if ( stype == TRTF::StrawRegion::ECA ) { paramArr = &m_bbParams_eca; }
+  else if ( stype == TRTF::StrawRegion::ECB ) { paramArr = &m_bbParams_ecb; }
+  else                                        { paramArr = &m_bbParams;     }
 
   return paramArr->at(0) /
     std::pow(std::sqrt((bg*bg)/(1.+(bg*bg))), paramArr->at(3)) * (paramArr->at(1) -

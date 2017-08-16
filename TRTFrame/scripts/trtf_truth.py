@@ -19,10 +19,6 @@ parser.add_argument('-o','--out-dir',    dest='outdir',    type=str)
 parser.add_argument('--gridDS',          dest='gridDS',    type=str)
 parser.add_argument('--outDS',           dest='outDS',     type=str)
 
-## configuration arguments
-parser.add_argument('--leptons-only',dest='leps_only',action='store_true')
-parser.add_argument('--save-hits',   dest='save_hits',action='store_true')
-
 args = parser.parse_args()
 if len(sys.argv) < 5:
     parser.print_help()
@@ -47,9 +43,7 @@ def main():
     alg.feedConfig(args.config)
 
     job.algsAdd(alg)
-    #alg.useGRLTool(True)
-    alg.setFillLeptonsOnly(args.leps_only)
-    alg.setSaveHits(args.save_hits)
+
     alg.setTreeOutputName("treeOutput")
 
     sh = ROOT.SH.SampleHandler()

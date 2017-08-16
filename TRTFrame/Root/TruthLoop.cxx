@@ -12,6 +12,9 @@
 // TRTFrame
 #include <TRTFrame/TruthLoop.h>
 
+// C++
+#include <sstream>
+
 ClassImp(TRTF::TruthLoop)
 
 TRTF::TruthLoop::TruthLoop() : TRTF::LoopAlg() {
@@ -26,6 +29,9 @@ EL::StatusCode TRTF::TruthLoop::histInitialize() {
   ANA_CHECK(TRTF::LoopAlg::histInitialize());
 
   book(TH1F("h_averageMu","",70,-0.5,69.5));
+
+  std::istringstream(config()->custom("LeptonsOnly")) >> m_fillLeptonsOnly;
+  std::istringstream(config()->custom("StoreHits"))   >> m_saveHits;
 
   TFile *outFile = wk()->getOutputFile(m_outputName);
 
@@ -53,9 +59,13 @@ EL::StatusCode TRTF::TruthLoop::histInitialize() {
     itree->Branch("eProbComb",  &m_eProbComb);
     itree->Branch("eProbComb2", &m_eProbComb2);
     itree->Branch("nTRThits",   &m_nTRThits);
+    itree->Branch("nTRThitsMan",&m_nTRThitsMan);
     itree->Branch("nArhits",    &m_nArhits);
+    itree->Branch("nArhitsMan", &m_nArhitsMan);
     itree->Branch("nXehits",    &m_nXehits);
+    itree->Branch("nXehitsMan", &m_nXehitsMan);
     itree->Branch("nHThits",    &m_nHThits);
+    itree->Branch("nHThitsMan", &m_nHThitsMan);
     itree->Branch("dEdxNoHT",   &m_dEdxNoHT);
     itree->Branch("NhitsdEdx",  &m_nHitsdEdx);
     itree->Branch("sumToT",     &m_sumToT);
@@ -106,12 +116,6 @@ EL::StatusCode TRTF::TruthLoop::execute() {
   m_weight = eventWeight();
   hist("h_averageMu")->Fill(averageMu(),m_weight);
 
-  /*
-    auto combinedProb = [](float pHT, float pToT) {
-    return pHT*pToT/(pHT*pToT+(1-pHT)*(1-pToT));
-    };
-  */
-
   auto tracks = trackContainer();
 
   int nthPion = 0;
@@ -132,11 +136,22 @@ EL::StatusCode TRTF::TruthLoop::execute() {
     if ( failTrkSel ) continue;
 
     uint8_t ntrthits = -1;
+    uint8_t nxehits  = -1;
+    uint8_t nhthits  = -1;
     track->summaryValue(ntrthits,xAOD::numberOfTRTHits);
+    track->summaryValue(nxehits, xAOD::numberOfTRTXenonHits);
+    track->summaryValue(nhthits, xAOD::numberOfTRTHighThresholdHitsTotal);
+
     m_nTRThits = ntrthits;
-    m_nHThits  = 0;
-    m_sumL     = 0.0;
-    m_sumToT   = 0.0;
+    m_nXehits  = nxehits;
+    m_nArhits  = ntrthits-nxehits;
+    m_nHThits  = nhthits;
+    m_nTRThitsMan = 0;
+    m_nXehitsMan  = 0;
+    m_nArhitsMan  = 0;
+    m_nHThitsMan  = 0;
+    m_sumL   = 0.0;
+    m_sumToT = 0.0;
     //m_nHThits  = nhthits;
 
     // only take every 5th pion.
@@ -154,17 +169,6 @@ EL::StatusCode TRTF::TruthLoop::execute() {
     m_phi       = track->phi();
     m_theta     = track->theta();
 
-    /*
-      auto absEta = std::fabs(m_eta);
-      TRTF::StrawType st;
-      if      ( absEta < 0.625 ) { st = TRTF::StrawType::BRL; }
-      else if ( absEta < 1.070 ) { st = TRTF::StrawType::NON; }
-      else if ( absEta < 1.304 ) { st = TRTF::StrawType::ECA; }
-      else if ( absEta < 1.752 ) { st = TRTF::StrawType::NON; }
-      else if ( absEta < 2.000 ) { st = TRTF::StrawType::ECB; }
-      else                       { st = TRTF::StrawType::NON; }
-    */
-
     m_trkOcc    = get(TRTF::Acc::TRTTrackOccupancy,track);
     m_eProbToT  = get(TRTF::Acc::eProbabilityToT,track);
     m_eProbHT   = get(TRTF::Acc::eProbabilityHT,track);
@@ -178,6 +182,9 @@ EL::StatusCode TRTF::TruthLoop::execute() {
     m_dEdxNoHT  = get(TRTF::Acc::ToT_dEdx_noHT_divByL,track);
     m_nHitsdEdx = get(TRTF::Acc::ToT_usedHits_noHT_divByL,track);
 
+    bool fillType0only;
+    std::istringstream(config()->custom("Type0HitOnly")) >> fillType0only;
+
     const xAOD::TrackStateValidation* msos = nullptr;
     const xAOD::TrackMeasurementValidation* driftCircle = nullptr;
     if ( TRTF::Acc::msosLink.isAvailable(*track) ) {
@@ -187,7 +194,7 @@ EL::StatusCode TRTF::TruthLoop::execute() {
           if ( msos->detType() != 3 ) continue; // TRT hits only.
           if ( !(msos->trackMeasurementValidationLink().isValid()) ) continue;
           driftCircle = *(msos->trackMeasurementValidationLink());
-          if ( !fillHitBasedVariables(track,msos,driftCircle) ) continue;
+          if ( !fillHitBasedVariables(track,msos,driftCircle,fillType0only) ) continue;
         }
       }
     }
@@ -218,12 +225,17 @@ EL::StatusCode TRTF::TruthLoop::execute() {
 
 bool TRTF::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
                                             const xAOD::TrackStateValidation* msos,
-                                            const xAOD::TrackMeasurementValidation* driftCircle) {
+                                            const xAOD::TrackMeasurementValidation* driftCircle,
+                                            const bool type0only) {
   auto hit = getHitSummary(track,msos,driftCircle);
-  if ( hit.tot < 0.005 ) return false;
+  //if ( hit.tot < 0.005 ) return false;
+  if ( type0only && (hit.type != 0) ) return false;
+  m_nTRThitsMan++;
   m_type.push_back(hit.type);
   m_HTMB.push_back(hit.HTMB);
-  if ( hit.HTMB == 1 ) m_nHThits++;
+  if ( hit.HTMB == 1 ) m_nHThitsMan++;
+  if ( hit.gasType == 1 || hit.gasType == 6 ) m_nArhitsMan++;
+  if ( hit.gasType == 0 ) m_nXehitsMan++;
   m_gasType.push_back(hit.gasType);
   m_bec.push_back(hit.bec);
   m_layer.push_back(hit.layer);

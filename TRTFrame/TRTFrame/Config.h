@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 namespace TRTF {
 
@@ -15,6 +16,8 @@ namespace TRTF {
     std::vector<std::string> m_PRWConfFiles;
     std::vector<std::string> m_PRWLumiFiles;
 
+    std::map<std::string,std::string> m_customOptions;
+
   public:
     Config();
     virtual ~Config();
@@ -26,6 +29,8 @@ namespace TRTF {
     const std::vector<std::string>& GRLFiles()     const;
     const std::vector<std::string>& PRWConfFiles() const;
     const std::vector<std::string>& PRWLumiFiles() const;
+
+    const std::string& custom(const std::string& name) const;
 
   };
 }

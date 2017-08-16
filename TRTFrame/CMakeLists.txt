@@ -24,6 +24,7 @@ atlas_depends_on_subdirs(PUBLIC
 # This package uses ROOT:
 find_package(ROOT REQUIRED COMPONENTS Core Gpad Tree Hist RIO MathCore Graf)
 
+# This packages uses yaml-cpp
 find_package(yamlcpp REQUIRED)
 
 # Custom definitions needed for this package:
