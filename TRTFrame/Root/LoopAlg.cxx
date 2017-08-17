@@ -13,45 +13,45 @@
 #include <TRTFrame/LoopAlg.h>
 
 // this is needed to distribute the algorithm to the workers
-ClassImp(TRTF::LoopAlg)
+ClassImp(xTRT::LoopAlg)
 
-TRTF::LoopAlg::LoopAlg() {
-  SetName("TRTF::LoopAlg");
+xTRT::LoopAlg::LoopAlg() {
+  SetName("xTRT::LoopAlg");
   m_usePRWTool   = false;
   m_useTrigTools = false;
-  m_pidSvc = std::make_shared<TRTF::ParticleIdSvc>();
+  m_pidSvc = std::make_shared<xTRT::ParticleIdSvc>();
 }
 
-TRTF::LoopAlg::~LoopAlg() {}
+xTRT::LoopAlg::~LoopAlg() {}
 
-EL::StatusCode TRTF::LoopAlg::setupJob(EL::Job& job) {
+EL::StatusCode xTRT::LoopAlg::setupJob(EL::Job& job) {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   //setMsgLevel(MSG::DEBUG);
   job.options()->setDouble(EL::Job::optXAODSummaryReport, 0);
   job.useXAOD();
-  ANA_CHECK(xAOD::Init("TRTFrame"));
+  ANA_CHECK(xAOD::Init("xTRTrame"));
 
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode TRTF::LoopAlg::histInitialize() {
+EL::StatusCode xTRT::LoopAlg::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   TH1::SetDefaultSumw2();
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode TRTF::LoopAlg::fileExecute() {
+EL::StatusCode xTRT::LoopAlg::fileExecute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode TRTF::LoopAlg::changeInput(bool firstFile) {
+EL::StatusCode xTRT::LoopAlg::changeInput(bool firstFile) {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   (void)firstFile;
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode TRTF::LoopAlg::initialize() {
+EL::StatusCode xTRT::LoopAlg::initialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   m_event = wk()->xaodEvent();
   m_store = wk()->xaodStore();
@@ -68,7 +68,7 @@ EL::StatusCode TRTF::LoopAlg::initialize() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode TRTF::LoopAlg::execute() {
+EL::StatusCode xTRT::LoopAlg::execute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
 
   if ( m_eventCounter % 5000 == 0 ) {
@@ -83,12 +83,12 @@ EL::StatusCode TRTF::LoopAlg::execute() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode TRTF::LoopAlg::postExecute() {
+EL::StatusCode xTRT::LoopAlg::postExecute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode TRTF::LoopAlg::finalize() {
+EL::StatusCode xTRT::LoopAlg::finalize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_CHECK(m_trackSelToolHandle->finalize());
   ANA_CHECK(m_trackElecSelToolHandle->finalize());
@@ -96,7 +96,7 @@ EL::StatusCode TRTF::LoopAlg::finalize() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode TRTF::LoopAlg::histFinalize() {
+EL::StatusCode xTRT::LoopAlg::histFinalize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   return EL::StatusCode::SUCCESS;
 }

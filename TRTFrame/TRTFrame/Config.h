@@ -5,7 +5,7 @@
 #include <string>
 #include <map>
 
-namespace TRTF {
+namespace xTRT {
 
   class Config {
 

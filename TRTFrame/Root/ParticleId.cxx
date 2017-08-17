@@ -5,7 +5,7 @@
 #include <cmath>
 #include <iostream>
 
-TRTF::ParticleIdSvc::ParticleIdSvc() {
+xTRT::ParticleIdSvc::ParticleIdSvc() {
 
   //m_bbParams = { -0.192682, -6.956870, -0.974757, 1.27633, -0.014986 }; // DEFAULT
 
@@ -28,11 +28,11 @@ TRTF::ParticleIdSvc::ParticleIdSvc() {
   };
 }
 
-TRTF::ParticleIdSvc::~ParticleIdSvc() {}
+xTRT::ParticleIdSvc::~ParticleIdSvc() {}
 
-float TRTF::ParticleIdSvc::ToT_getTest(float dEdx, float trackP,
-                                          TRTF::Hyp hyp, TRTF::Hyp ahyp, int nhits,
-                                          TRTF::StrawRegion stype) const {
+float xTRT::ParticleIdSvc::ToT_getTest(float dEdx, float trackP,
+                                          xTRT::Hyp hyp, xTRT::Hyp ahyp, int nhits,
+                                          xTRT::StrawRegion stype) const {
   double Pone = ToT_getProbability(dEdx, trackP, hyp,  nhits, stype);
   double Ptwo = ToT_getProbability(dEdx, trackP, ahyp, nhits, stype);
   if ( (Pone+Ptwo) != 0.0 ) {
@@ -43,13 +43,13 @@ float TRTF::ParticleIdSvc::ToT_getTest(float dEdx, float trackP,
   }
 }
 
-float TRTF::ParticleIdSvc::ToT_getProbability(float dEdx, float trackP,
-                                                 TRTF::Hyp hyp, int nhits, TRTF::StrawRegion stype) const {
+float xTRT::ParticleIdSvc::ToT_getProbability(float dEdx, float trackP,
+                                                 xTRT::Hyp hyp, int nhits, xTRT::StrawRegion stype) const {
   float dEdx_pred = ToT_predictdEdx(trackP, hyp, stype);
   if ( dEdx_pred == 0.0 ) return 0.0;
 
   float res = 0.0;
-  if ( hyp == TRTF::Hyp::Electron ) {
+  if ( hyp == xTRT::Hyp::Electron ) {
     float factor  = 1.0;
     float correct = 1+factor*(0.045*std::log10(trackP)+0.885-1);
     //float correct = 1+factor*(0.025*std::log10(trackP)+0.885-1);
@@ -66,18 +66,18 @@ float TRTF::ParticleIdSvc::ToT_getProbability(float dEdx, float trackP,
   return prob;
 }
 
-float TRTF::ParticleIdSvc::ToT_predictdEdx(float trackP, TRTF::Hyp hyp, TRTF::StrawRegion stype) const {
+float xTRT::ParticleIdSvc::ToT_predictdEdx(float trackP, xTRT::Hyp hyp, xTRT::StrawRegion stype) const {
   float mass = 0.510998;
-  if ( hyp == TRTF::Hyp::Pion ) {
+  if ( hyp == xTRT::Hyp::Pion ) {
     mass = 139.98;
   }
   float bg = trackP/mass;
   if ( trackP < 100.0 ) return 0.0;
 
   const std::array<float,5>* paramArr;
-  if      ( stype == TRTF::StrawRegion::BRL ) { paramArr = &m_bbParams_brl; }
-  else if ( stype == TRTF::StrawRegion::ECA ) { paramArr = &m_bbParams_eca; }
-  else if ( stype == TRTF::StrawRegion::ECB ) { paramArr = &m_bbParams_ecb; }
+  if      ( stype == xTRT::StrawRegion::BRL ) { paramArr = &m_bbParams_brl; }
+  else if ( stype == xTRT::StrawRegion::ECA ) { paramArr = &m_bbParams_eca; }
+  else if ( stype == xTRT::StrawRegion::ECB ) { paramArr = &m_bbParams_ecb; }
   else                                        { paramArr = &m_bbParams;     }
 
   return paramArr->at(0) /

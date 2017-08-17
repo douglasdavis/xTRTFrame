@@ -1,7 +1,7 @@
 #ifndef TRTFrame_Helpers_h
 #define TRTFrame_Helpers_h
 
-namespace TRTF {
+namespace xTRT {
   enum StrawRegion {
     BRL    = 0,
     BRLECA = 1,
@@ -12,7 +12,7 @@ namespace TRTF {
   };
 }
 
-namespace TRTF {
+namespace xTRT {
   StrawRegion getStrawRegion(const float eta);
 }
 

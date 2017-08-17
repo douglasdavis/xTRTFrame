@@ -14,7 +14,7 @@
 #endif
 
 #ifdef __CINT__
-#pragma link C++ class TRTF::Config+;
-#pragma link C++ class TRTF::LoopAlg+;
-#pragma link C++ class TRTF::TruthLoop+;
+#pragma link C++ class xTRT::Config+;
+#pragma link C++ class xTRT::LoopAlg+;
+#pragma link C++ class xTRT::TruthLoop+;
 #endif

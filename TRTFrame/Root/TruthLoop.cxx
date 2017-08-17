@@ -15,18 +15,18 @@
 // C++
 #include <sstream>
 
-ClassImp(TRTF::TruthLoop)
+ClassImp(xTRT::TruthLoop)
 
-TRTF::TruthLoop::TruthLoop() : TRTF::LoopAlg() {
+xTRT::TruthLoop::TruthLoop() : xTRT::LoopAlg() {
   m_fillLeptonsOnly = false;
   m_saveHits        = false;
 }
 
-TRTF::TruthLoop::~TruthLoop() {}
+xTRT::TruthLoop::~TruthLoop() {}
 
-EL::StatusCode TRTF::TruthLoop::histInitialize() {
+EL::StatusCode xTRT::TruthLoop::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(TRTF::LoopAlg::histInitialize());
+  ANA_CHECK(xTRT::LoopAlg::histInitialize());
 
   book(TH1F("h_averageMu","",70,-0.5,69.5));
 
@@ -93,25 +93,17 @@ EL::StatusCode TRTF::TruthLoop::histInitialize() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode TRTF::TruthLoop::initialize() {
+EL::StatusCode xTRT::TruthLoop::initialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(TRTF::LoopAlg::initialize());
+  ANA_CHECK(xTRT::LoopAlg::initialize());
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode TRTF::TruthLoop::execute() {
+EL::StatusCode xTRT::TruthLoop::execute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(TRTF::LoopAlg::execute());
+  ANA_CHECK(xTRT::LoopAlg::execute());
 
-  bool isMC = false;
-  if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) ) {
-    isMC = true;
-  }
-  if ( !isMC && config()->useGRL() ) {
-    if ( !m_GRLToolHandle->passRunLB(*m_eventInfo) ) {
-      return EL::StatusCode::SUCCESS;
-    }
-  }
+  if ( !passGRL() ) return EL::StatusCode::SUCCESS;
 
   m_weight = eventWeight();
   hist("h_averageMu")->Fill(averageMu(),m_weight);
@@ -169,26 +161,26 @@ EL::StatusCode TRTF::TruthLoop::execute() {
     m_phi       = track->phi();
     m_theta     = track->theta();
 
-    m_trkOcc    = get(TRTF::Acc::TRTTrackOccupancy,track);
-    m_eProbToT  = get(TRTF::Acc::eProbabilityToT,track);
-    m_eProbHT   = get(TRTF::Acc::eProbabilityHT,track);
-    m_eProbToT2 = 0; //particleIdSvc()->ToT_getTest(get(TRTF::Acc::ToT_dEdx_noHT_divByL,track),
-                     //                          m_p,TRTF::Hyp::Electron,TRTF::Hyp::Pion,
-                     //                          get(TRTF::Acc::ToT_usedHits_noHT_divByL,track), st);
+    m_trkOcc    = get(xTRT::Acc::TRTTrackOccupancy,track);
+    m_eProbToT  = get(xTRT::Acc::eProbabilityToT,track);
+    m_eProbHT   = get(xTRT::Acc::eProbabilityHT,track);
+    m_eProbToT2 = 0; //particleIdSvc()->ToT_getTest(get(xTRT::Acc::ToT_dEdx_noHT_divByL,track),
+                     //                          m_p,xTRT::Hyp::Electron,xTRT::Hyp::Pion,
+                     //                          get(xTRT::Acc::ToT_usedHits_noHT_divByL,track), st);
 
     m_eProbComb  = 0; //combinedProb(m_eProbHT,m_eProbToT);
     m_eProbComb2 = 0; //combinedProb(m_eProbHT,m_eProbToT2);
 
-    m_dEdxNoHT  = get(TRTF::Acc::ToT_dEdx_noHT_divByL,track);
-    m_nHitsdEdx = get(TRTF::Acc::ToT_usedHits_noHT_divByL,track);
+    m_dEdxNoHT  = get(xTRT::Acc::ToT_dEdx_noHT_divByL,track);
+    m_nHitsdEdx = get(xTRT::Acc::ToT_usedHits_noHT_divByL,track);
 
     bool fillType0only;
     std::istringstream(config()->custom("Type0HitOnly")) >> fillType0only;
 
     const xAOD::TrackStateValidation* msos = nullptr;
     const xAOD::TrackMeasurementValidation* driftCircle = nullptr;
-    if ( TRTF::Acc::msosLink.isAvailable(*track) ) {
-      for ( auto trackMeasurement : TRTF::Acc::msosLink(*track) ) {
+    if ( xTRT::Acc::msosLink.isAvailable(*track) ) {
+      for ( auto trackMeasurement : xTRT::Acc::msosLink(*track) ) {
         if ( trackMeasurement.isValid() ) {
           msos = *trackMeasurement;
           if ( msos->detType() != 3 ) continue; // TRT hits only.
@@ -223,7 +215,7 @@ EL::StatusCode TRTF::TruthLoop::execute() {
   return EL::StatusCode::SUCCESS;
 }
 
-bool TRTF::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
+bool xTRT::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
                                             const xAOD::TrackStateValidation* msos,
                                             const xAOD::TrackMeasurementValidation* driftCircle,
                                             const bool type0only) {
@@ -256,7 +248,7 @@ bool TRTF::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
   return true;
 }
 
-void TRTF::TruthLoop::clearVectors() {
+void xTRT::TruthLoop::clearVectors() {
   m_type       .clear();
   m_HTMB       .clear();
   m_gasType    .clear();

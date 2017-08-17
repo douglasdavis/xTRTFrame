@@ -39,7 +39,7 @@ def main():
     ntuple = ROOT.EL.NTupleSvc("treeOutput")
     job.algsAdd(ntuple)
 
-    alg = ROOT.TRTF.TruthLoop()
+    alg = ROOT.xTRT.TruthLoop()
     alg.feedConfig(args.config)
 
     job.algsAdd(alg)

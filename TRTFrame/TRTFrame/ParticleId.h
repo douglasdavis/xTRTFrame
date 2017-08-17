@@ -7,7 +7,7 @@
 // TRTFrame
 #include <TRTFrame/Helpers.h>
 
-namespace TRTF {
+namespace xTRT {
   enum Hyp {
     Electron,
     Pion,
@@ -15,7 +15,7 @@ namespace TRTF {
   };
 }
 
-namespace TRTF {
+namespace xTRT {
 
   class ParticleIdSvc {
 
@@ -36,17 +36,17 @@ namespace TRTF {
 
     float combinedProb(float pHT, float pToT) const;
 
-    float ToT_getTest(float dEdx, float trackP, TRTF::Hyp hyp, TRTF::Hyp ahyp,
-                      int nhits, TRTF::StrawRegion stype) const;
-    float ToT_getProbability(float dEdx, float trackP, TRTF::Hyp hyp,
-                             int nhits, TRTF::StrawRegion stype) const;
-    float ToT_predictdEdx(float trackP, TRTF::Hyp hyp, TRTF::StrawRegion stype) const;
+    float ToT_getTest(float dEdx, float trackP, xTRT::Hyp hyp, xTRT::Hyp ahyp,
+                      int nhits, xTRT::StrawRegion stype) const;
+    float ToT_getProbability(float dEdx, float trackP, xTRT::Hyp hyp,
+                             int nhits, xTRT::StrawRegion stype) const;
+    float ToT_predictdEdx(float trackP, xTRT::Hyp hyp, xTRT::StrawRegion stype) const;
 
   };
 
 }
 
-inline float TRTF::ParticleIdSvc::combinedProb(float pHT, float pToT) const {
+inline float xTRT::ParticleIdSvc::combinedProb(float pHT, float pToT) const {
   return pHT*pToT/(pHT*pToT+(1-pHT)*(1-pToT));
 }
 

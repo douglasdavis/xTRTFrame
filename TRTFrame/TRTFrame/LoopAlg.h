@@ -43,13 +43,13 @@
 #include <TH1F.h>
 #include <TTree.h>
 
-namespace TRTF {
+namespace xTRT {
 
   class LoopAlg : public EL::Algorithm {
 
   protected:
 
-    std::unique_ptr<TRTF::Config> m_config;
+    std::unique_ptr<xTRT::Config> m_config;
 
     bool m_usePRWTool;
     bool m_useTrigTools;
@@ -76,7 +76,7 @@ namespace TRTF {
     xAOD::TEvent* m_event; //!
     xAOD::TStore* m_store; //!
 
-    std::shared_ptr<TRTF::ParticleIdSvc> m_pidSvc; //!
+    std::shared_ptr<xTRT::ParticleIdSvc> m_pidSvc; //!
 
   protected:
 
@@ -90,10 +90,10 @@ namespace TRTF {
 
     // functions to configure the algorithm
     void feedConfig(const std::string fileName) {
-      m_config = std::make_unique<TRTF::Config>();
+      m_config = std::make_unique<xTRT::Config>();
       m_config->parse(fileName);
     }
-    TRTF::Config* config() { return m_config.get(); }
+    xTRT::Config* config() { return m_config.get(); }
 
     void addPRWConfFile(const std::string& file)      { m_PRWConfFiles.push_back(file);     }
     void addPRWLumiCalcFile(const std::string& file)  { m_PRWLumiCalcFiles.push_back(file); }
@@ -117,7 +117,7 @@ namespace TRTF {
     EL::StatusCode enablePRWTool();
     EL::StatusCode enableTriggerTools();
 
-    std::shared_ptr<TRTF::ParticleIdSvc> particleIdSvc() const { return m_pidSvc; }
+    std::shared_ptr<xTRT::ParticleIdSvc> particleIdSvc() const { return m_pidSvc; }
 
     const xAOD::TrackParticleContainer* trackContainer();
     const xAOD::ElectronContainer*      electronContainer();
@@ -127,12 +127,13 @@ namespace TRTF {
 
     float eventWeight() const;
     float averageMu();
+    bool  passGRL() const;
 
     xAOD::TEvent* event() { return m_event; }
     xAOD::TStore* store() { return m_store; }
     const xAOD::EventInfo* eventInfo();
 
-    TRTF::HitSummary getHitSummary(const xAOD::TrackParticle* track,
+    xTRT::HitSummary getHitSummary(const xAOD::TrackParticle* track,
                                    const xAOD::TrackStateValidation* msos,
                                    const xAOD::TrackMeasurementValidation* driftCircle);
 
@@ -155,13 +156,13 @@ namespace TRTF {
       return 0;
     }
 
-    ClassDef(TRTF::LoopAlg, 1);
+    ClassDef(xTRT::LoopAlg, 1);
 
   };
 
 }
 
-inline const xAOD::EventInfo* TRTF::LoopAlg::eventInfo() {
+inline const xAOD::EventInfo* xTRT::LoopAlg::eventInfo() {
   const xAOD::EventInfo* evtinfo = nullptr;
   if ( evtStore()->retrieve(evtinfo,"EventInfo").isFailure() ) {
     ANA_MSG_ERROR("Cannot retrieve EventInfo for some reason");

@@ -4,9 +4,9 @@
 // TRTFrame
 #include <TRTFrame/LoopAlg.h>
 
-namespace TRTF {
+namespace xTRT {
 
-  class TruthLoop : public TRTF::LoopAlg {
+  class TruthLoop : public xTRT::LoopAlg {
 
   private:
 
@@ -79,7 +79,7 @@ namespace TRTF {
                                const xAOD::TrackMeasurementValidation* driftCircle,
                                const bool type0only);
 
-    ClassDef(TRTF::TruthLoop, 1);
+    ClassDef(xTRT::TruthLoop, 1);
 
   };
 

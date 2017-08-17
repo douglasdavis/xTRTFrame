@@ -2,11 +2,11 @@
 #include <yaml-cpp/yaml.h>
 #include <iostream>
 
-TRTF::Config::Config() {}
+xTRT::Config::Config() {}
 
-TRTF::Config::~Config() {}
+xTRT::Config::~Config() {}
 
-bool TRTF::Config::parse(const std::string fileName) {
+bool xTRT::Config::parse(const std::string fileName) {
   YAML::Node config = YAML::LoadFile(fileName);
 
   auto node_GRL = config["GRL"];
