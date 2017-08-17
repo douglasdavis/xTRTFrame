@@ -7,6 +7,7 @@ atlas_depends_on_subdirs(PUBLIC
   PhysicsAnalysis/D3PDTools/EventLoop
   PhysicsAnalysis/D3PDTools/EventLoopAlgs
   PhysicsAnalysis/D3PDTools/EventLoopGrid
+  PhysicsAnalysis/D3P3Tools/SampleHandler
   Event/xAOD/xAODRootAccess
   Event/xAOD/xAODEventInfo
   Event/xAOD/xAODTracking
@@ -46,6 +47,7 @@ atlas_add_library(TRTFrame Root/*.cxx TRTFrame/*.h TRTFrame/*.hpp ${_cintDictSou
   EventLoop
   EventLoopAlgs
   EventLoopGrid
+  SampleHandler
   xAODRootAccess
   xAODEventInfo
   xAODTracking
@@ -61,10 +63,11 @@ atlas_add_library(TRTFrame Root/*.cxx TRTFrame/*.h TRTFrame/*.hpp ${_cintDictSou
   INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} ${YAMLCPP_INCLUDE_DIR}
   )
 
-#atlas_add_executable(runLoopAlg
-#  util/runLoopAlg.cxx
-#  LINK_LIBRARIES ${ROOT_LIBRARIES} TRTFrame
-#  )
+atlas_add_executable(runTruthAlg
+  util/runTruthAlg.cxx
+  LINK_LIBRARIES ${ROOT_LIBRARIES} TRTFrame
+  )
 
 atlas_install_scripts(scripts/*.py)
+
 atlas_install_data(data/*)
