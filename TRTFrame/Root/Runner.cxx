@@ -65,7 +65,7 @@ namespace xTRT {
       sh.print();
       job.sampleHandler(sh);
       EL::PrunDriver driver;
-      driver.options()->setString("nc_outputSamplename",outDS);
+      driver.options()->setString("nc_outputSampleName",outDS);
       driver.submitOnly(job,"TRTFrameGridJob_"+outputDir);
     }
     else {
