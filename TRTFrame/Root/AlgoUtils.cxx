@@ -65,7 +65,7 @@ float xTRT::Algo::eventWeight() const {
 }
 
 float xTRT::Algo::averageMu() {
-  if ( !(m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION)) && m_usePRWTool ) {
+  if ( !(m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION)) && config()->usePRW() ) {
     return m_PRWToolHandle->getCorrectedAverageInteractionsPerCrossing(*m_eventInfo,true);
   }
   else {

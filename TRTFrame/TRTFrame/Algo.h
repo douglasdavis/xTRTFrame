@@ -4,6 +4,7 @@
 // C++
 #include <memory>
 #include <vector>
+#include <map>
 
 // ATLAS
 #include <EventLoop/Algorithm.h>
@@ -40,7 +41,6 @@
 #include <TRTFrame/Config.h>
 
 // ROOT
-#include <TH1F.h>
 #include <TTree.h>
 
 namespace xTRT {
@@ -50,15 +50,9 @@ namespace xTRT {
   protected:
 
     std::unique_ptr<xTRT::Config> m_config;
+    std::string m_outputName;
 
-    bool m_usePRWTool;
-    bool m_useTrigTools;
-
-    std::vector<std::string> m_JPsi_electronTriggers;
-    std::vector<std::string> m_JPsi_muonTriggers;
-
-    std::vector<std::string> m_PRWConfFiles;     //!
-    std::vector<std::string> m_PRWLumiCalcFiles; //!
+    std::map<std::string,TObject*> m_objStore; //!
 
     asg::AnaToolHandle<IGoodRunsListSelectionTool> m_GRLToolHandle{""};          //!
     asg::AnaToolHandle<CP::IPileupReweightingTool> m_PRWToolHandle{""};          //!
@@ -73,14 +67,10 @@ namespace xTRT {
     int m_eventCounter; //!
 
     const xAOD::EventInfo* m_eventInfo; //!
-    xAOD::TEvent* m_event; //!
-    xAOD::TStore* m_store; //!
+    xAOD::TEvent* m_event;              //!
+    xAOD::TStore* m_store;              //!
 
     std::shared_ptr<xTRT::ParticleIdSvc> m_pidSvc; //!
-
-  protected:
-
-    std::string m_outputName;
 
   public:
 
@@ -88,20 +78,37 @@ namespace xTRT {
     Algo();
     virtual ~Algo();
 
-    // functions to configure the algorithm
-    void feedConfig(const std::string fileName) {
-      m_config = std::make_unique<xTRT::Config>();
-      m_config->parse(fileName);
-    }
-    xTRT::Config* config() { return m_config.get(); }
+    /*! Creates a ROOT object to be stored.
+     *
+     * This allows easy creation by just calling the constructor of a
+     * ROOT object (such as a TH1F or TProfile). The name given to the
+     * object constructor will be used to manipulate the pointer to
+     * the copy which is stored.
+     */
+    template <typename T>
+    void create(const T obj);
 
-    void addPRWConfFile(const std::string& file)      { m_PRWConfFiles.push_back(file);     }
-    void addPRWLumiCalcFile(const std::string& file)  { m_PRWLumiCalcFiles.push_back(file); }
-    void usePRWTool(bool logic = true)                { m_usePRWTool   = logic; }
-    void useTrigTools(bool logic = true)              { m_useTrigTools = logic; }
-    void setTreeOutputName(const std::string name)    { m_outputName   = name;  }
+    /*! Get access to a ROOT object which will be stored
+     *
+     * Using the name of the TObject staged for storage with the
+     * Algo::create function, retrieve and manipulate the object, used
+     * for e.g. filling a histogram.
+     */
+    template <typename T>
+    T* grab(const std::string& name);
 
-    // these are the functions inherited from Algorithm
+    /*! Send YAML file to be parsed by the configuration class
+     */
+    void feedConfig(const std::string fileName, bool print_conf = false);
+
+    /*! const pointer access to the configuration class
+     */
+    xTRT::Config* config() const;
+
+    /*! Sets the treeOutput name for the EL::NTupleSvc
+     */
+    void setTreeOutputName(const std::string name);
+
     virtual EL::StatusCode setupJob(EL::Job& job);
     virtual EL::StatusCode fileExecute();
     virtual EL::StatusCode histInitialize();
@@ -117,7 +124,7 @@ namespace xTRT {
     EL::StatusCode enablePRWTool();
     EL::StatusCode enableTriggerTools();
 
-    std::shared_ptr<xTRT::ParticleIdSvc> particleIdSvc() const { return m_pidSvc; }
+    std::shared_ptr<xTRT::ParticleIdSvc> particleIdSvc() const;
 
     const xAOD::TrackParticleContainer* trackContainer();
     const xAOD::ElectronContainer*      electronContainer();
@@ -129,15 +136,14 @@ namespace xTRT {
     float averageMu();
     bool  passGRL() const;
 
-    xAOD::TEvent* event() { return m_event; }
-    xAOD::TStore* store() { return m_store; }
+    xAOD::TEvent* event();
+    xAOD::TStore* store();
     const xAOD::EventInfo* eventInfo();
 
     xTRT::HitSummary getHitSummary(const xAOD::TrackParticle* track,
                                    const xAOD::TrackStateValidation* msos,
                                    const xAOD::TrackMeasurementValidation* driftCircle);
 
-    // selection functions
     bool triggerPassed(const std::string trigName) const;
     bool triggersPassed(const std::vector<std::string>& trigNames) const;
 
@@ -148,13 +154,7 @@ namespace xTRT {
     double  d0signif(const xAOD::TrackParticle *track) const;
 
     template <class T1, class T2>
-    T1 get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* cont, std::string vn = "") const {
-      if ( acc.isAvailable(*cont) ) {
-        return acc(*cont);
-      }
-      ANA_MSG_WARNING("AuxElement: " << vn << " is not available! Returning 0!");
-      return 0;
-    }
+    T1 get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* cont, std::string vn = "") const;
 
     ClassDef(xTRT::Algo, 1);
 
@@ -162,12 +162,6 @@ namespace xTRT {
 
 }
 
-inline const xAOD::EventInfo* xTRT::Algo::eventInfo() {
-  const xAOD::EventInfo* evtinfo = nullptr;
-  if ( evtStore()->retrieve(evtinfo,"EventInfo").isFailure() ) {
-    ANA_MSG_ERROR("Cannot retrieve EventInfo for some reason");
-  }
-  return evtinfo;
-}
+#include "Algo.icc"
 
 #endif

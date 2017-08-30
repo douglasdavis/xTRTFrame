@@ -23,8 +23,10 @@ namespace xTRT {
     std::string outputDir;
     std::string gridDS;
     std::string outDS;
+    bool        printConf;
     app.add_option("-c,--config",configFile,"Config file name")->required();
     app.add_option("-o,--out-dir",outputDir,"Name for output directory")->required();
+    app.add_flag("--print-config",printConf,"Print YAML config");
     auto o_infile = app.add_option("-i,--in-file",inputTextFile,"List of samples in a txt file");
     auto o_gridds = app.add_option("--gridDS",gridDS,"Grid sample name to process");
     auto o_outds  = app.add_option("--outDS", outDS, "Output sample name to for grid job");
@@ -43,7 +45,7 @@ namespace xTRT {
     EL::NTupleSvc *ntuple = new EL::NTupleSvc("treeOutput");
     job.algsAdd(ntuple);
 
-    alg->feedConfig(configFile.c_str());
+    alg->feedConfig(configFile.c_str(),printConf);
     job.algsAdd(alg);
     alg->setTreeOutputName("treeOutput");
 

@@ -1,0 +1,48 @@
+// inline definitions
+
+template <class T>
+inline void xTRT::Algo::create(const T obj) {
+  auto clone = obj.Clone();
+  wk()->addOutput(clone);
+  m_objStore.emplace(std::make_pair(clone->GetName(),clone));
+}
+
+template <class T>
+inline T* xTRT::Algo::grab(const std::string& name) {
+  auto iter = m_objStore.find(name);
+  if ( iter == m_objStore.end() ) {
+    ANA_MSG_FATAL("Cannot find object with name:" << name);
+  }
+  return dynamic_cast<T*>(iter->second);
+}
+
+inline void xTRT::Algo::setTreeOutputName(const std::string name) { m_outputName = name; }
+
+inline void xTRT::Algo::feedConfig(const std::string fileName, bool print_conf) {
+  m_config = std::make_unique<xTRT::Config>();
+  m_config->parse(fileName, print_conf);
+}
+
+inline xTRT::Config* xTRT::Algo::config() const { return m_config.get(); }
+
+inline xAOD::TEvent* xTRT::Algo::event() { return m_event; }
+inline xAOD::TStore* xTRT::Algo::store() { return m_store; }
+
+inline std::shared_ptr<xTRT::ParticleIdSvc> xTRT::Algo::particleIdSvc() const { return m_pidSvc; }
+
+inline const xAOD::EventInfo* xTRT::Algo::eventInfo() {
+  const xAOD::EventInfo* evtinfo = nullptr;
+  if ( evtStore()->retrieve(evtinfo,"EventInfo").isFailure() ) {
+    ANA_MSG_ERROR("Cannot retrieve EventInfo for some reason");
+  }
+  return evtinfo;
+}
+
+template <class T1, class T2>
+inline T1 xTRT::Algo::get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* cont, std::string vn ) const {
+  if ( acc.isAvailable(*cont) ) {
+    return acc(*cont);
+  }
+  ANA_MSG_WARNING("AuxElement: " << vn << " is not available! Returning 0!");
+  return 0;
+}

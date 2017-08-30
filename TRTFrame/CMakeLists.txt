@@ -38,7 +38,7 @@ atlas_add_root_dictionary(TRTFrame _cintDictSource
   )
 
 # Build a library that other components can link against:
-atlas_add_library(TRTFrame Root/*.cxx TRTFrame/*.h TRTFrame/*.hpp ${_cintDictSource}
+atlas_add_library(TRTFrame Root/*.cxx TRTFrame/*.h TRTFrame/*.icc TRTFrame/*.hpp ${_cintDictSource}
   PUBLIC_HEADERS TRTFrame
   LINK_LIBRARIES
   AsgTools

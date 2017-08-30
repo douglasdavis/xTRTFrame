@@ -1,15 +1,2 @@
 // Inline implementation of xTRT::Config files.
 
-inline bool xTRT::Config::useGRL() const { return m_useGRL; }
-inline bool xTRT::Config::usePRW() const { return m_usePRW; }
-
-inline const std::vector<std::string>& xTRT::Config::GRLFiles()     const { return m_GRLFiles;     }
-inline const std::vector<std::string>& xTRT::Config::PRWConfFiles() const { return m_PRWConfFiles; }
-inline const std::vector<std::string>& xTRT::Config::PRWLumiFiles() const { return m_PRWLumiFiles; }
-
-template <typename T>
-inline T xTRT::Config::getOpt(const std::string& name) const {
-  YAML::Node config = YAML::Load(m_fileAsString);
-  auto customNode = config["Custom"];
-  return customNode[name].as<T>();
-}

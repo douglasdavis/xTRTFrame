@@ -11,7 +11,22 @@ GRL:
     - "GoodRunsLists/data15_13TeV/20160720/physics_25ns_20.7.xml"
     - "GoodRunsLists/data16_13TeV/20161101/physics_25ns_20.7.xml"
 
-Custom:
-  LeptonsOnly: True
-  StoreHits: True
-  Type0HitOnly: True
+Trig:
+  Use: False
+  electron:
+    - "none"
+  muon:
+    - "none"
+  dielectron:
+    - "none"
+  dimuon:
+    - "none"
+  misc:
+    - "none"
+
+####################
+## Custom options ##
+####################
+LeptonsOnly: True
+StoreHits: True
+Type0HitOnly: True

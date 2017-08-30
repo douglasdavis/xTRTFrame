@@ -8,6 +8,7 @@
 // ROOT
 #include <TSystem.h>
 #include <TFile.h>
+#include <TH1F.h>
 
 // TRTFrame
 #include <TRTFrame/TruthLoop.h>
@@ -25,7 +26,7 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_CHECK(xTRT::Algo::histInitialize());
 
-  book(TH1F("h_averageMu","",70,-0.5,69.5));
+  create(TH1F("h_averageMu","",70,-0.5,69.5));
 
   TFile *outFile = wk()->getOutputFile(m_outputName);
 
@@ -91,16 +92,9 @@ EL::StatusCode xTRT::TruthLoop::initialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_CHECK(xTRT::Algo::initialize());
 
-  //std::cout << *(config()->YAMLNode()) << std::endl;
-
-  m_fillLeptonsOnly = config()->getOpt<bool>("LeptonsOnly");
-  m_saveHits        = config()->getOpt<bool>("StoreHits");
-  m_type0only       = config()->getOpt<bool>("Type0HitOnly");
-
-  std::cout << std::boolalpha << m_fillLeptonsOnly << " " << m_saveHits << " " << m_type0only << std::endl;
-  //m_fillLeptonsOnly = true;
-  //m_saveHits        = true;
-  //m_type0only       = true;
+  m_fillLeptonsOnly = config()->customOpt<bool>("LeptonsOnly");
+  m_saveHits        = config()->customOpt<bool>("StoreHits");
+  m_type0only       = config()->customOpt<bool>("Type0HitOnly");
 
   return EL::StatusCode::SUCCESS;
 }
@@ -112,7 +106,7 @@ EL::StatusCode xTRT::TruthLoop::execute() {
   if ( !passGRL() ) return EL::StatusCode::SUCCESS;
 
   m_weight = eventWeight();
-  hist("h_averageMu")->Fill(averageMu(),m_weight);
+  grab<TH1F>("h_averageMu")->Fill(averageMu(),m_weight);
 
   auto tracks = trackContainer();
 
@@ -252,7 +246,6 @@ bool xTRT::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
 }
 
 void xTRT::TruthLoop::clearVectors() {
-  m_type       .clear();
   m_HTMB       .clear();
   m_gasType    .clear();
   m_bec        .clear();
@@ -262,6 +255,7 @@ void xTRT::TruthLoop::clearVectors() {
   m_drifttime  .clear();
   m_tot        .clear();
   m_T0         .clear();
+  m_type       .clear();
   m_localTheta .clear();
   m_localPhi   .clear();
   m_HitZ       .clear();

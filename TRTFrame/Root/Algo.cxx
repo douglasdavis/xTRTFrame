@@ -8,6 +8,7 @@
 // ROOT
 #include <TSystem.h>
 #include <TFile.h>
+#include <TH1.h>
 
 // TRTFrame
 #include <TRTFrame/Algo.h>
@@ -17,8 +18,6 @@ ClassImp(xTRT::Algo)
 
 xTRT::Algo::Algo() {
   SetName("xTRT::Algo");
-  m_usePRWTool   = false;
-  m_useTrigTools = false;
   m_pidSvc = std::make_shared<xTRT::ParticleIdSvc>();
 }
 
@@ -26,7 +25,6 @@ xTRT::Algo::~Algo() {}
 
 EL::StatusCode xTRT::Algo::setupJob(EL::Job& job) {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  //setMsgLevel(MSG::DEBUG);
   job.options()->setDouble(EL::Job::optXAODSummaryReport, 0);
   job.useXAOD();
   ANA_CHECK(xAOD::Init("xTRTrame"));
@@ -59,9 +57,9 @@ EL::StatusCode xTRT::Algo::initialize() {
 
   m_eventCounter = 0;
 
-  if ( m_usePRWTool       ) ANA_CHECK(enablePRWTool());
-  if ( config()->useGRL() ) ANA_CHECK(enableGRLTool());
-  if ( m_useTrigTools     ) ANA_CHECK(enableTriggerTools());
+  if ( config()->usePRW()  ) ANA_CHECK(enablePRWTool());
+  if ( config()->useGRL()  ) ANA_CHECK(enableGRLTool());
+  if ( config()->useTrig() ) ANA_CHECK(enableTriggerTools());
 
   ANA_CHECK(setupTrackSelectionTools());
 
@@ -100,29 +98,3 @@ EL::StatusCode xTRT::Algo::histFinalize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   return EL::StatusCode::SUCCESS;
 }
-
-// saving this for later use
-/*
-  if ( m_useTrigTools ) {
-  std::vector<std::string> dielTrigs;
-  dielTrigs.push_back("HLT_e5_lhtight_nod0_e4_etcut");
-  dielTrigs.push_back("HLT_e5_lhtight_nod0_e4_etcut_Jpsiee");
-  dielTrigs.push_back("HLT_e9_lhtight_nod0_e4_etcut_Jpsiee");
-  dielTrigs.push_back("HLT_e14_lhtight_nod0_e4_etcut_Jpsiee");
-  dielTrigs.push_back("HLT_e9_etcut_e5_lhtight_nod0_Jpsiee");
-  dielTrigs.push_back("HLT_e14_etcut_e5_lhtight_nod0_Jpsiee");
-  std::vector<std::string> dimuTrigs;
-  dimuTrigs.push_back("HLT_2mu6_bJpsimumu");
-  dimuTrigs.push_back("HLT_2mu6_bJpsimumu_delayed");
-  dimuTrigs.push_back("HLT_2mu6_bJpsimumu_Lxy0_delayed");
-  dimuTrigs.push_back("HLT_2mu10_bJpsimumu");
-  dimuTrigs.push_back("HLT_2mu10_bJpsimumu_delayed");
-  dimuTrigs.push_back("HLT_2mu10_bJpsimumu_noL2");
-  dimuTrigs.push_back("HLT_2mu14");
-  dimuTrigs.push_back("HLT_2mu14_nomucomb");
-  dimuTrigs.push_back("HLT_2mu15");
-
-  if ( triggersPassed(dimuTrigs) ) { std::cout << "@@@@@ GOT ONE! MU" << std::endl; }
-  if ( triggersPassed(dielTrigs) ) { std::cout << "@@@@@ GOT ONE! EL" << std::endl; }
-  }
-*/
