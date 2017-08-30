@@ -1,5 +1,5 @@
 // TRTFrame
-#include <TRTFrame/LoopAlg.h>
+#include <TRTFrame/Algo.h>
 
 // ROOT
 #include <TSystem.h>
@@ -12,7 +12,7 @@
   ASG_SET_ANA_TOOL_TYPE(TOOLHANDLE, TOOLTYPE);        \
   TOOLHANDLE.setName(TOOLNAME);
 
-EL::StatusCode xTRT::LoopAlg::setupTrackSelectionTools() {
+EL::StatusCode xTRT::Algo::setupTrackSelectionTools() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
 
   if ( !m_trackSelToolHandle.isUserConfigured() ) {
@@ -48,7 +48,7 @@ EL::StatusCode xTRT::LoopAlg::setupTrackSelectionTools() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::LoopAlg::enableGRLTool() {
+EL::StatusCode xTRT::Algo::enableGRLTool() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ATH_MSG_INFO("Setting up GRL tool");
 
@@ -64,7 +64,7 @@ EL::StatusCode xTRT::LoopAlg::enableGRLTool() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::LoopAlg::enablePRWTool() {
+EL::StatusCode xTRT::Algo::enablePRWTool() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ATH_MSG_INFO("Setting up PRW tool");
 
@@ -82,7 +82,7 @@ EL::StatusCode xTRT::LoopAlg::enablePRWTool() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::LoopAlg::enableTriggerTools() {
+EL::StatusCode xTRT::Algo::enableTriggerTools() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   std::string toolName = "";
   if ( !m_trigDecToolHandle.isUserConfigured() ) {

@@ -17,21 +17,15 @@
 
 ClassImp(xTRT::TruthLoop)
 
-xTRT::TruthLoop::TruthLoop() : xTRT::LoopAlg() {
-  m_fillLeptonsOnly = false;
-  m_saveHits        = false;
-}
+xTRT::TruthLoop::TruthLoop() : xTRT::Algo() {}
 
 xTRT::TruthLoop::~TruthLoop() {}
 
 EL::StatusCode xTRT::TruthLoop::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(xTRT::LoopAlg::histInitialize());
+  ANA_CHECK(xTRT::Algo::histInitialize());
 
   book(TH1F("h_averageMu","",70,-0.5,69.5));
-
-  std::istringstream(config()->custom("LeptonsOnly")) >> m_fillLeptonsOnly;
-  std::istringstream(config()->custom("StoreHits"))   >> m_saveHits;
 
   TFile *outFile = wk()->getOutputFile(m_outputName);
 
@@ -95,13 +89,25 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
 
 EL::StatusCode xTRT::TruthLoop::initialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(xTRT::LoopAlg::initialize());
+  ANA_CHECK(xTRT::Algo::initialize());
+
+  //std::cout << *(config()->YAMLNode()) << std::endl;
+
+  m_fillLeptonsOnly = config()->getOpt<bool>("LeptonsOnly");
+  m_saveHits        = config()->getOpt<bool>("StoreHits");
+  m_type0only       = config()->getOpt<bool>("Type0HitOnly");
+
+  std::cout << std::boolalpha << m_fillLeptonsOnly << " " << m_saveHits << " " << m_type0only << std::endl;
+  //m_fillLeptonsOnly = true;
+  //m_saveHits        = true;
+  //m_type0only       = true;
+
   return EL::StatusCode::SUCCESS;
 }
 
 EL::StatusCode xTRT::TruthLoop::execute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(xTRT::LoopAlg::execute());
+  ANA_CHECK(xTRT::Algo::execute());
 
   if ( !passGRL() ) return EL::StatusCode::SUCCESS;
 
@@ -174,9 +180,6 @@ EL::StatusCode xTRT::TruthLoop::execute() {
     m_dEdxNoHT  = get(xTRT::Acc::ToT_dEdx_noHT_divByL,track);
     m_nHitsdEdx = get(xTRT::Acc::ToT_usedHits_noHT_divByL,track);
 
-    bool fillType0only;
-    std::istringstream(config()->custom("Type0HitOnly")) >> fillType0only;
-
     const xAOD::TrackStateValidation* msos = nullptr;
     const xAOD::TrackMeasurementValidation* driftCircle = nullptr;
     if ( xTRT::Acc::msosLink.isAvailable(*track) ) {
@@ -186,7 +189,7 @@ EL::StatusCode xTRT::TruthLoop::execute() {
           if ( msos->detType() != 3 ) continue; // TRT hits only.
           if ( !(msos->trackMeasurementValidationLink().isValid()) ) continue;
           driftCircle = *(msos->trackMeasurementValidationLink());
-          if ( !fillHitBasedVariables(track,msos,driftCircle,fillType0only) ) continue;
+          if ( !fillHitBasedVariables(track,msos,driftCircle,m_type0only) ) continue;
         }
       }
     }

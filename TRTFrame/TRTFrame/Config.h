@@ -4,19 +4,19 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <yaml-cpp/yaml.h>
 
 namespace xTRT {
 
   class Config {
 
   private:
+    std::string              m_fileAsString;
     bool                     m_useGRL;
     bool                     m_usePRW;
     std::vector<std::string> m_GRLFiles;
     std::vector<std::string> m_PRWConfFiles;
     std::vector<std::string> m_PRWLumiFiles;
-
-    std::map<std::string,std::string> m_customOptions;
 
   public:
     Config();
@@ -30,7 +30,8 @@ namespace xTRT {
     const std::vector<std::string>& PRWConfFiles() const;
     const std::vector<std::string>& PRWLumiFiles() const;
 
-    const std::string& custom(const std::string& name) const;
+    template <typename T>
+    T getOpt(const std::string& name) const;
 
   };
 }

@@ -1,6 +1,6 @@
 #include <TRTFrame/Runner.h>
-#include <TRTFrame/LoopAlg.h>
-#include <TRTFrame/CLI11.hpp>
+#include <TRTFrame/Algo.h>
+#include <TRTFrame/Externals/CLI11.hpp>
 
 #include <EventLoopGrid/PrunDriver.h>
 #include <EventLoopGrid/GridDriver.h>
@@ -15,7 +15,7 @@
 #include "xAODRootAccess/Init.h"
 
 namespace xTRT {
-  int Runner(int argc, char **argv, xTRT::LoopAlg* alg) {
+  int Runner(int argc, char **argv, xTRT::Algo* alg) {
     CLI::App app("TRTFrame Job");
 
     std::string configFile;

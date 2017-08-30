@@ -12,6 +12,6 @@ GRL:
     - "GoodRunsLists/data16_13TeV/20161101/physics_25ns_20.7.xml"
 
 Custom:
-  LeptonsOnly: "1"
-  StoreHits: "1"
-  Type0HitOnly: "1"
+  LeptonsOnly: True
+  StoreHits: True
+  Type0HitOnly: True

@@ -1,6 +1,6 @@
 // -*- c++ -*-
 
-#include <TRTFrame/LoopAlg.h>
+#include <TRTFrame/Algo.h>
 #include <TRTFrame/TruthLoop.h>
 #include <TRTFrame/Config.h>
 
@@ -15,6 +15,6 @@
 
 #ifdef __CINT__
 #pragma link C++ class xTRT::Config+;
-#pragma link C++ class xTRT::LoopAlg+;
+#pragma link C++ class xTRT::Algo+;
 #pragma link C++ class xTRT::TruthLoop+;
 #endif

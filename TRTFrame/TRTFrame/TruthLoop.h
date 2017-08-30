@@ -2,16 +2,17 @@
 #define TRTFrame_TruthLoop_h
 
 // TRTFrame
-#include <TRTFrame/LoopAlg.h>
+#include <TRTFrame/Algo.h>
 
 namespace xTRT {
 
-  class TruthLoop : public xTRT::LoopAlg {
+  class TruthLoop : public xTRT::Algo {
 
   private:
 
     bool m_fillLeptonsOnly;
     bool m_saveHits;
+    bool m_type0only;
 
     TTree*      m_elTree; //!
     TTree*      m_muTree; //!

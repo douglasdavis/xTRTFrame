@@ -1,5 +1,5 @@
-#ifndef TRTFrame_LoopAlg_h
-#define TRTFrame_LoopAlg_h
+#ifndef TRTFrame_Algo_h
+#define TRTFrame_Algo_h
 
 // C++
 #include <memory>
@@ -45,7 +45,7 @@
 
 namespace xTRT {
 
-  class LoopAlg : public EL::Algorithm {
+  class Algo : public EL::Algorithm {
 
   protected:
 
@@ -85,8 +85,8 @@ namespace xTRT {
   public:
 
     // this is a standard constructor
-    LoopAlg();
-    virtual ~LoopAlg();
+    Algo();
+    virtual ~Algo();
 
     // functions to configure the algorithm
     void feedConfig(const std::string fileName) {
@@ -156,13 +156,13 @@ namespace xTRT {
       return 0;
     }
 
-    ClassDef(xTRT::LoopAlg, 1);
+    ClassDef(xTRT::Algo, 1);
 
   };
 
 }
 
-inline const xAOD::EventInfo* xTRT::LoopAlg::eventInfo() {
+inline const xAOD::EventInfo* xTRT::Algo::eventInfo() {
   const xAOD::EventInfo* evtinfo = nullptr;
   if ( evtStore()->retrieve(evtinfo,"EventInfo").isFailure() ) {
     ANA_MSG_ERROR("Cannot retrieve EventInfo for some reason");

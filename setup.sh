@@ -1,4 +1,4 @@
-export TRTFrame_SRC="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
+export TRTFrame_SRC="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 lsetup 'sft releases/LCG_87/yamlcpp/0.5.1'
 export YAMLCPP_ROOT=$SFT_HOME_yamlcpp

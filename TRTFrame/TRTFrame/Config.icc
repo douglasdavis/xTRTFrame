@@ -7,6 +7,9 @@ inline const std::vector<std::string>& xTRT::Config::GRLFiles()     const { retu
 inline const std::vector<std::string>& xTRT::Config::PRWConfFiles() const { return m_PRWConfFiles; }
 inline const std::vector<std::string>& xTRT::Config::PRWLumiFiles() const { return m_PRWLumiFiles; }
 
-inline const std::string& xTRT::Config::custom(const std::string& name) const {
-  return m_customOptions.at(name);
+template <typename T>
+inline T xTRT::Config::getOpt(const std::string& name) const {
+  YAML::Node config = YAML::Load(m_fileAsString);
+  auto customNode = config["Custom"];
+  return customNode[name].as<T>();
 }

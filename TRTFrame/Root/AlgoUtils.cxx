@@ -1,9 +1,9 @@
-#include <TRTFrame/LoopAlg.h>
+#include <TRTFrame/Algo.h>
 
 #include <xAODTracking/Vertex.h>
 #include <xAODTracking/TrackParticlexAODHelpers.h>
 
-const xAOD::TrackParticleContainer* xTRT::LoopAlg::trackContainer() {
+const xAOD::TrackParticleContainer* xTRT::Algo::trackContainer() {
   const xAOD::TrackParticleContainer* trackContainerPtr = nullptr;
   if ( evtStore()->retrieve(trackContainerPtr,"InDetTrackParticles").isFailure() ) {
     ANA_MSG_WARNING("InDetTrackParticles unavailable!");
@@ -12,7 +12,7 @@ const xAOD::TrackParticleContainer* xTRT::LoopAlg::trackContainer() {
   return trackContainerPtr;
 }
 
-const xAOD::ElectronContainer* xTRT::LoopAlg::electronContainer() {
+const xAOD::ElectronContainer* xTRT::Algo::electronContainer() {
   const xAOD::ElectronContainer* electronContainerPtr = nullptr;
   if ( evtStore()->retrieve(electronContainerPtr,"Electrons").isFailure() ) {
     ANA_MSG_WARNING("Electrons unavailable!");
@@ -21,7 +21,7 @@ const xAOD::ElectronContainer* xTRT::LoopAlg::electronContainer() {
   return electronContainerPtr;
 }
 
-const xAOD::MuonContainer* xTRT::LoopAlg::muonContainer() {
+const xAOD::MuonContainer* xTRT::Algo::muonContainer() {
   const xAOD::MuonContainer* muonContainerPtr = nullptr;
   if ( evtStore()->retrieve(muonContainerPtr,"Muons").isFailure() ) {
     ANA_MSG_WARNING("Muons unavailable!");
@@ -30,7 +30,7 @@ const xAOD::MuonContainer* xTRT::LoopAlg::muonContainer() {
   return muonContainerPtr;
 }
 
-const xAOD::TruthParticle* xTRT::LoopAlg::truthParticle(const xAOD::TrackParticle* track) {
+const xAOD::TruthParticle* xTRT::Algo::truthParticle(const xAOD::TrackParticle* track) {
   const xAOD::TruthParticle* truthParticle = nullptr;
   if ( xTRT::Acc::truthParticleLink.isAvailable(*track) ) {
     const auto truthLink = xTRT::Acc::truthParticleLink(*track);
@@ -41,13 +41,13 @@ const xAOD::TruthParticle* xTRT::LoopAlg::truthParticle(const xAOD::TrackParticl
   return truthParticle;
 }
 
-bool xTRT::LoopAlg::triggerPassed(const std::string trigName) const {
+bool xTRT::Algo::triggerPassed(const std::string trigName) const {
   auto chainGroup = m_trigDecToolHandle->getChainGroup(trigName);
   auto passed = chainGroup->isPassed();
   return passed;
 }
 
-bool xTRT::LoopAlg::triggersPassed(const std::vector<std::string>& trigNames) const {
+bool xTRT::Algo::triggersPassed(const std::vector<std::string>& trigNames) const {
   for ( auto const& name : trigNames ) {
     auto chainGroup = m_trigDecToolHandle->getChainGroup(name);
     if ( chainGroup->isPassed() ) return true;
@@ -55,7 +55,7 @@ bool xTRT::LoopAlg::triggersPassed(const std::vector<std::string>& trigNames) co
   return false;
 }
 
-float xTRT::LoopAlg::eventWeight() const {
+float xTRT::Algo::eventWeight() const {
   if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) ) {
     auto weights = m_eventInfo->mcEventWeights();
     if ( !(weights.empty()) ) return weights.at(0);
@@ -64,7 +64,7 @@ float xTRT::LoopAlg::eventWeight() const {
   return 1.0;
 }
 
-float xTRT::LoopAlg::averageMu() {
+float xTRT::Algo::averageMu() {
   if ( !(m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION)) && m_usePRWTool ) {
     return m_PRWToolHandle->getCorrectedAverageInteractionsPerCrossing(*m_eventInfo,true);
   }
@@ -73,14 +73,14 @@ float xTRT::LoopAlg::averageMu() {
   }
 }
 
-bool xTRT::LoopAlg::passGRL() const {
+bool xTRT::Algo::passGRL() const {
   if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) || !m_config->useGRL() ) {
     return true;
   }
   return m_GRLToolHandle->passRunLB(*m_eventInfo);
 }
 
-xTRT::HitSummary xTRT::LoopAlg::getHitSummary(const xAOD::TrackParticle* track,
+xTRT::HitSummary xTRT::Algo::getHitSummary(const xAOD::TrackParticle* track,
                                               const xAOD::TrackStateValidation* msos,
                                               const xAOD::TrackMeasurementValidation* driftCircle) {
   xTRT::HitSummary hit;
@@ -125,7 +125,7 @@ xTRT::HitSummary xTRT::LoopAlg::getHitSummary(const xAOD::TrackParticle* track,
   return hit;
 }
 
-uint8_t xTRT::LoopAlg::nSilicon(const xAOD::TrackParticle* track) const {
+uint8_t xTRT::Algo::nSilicon(const xAOD::TrackParticle* track) const {
   uint8_t nPix = -1;
   uint8_t nSCT = -1;
   if ( !track->summaryValue(nPix,xAOD::numberOfPixelHits) ) ANA_MSG_ERROR("No Pix hits?");
@@ -133,7 +133,7 @@ uint8_t xTRT::LoopAlg::nSilicon(const xAOD::TrackParticle* track) const {
   return (nPix + nSCT);
 }
 
-uint8_t xTRT::LoopAlg::nSiliconHoles(const xAOD::TrackParticle* track) const {
+uint8_t xTRT::Algo::nSiliconHoles(const xAOD::TrackParticle* track) const {
   uint8_t nPixHole = -1;
   uint8_t nSCTHole = -1;
   if ( !track->summaryValue(nPixHole,xAOD::numberOfPixelHoles) ) ANA_MSG_ERROR("No Pix holes?");
@@ -141,7 +141,7 @@ uint8_t xTRT::LoopAlg::nSiliconHoles(const xAOD::TrackParticle* track) const {
   return (nPixHole + nSCTHole);
 }
 
-uint8_t xTRT::LoopAlg::nSiliconShared(const xAOD::TrackParticle* track) const {
+uint8_t xTRT::Algo::nSiliconShared(const xAOD::TrackParticle* track) const {
   uint8_t nSCTSh = -1;
   uint8_t nPixSh = -1;
   if ( !track->summaryValue(nPixSh,xAOD::numberOfPixelSharedHits) ) ANA_MSG_ERROR("No Pix shared?");
@@ -149,13 +149,13 @@ uint8_t xTRT::LoopAlg::nSiliconShared(const xAOD::TrackParticle* track) const {
   return (nPixSh + nSCTSh);
 }
 
-float xTRT::LoopAlg::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) const {
+float xTRT::Algo::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) const {
   float delta_z0 = std::fabs(track->z0() + track->vz() - vtx->z());
   float dz0sinth = std::fabs(delta_z0*std::sin(track->theta()));
   return dz0sinth;
 }
 
-double xTRT::LoopAlg::d0signif(const xAOD::TrackParticle *track) const {
+double xTRT::Algo::d0signif(const xAOD::TrackParticle *track) const {
   double d0sig = xAOD::TrackingHelpers::d0significance(track,
                                                        m_eventInfo->beamPosSigmaX(),
                                                        m_eventInfo->beamPosSigmaY(),
