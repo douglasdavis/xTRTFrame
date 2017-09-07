@@ -19,11 +19,10 @@ inline T* xTRT::Algo::grab(const std::string& name) {
 inline void xTRT::Algo::setTreeOutputName(const std::string name) { m_outputName = name; }
 
 inline void xTRT::Algo::feedConfig(const std::string fileName, bool print_conf) {
-  m_config = std::make_unique<xTRT::Config>();
-  m_config->parse(fileName, print_conf);
+  m_config.parse(fileName, print_conf);
 }
 
-inline xTRT::Config* xTRT::Algo::config() const { return m_config.get(); }
+inline const xTRT::Config* xTRT::Algo::config() const { return &m_config; }
 
 inline xAOD::TEvent* xTRT::Algo::event() { return m_event; }
 inline xAOD::TStore* xTRT::Algo::store() { return m_store; }

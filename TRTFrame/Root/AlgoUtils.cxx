@@ -74,7 +74,7 @@ float xTRT::Algo::averageMu() {
 }
 
 bool xTRT::Algo::passGRL() const {
-  if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) || !m_config->useGRL() ) {
+  if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) || !config()->useGRL() ) {
     return true;
   }
   return m_GRLToolHandle->passRunLB(*m_eventInfo);

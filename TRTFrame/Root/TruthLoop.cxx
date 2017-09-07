@@ -26,6 +26,10 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_CHECK(xTRT::Algo::histInitialize());
 
+  m_fillLeptonsOnly = config()->customOpt<bool>("LeptonsOnly");
+  m_saveHits        = config()->customOpt<bool>("StoreHits");
+  m_type0only       = config()->customOpt<bool>("Type0HitOnly");
+
   create(TH1F("h_averageMu","",70,-0.5,69.5));
 
   TFile *outFile = wk()->getOutputFile(m_outputName);
@@ -91,10 +95,6 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
 EL::StatusCode xTRT::TruthLoop::initialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_CHECK(xTRT::Algo::initialize());
-
-  m_fillLeptonsOnly = config()->customOpt<bool>("LeptonsOnly");
-  m_saveHits        = config()->customOpt<bool>("StoreHits");
-  m_type0only       = config()->customOpt<bool>("Type0HitOnly");
 
   return EL::StatusCode::SUCCESS;
 }

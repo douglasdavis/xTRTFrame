@@ -16,7 +16,17 @@
 // this is needed to distribute the algorithm to the workers
 ClassImp(xTRT::Algo)
 
-xTRT::Algo::Algo() {
+xTRT::Algo::Algo()
+: m_GRLToolHandle("GRLTool",this),
+  m_PRWToolHandle("PRWTool",this),
+  m_trigConfToolHandle("xAODConfigTool",this),
+  m_trigDecToolHandle("TrigDecisionTool",this),
+  m_trigMatchingToolHandle("TrigMatchingTool",this),
+  m_trackSelToolHandle("TrackSelTool",this),
+  m_trackElecSelToolHandle("TrackElecSelTool",this),
+  m_trackMuonSelToolHandle("TrackMuonSelTool",this),
+  m_config()
+{
   SetName("xTRT::Algo");
   m_pidSvc = std::make_shared<xTRT::ParticleIdSvc>();
 }

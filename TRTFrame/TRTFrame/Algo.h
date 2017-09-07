@@ -49,20 +49,20 @@ namespace xTRT {
 
   protected:
 
-    std::unique_ptr<xTRT::Config> m_config;
+    asg::AnaToolHandle<IGoodRunsListSelectionTool> m_GRLToolHandle;          //!
+    asg::AnaToolHandle<CP::IPileupReweightingTool> m_PRWToolHandle;          //!
+    asg::AnaToolHandle<TrigConf::ITrigConfigTool>  m_trigConfToolHandle;     //!
+    asg::AnaToolHandle<Trig::TrigDecisionTool>     m_trigDecToolHandle;      //!
+    asg::AnaToolHandle<Trig::IMatchingTool>        m_trigMatchingToolHandle; //!
+
+    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackSelToolHandle;     //!
+    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackElecSelToolHandle; //!
+    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackMuonSelToolHandle; //!
+
+    xTRT::Config m_config;
     std::string m_outputName;
 
     std::map<std::string,TObject*> m_objStore; //!
-
-    asg::AnaToolHandle<IGoodRunsListSelectionTool> m_GRLToolHandle{""};          //!
-    asg::AnaToolHandle<CP::IPileupReweightingTool> m_PRWToolHandle{""};          //!
-    asg::AnaToolHandle<TrigConf::ITrigConfigTool>  m_trigConfToolHandle{""};     //!
-    asg::AnaToolHandle<Trig::TrigDecisionTool>     m_trigDecToolHandle{""};      //!
-    asg::AnaToolHandle<Trig::IMatchingTool>        m_trigMatchingToolHandle{""}; //!
-
-    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackSelToolHandle{""};     //!
-    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackElecSelToolHandle{""}; //!
-    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackMuonSelToolHandle{""}; //!
 
     int m_eventCounter; //!
 
@@ -97,13 +97,11 @@ namespace xTRT {
     template <typename T>
     T* grab(const std::string& name);
 
-    /*! Send YAML file to be parsed by the configuration class
-     */
     void feedConfig(const std::string fileName, bool print_conf = false);
 
     /*! const pointer access to the configuration class
      */
-    xTRT::Config* config() const;
+    const xTRT::Config* config() const;
 
     /*! Sets the treeOutput name for the EL::NTupleSvc
      */
