@@ -148,7 +148,7 @@ namespace xTRT {
      *
      *  @param raw the raw container
      *  @param selector the function which applies the selection
-     *  @param the name of the new deep copy container
+     *  @param contName the name of the new deep copy container
      */
     template<class C, class T>
     const C* selectedContainer(const C* raw,
