@@ -1,3 +1,17 @@
+/** @file  Algo.h
+ *  @brief xTRT::Algo class header
+ *  @class xTRT::Algo
+ *  @brief Base class for running a
+ *         TRTFrame analysis algorithm
+ *
+ *  This class has two purposes: one is to be a skeleton for the steps
+ *  needed to run a TRTFrame algorithm. The second is the supply many
+ *  helper functions and utilities for creating an algorithm for TRT
+ *  work.
+ *
+ *  @author Douglas Davis < ddavis@cern.ch >
+ */
+
 #ifndef TRTFrame_Algo_h
 #define TRTFrame_Algo_h
 
@@ -48,7 +62,20 @@ namespace xTRT {
 
   class Algo : public EL::Algorithm {
 
+  private:
+    xTRT::Config m_config;
+
+    std::map<std::string,TObject*> m_objStore; //!
+    int m_eventCounter; //!
+
+    const xAOD::EventInfo* m_eventInfo; //!
+    xAOD::TEvent* m_event;              //!
+    xAOD::TStore* m_store;              //!
+    std::shared_ptr<xTRT::ParticleIdSvc> m_pidSvc; //!
+
   protected:
+
+    std::string m_outputName;
 
     asg::AnaToolHandle<IGoodRunsListSelectionTool> m_GRLToolHandle;          //!
     asg::AnaToolHandle<CP::IPileupReweightingTool> m_PRWToolHandle;          //!
@@ -59,19 +86,6 @@ namespace xTRT {
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackSelToolHandle;     //!
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackElecSelToolHandle; //!
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackMuonSelToolHandle; //!
-
-    xTRT::Config m_config;
-    std::string m_outputName;
-
-    std::map<std::string,TObject*> m_objStore; //!
-
-    int m_eventCounter; //!
-
-    const xAOD::EventInfo* m_eventInfo; //!
-    xAOD::TEvent* m_event;              //!
-    xAOD::TStore* m_store;              //!
-
-    std::shared_ptr<xTRT::ParticleIdSvc> m_pidSvc; //!
 
   public:
 
