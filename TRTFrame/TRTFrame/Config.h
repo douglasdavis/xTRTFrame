@@ -25,6 +25,27 @@ namespace xTRT {
     std::vector<std::string> m_dimuTrigs;
     std::vector<std::string> m_miscTrigs;
 
+    float cut_track_p;
+    float cut_track_pT;
+    float cut_track_eta;
+    int   cut_track_nSi;
+    int   cut_track_nPix;
+    int   cut_track_nTRT;
+
+    float cut_elec_p;
+    float cut_elec_pT;
+    float cut_elec_eta;
+    int   cut_elec_nSi;
+    int   cut_elec_nPix;
+    int   cut_elec_nTRT;
+
+    float cut_muon_p;
+    float cut_muon_pT;
+    float cut_muon_eta;
+    int   cut_muon_nSi;
+    int   cut_muon_nPix;
+    int   cut_muon_nTRT;
+
   public:
     Config();
     virtual ~Config();
@@ -48,6 +69,27 @@ namespace xTRT {
     template <typename T>
     T customOpt(const std::string& name) const;
 
+    float track_p()    const;
+    float track_pT()   const;
+    float track_eta()  const;
+    int   track_nSi()  const;
+    int   track_nPix() const;
+    int   track_nTRT() const;
+
+    float muon_p()    const;
+    float muon_pT()   const;
+    float muon_eta()  const;
+    int   muon_nSi()  const;
+    int   muon_nPix() const;
+    int   muon_nTRT() const;
+
+    float elec_p()    const;
+    float elec_pT()   const;
+    float elec_eta()  const;
+    int   elec_nSi()  const;
+    int   elec_nPix() const;
+    int   elec_nTRT() const;
+
   };
 }
 
@@ -69,5 +111,26 @@ template <typename T>
 inline T xTRT::Config::customOpt(const std::string& name) const {
   return YAML::Load(m_fileAsString)[name].as<T>();
 }
+
+inline float xTRT::Config::track_p()    const { return cut_track_p;    }
+inline float xTRT::Config::track_pT()   const { return cut_track_pT;   }
+inline float xTRT::Config::track_eta()  const { return cut_track_eta;  }
+inline int   xTRT::Config::track_nSi()  const { return cut_track_nSi;  }
+inline int   xTRT::Config::track_nPix() const { return cut_track_nPix; }
+inline int   xTRT::Config::track_nTRT() const { return cut_track_nTRT; }
+
+inline float xTRT::Config::elec_p()    const { return cut_elec_p;    }
+inline float xTRT::Config::elec_pT()   const { return cut_elec_pT;   }
+inline float xTRT::Config::elec_eta()  const { return cut_elec_eta;  }
+inline int   xTRT::Config::elec_nSi()  const { return cut_elec_nSi;  }
+inline int   xTRT::Config::elec_nPix() const { return cut_elec_nPix; }
+inline int   xTRT::Config::elec_nTRT() const { return cut_elec_nTRT; }
+
+inline float xTRT::Config::muon_p()    const { return cut_muon_p;    }
+inline float xTRT::Config::muon_pT()   const { return cut_muon_pT;   }
+inline float xTRT::Config::muon_eta()  const { return cut_muon_eta;  }
+inline int   xTRT::Config::muon_nSi()  const { return cut_muon_nSi;  }
+inline int   xTRT::Config::muon_nPix() const { return cut_muon_nPix; }
+inline int   xTRT::Config::muon_nTRT() const { return cut_muon_nTRT; }
 
 #endif

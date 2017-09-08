@@ -16,18 +16,29 @@ inline T* xTRT::Algo::grab(const std::string& name) {
   return dynamic_cast<T*>(iter->second);
 }
 
-inline void xTRT::Algo::setTreeOutputName(const std::string name) { m_outputName = name; }
+inline void xTRT::Algo::setTreeOutputName(const std::string name) {
+  m_outputName = name;
+}
 
 inline void xTRT::Algo::feedConfig(const std::string fileName, bool print_conf) {
   m_config.parse(fileName, print_conf);
 }
 
-inline const xTRT::Config* xTRT::Algo::config() const { return &m_config; }
+inline const xTRT::Config* xTRT::Algo::config() const {
+  return &m_config;
+}
 
-inline xAOD::TEvent* xTRT::Algo::event() { return m_event; }
-inline xAOD::TStore* xTRT::Algo::store() { return m_store; }
+inline xAOD::TEvent* xTRT::Algo::event() {
+  return m_event;
+}
 
-inline std::shared_ptr<xTRT::ParticleIdSvc> xTRT::Algo::particleIdSvc() const { return m_pidSvc; }
+inline xAOD::TStore* xTRT::Algo::store() {
+  return m_store;
+}
+
+inline std::shared_ptr<xTRT::ParticleIdSvc> xTRT::Algo::particleIdSvc() const {
+  return m_pidSvc;
+}
 
 inline const xAOD::EventInfo* xTRT::Algo::eventInfo() {
   const xAOD::EventInfo* evtinfo = nullptr;
@@ -44,4 +55,34 @@ inline T1 xTRT::Algo::get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2
   }
   ANA_MSG_WARNING("AuxElement: " << vn << " is not available! Returning 0!");
   return 0;
+}
+
+template <class C, class T>
+inline const C* xTRT::Algo::selectedContainer(const C* raw,
+                                              std::function<bool(const T*,const xTRT::Config*)> selector,
+                                              const std::string& contName) {
+  auto goodObjects    = std::make_unique<C>();
+  auto goodObjectsAux = std::make_unique<xAOD::AuxContainerBase>();
+  goodObjects->setStore(goodObjectsAux.get());
+  for ( auto obj : *raw ) {
+    if ( selector(obj,config()) ) {
+      auto goodObj = new T();
+      goodObjects->push_back(goodObj);
+      *goodObj = *obj;
+    }
+  }
+  if ( evtStore()->record(goodObjects.release(),contName).isFailure() ) {
+    ANA_MSG_ERROR("Couldn't record " << contName << ", returning nullptr.");
+    return nullptr;
+  }
+  if ( evtStore()->record(goodObjectsAux.release(),contName+"Aux.").isFailure() ) {
+    ANA_MSG_ERROR("Couldn't record " << contName << "Aux., returning nullptr.");
+    return nullptr;
+  }
+  const C* retObjs = nullptr;
+  if ( evtStore()->retrieve(retObjs,contName).isFailure() ) {
+    ANA_MSG_ERROR("Couldn't retrieve " << contName << ", returning nullptr");
+    return nullptr;
+  }
+  return retObjs;
 }

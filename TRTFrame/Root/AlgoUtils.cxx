@@ -1,5 +1,7 @@
 #include <TRTFrame/Algo.h>
 
+#include <AsgTools/StatusCode.h>
+#include <xAODCore/AuxContainerBase.h>
 #include <xAODTracking/Vertex.h>
 #include <xAODTracking/TrackParticlexAODHelpers.h>
 
@@ -28,6 +30,21 @@ const xAOD::MuonContainer* xTRT::Algo::muonContainer() {
     return nullptr;
   }
   return muonContainerPtr;
+}
+
+const xAOD::TrackParticleContainer* xTRT::Algo::selectedTracks() {
+  return selectedContainer<xAOD::TrackParticleContainer,xAOD::TrackParticle>
+    (trackContainer(),passTrackSelection,"GoodTracks");
+}
+
+const xAOD::ElectronContainer* xTRT::Algo::selectedElectrons() {
+  return selectedContainer<xAOD::ElectronContainer,xAOD::Electron>
+    (electronContainer(),passElectronSelection,"GoodElectrons");
+}
+
+const xAOD::MuonContainer* xTRT::Algo::selectedMuons() {
+  return selectedContainer<xAOD::MuonContainer,xAOD::Muon>
+    (muonContainer(),passMuonSelection,"GoodMuons");
 }
 
 const xAOD::TruthParticle* xTRT::Algo::truthParticle(const xAOD::TrackParticle* track) {
@@ -80,9 +97,65 @@ bool xTRT::Algo::passGRL() const {
   return m_GRLToolHandle->passRunLB(*m_eventInfo);
 }
 
+uint8_t xTRT::Algo::nSilicon(const xAOD::TrackParticle* track) const {
+  uint8_t nPix = -1;
+  uint8_t nSCT = -1;
+  if ( !track->summaryValue(nPix,xAOD::numberOfPixelHits) ) ANA_MSG_ERROR("No Pix hits?");
+  if ( !track->summaryValue(nSCT,xAOD::numberOfSCTHits)   ) ANA_MSG_ERROR("No SCT hits?");
+  return (nPix + nSCT);
+}
+
+uint8_t xTRT::Algo::nSiliconHoles(const xAOD::TrackParticle* track) const {
+  uint8_t nPixHole = -1;
+  uint8_t nSCTHole = -1;
+  if ( !track->summaryValue(nPixHole,xAOD::numberOfPixelHoles) ) ANA_MSG_ERROR("No Pix holes?");
+  if ( !track->summaryValue(nSCTHole,xAOD::numberOfSCTHoles)   ) ANA_MSG_ERROR("No SCT holes?");
+  return (nPixHole + nSCTHole);
+}
+
+uint8_t xTRT::Algo::nSiliconShared(const xAOD::TrackParticle* track) const {
+  uint8_t nSCTSh = -1;
+  uint8_t nPixSh = -1;
+  if ( !track->summaryValue(nPixSh,xAOD::numberOfPixelSharedHits) ) ANA_MSG_ERROR("No Pix shared?");
+  if ( !track->summaryValue(nSCTSh,xAOD::numberOfSCTSharedHits)   ) ANA_MSG_ERROR("No SCT shared?");
+  return (nPixSh + nSCTSh);
+}
+
+float xTRT::Algo::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) const {
+  float delta_z0 = std::fabs(track->z0() + track->vz() - vtx->z());
+  float dz0sinth = std::fabs(delta_z0*std::sin(track->theta()));
+  return dz0sinth;
+}
+
+double xTRT::Algo::d0signif(const xAOD::TrackParticle *track) const {
+  double d0sig = xAOD::TrackingHelpers::d0significance(track,
+                                                       m_eventInfo->beamPosSigmaX(),
+                                                       m_eventInfo->beamPosSigmaY(),
+                                                       m_eventInfo->beamPosSigmaXY());
+  return d0sig;
+}
+
+bool xTRT::Algo::passTrackSelection(const xAOD::TrackParticle* track, const xTRT::Config* conf) {
+  if ( track->pt() < conf->track_pT() ) return false;
+  if ( std::abs(track->eta()) > conf->track_eta() ) return false;
+  return true;
+}
+
+bool xTRT::Algo::passElectronSelection(const xAOD::Electron* electron, const xTRT::Config* conf) {
+  if ( electron->pt() < conf->elec_pT() ) return false;
+  if ( std::abs(electron->eta()) > conf->elec_eta() ) return false;
+  return true;
+}
+
+bool xTRT::Algo::passMuonSelection(const xAOD::Muon* muon, const xTRT::Config* conf) {
+  if ( muon->pt() < conf->muon_pT() ) return false;
+  if ( std::abs(muon->eta()) > conf->muon_eta() ) return false;
+  return true;
+}
+
 xTRT::HitSummary xTRT::Algo::getHitSummary(const xAOD::TrackParticle* track,
-                                              const xAOD::TrackStateValidation* msos,
-                                              const xAOD::TrackMeasurementValidation* driftCircle) {
+                                           const xAOD::TrackStateValidation* msos,
+                                           const xAOD::TrackMeasurementValidation* driftCircle) {
   xTRT::HitSummary hit;
   hit.HTMB        = (get(xTRT::Acc::bitPattern, driftCircle,"bitPattern") & 131072) ? 1 : 0;
   hit.tot         =  get(xTRT::Acc::tot,        driftCircle,"tot");
@@ -125,40 +198,3 @@ xTRT::HitSummary xTRT::Algo::getHitSummary(const xAOD::TrackParticle* track,
   return hit;
 }
 
-uint8_t xTRT::Algo::nSilicon(const xAOD::TrackParticle* track) const {
-  uint8_t nPix = -1;
-  uint8_t nSCT = -1;
-  if ( !track->summaryValue(nPix,xAOD::numberOfPixelHits) ) ANA_MSG_ERROR("No Pix hits?");
-  if ( !track->summaryValue(nSCT,xAOD::numberOfSCTHits)   ) ANA_MSG_ERROR("No SCT hits?");
-  return (nPix + nSCT);
-}
-
-uint8_t xTRT::Algo::nSiliconHoles(const xAOD::TrackParticle* track) const {
-  uint8_t nPixHole = -1;
-  uint8_t nSCTHole = -1;
-  if ( !track->summaryValue(nPixHole,xAOD::numberOfPixelHoles) ) ANA_MSG_ERROR("No Pix holes?");
-  if ( !track->summaryValue(nSCTHole,xAOD::numberOfSCTHoles)   ) ANA_MSG_ERROR("No SCT holes?");
-  return (nPixHole + nSCTHole);
-}
-
-uint8_t xTRT::Algo::nSiliconShared(const xAOD::TrackParticle* track) const {
-  uint8_t nSCTSh = -1;
-  uint8_t nPixSh = -1;
-  if ( !track->summaryValue(nPixSh,xAOD::numberOfPixelSharedHits) ) ANA_MSG_ERROR("No Pix shared?");
-  if ( !track->summaryValue(nSCTSh,xAOD::numberOfSCTSharedHits)   ) ANA_MSG_ERROR("No SCT shared?");
-  return (nPixSh + nSCTSh);
-}
-
-float xTRT::Algo::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) const {
-  float delta_z0 = std::fabs(track->z0() + track->vz() - vtx->z());
-  float dz0sinth = std::fabs(delta_z0*std::sin(track->theta()));
-  return dz0sinth;
-}
-
-double xTRT::Algo::d0signif(const xAOD::TrackParticle *track) const {
-  double d0sig = xAOD::TrackingHelpers::d0significance(track,
-                                                       m_eventInfo->beamPosSigmaX(),
-                                                       m_eventInfo->beamPosSigmaY(),
-                                                       m_eventInfo->beamPosSigmaXY());
-  return d0sig;
-}

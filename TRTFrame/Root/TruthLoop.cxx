@@ -108,7 +108,8 @@ EL::StatusCode xTRT::TruthLoop::execute() {
   m_weight = eventWeight();
   grab<TH1F>("h_averageMu")->Fill(averageMu(),m_weight);
 
-  auto tracks = trackContainer();
+  //auto tracks = trackContainer();
+  auto tracks = selectedTracks();
 
   int nthPion = 0;
   for ( auto const& track : *tracks ) {

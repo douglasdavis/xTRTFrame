@@ -56,5 +56,26 @@ bool xTRT::Config::parse(const std::string fileName, bool print_conf) {
     fillTrigs(m_miscTrigs, "misc");
   }
 
+  cut_track_p      = 0;
+  cut_track_pT     = 1000;
+  cut_track_eta    = 5;
+  cut_track_nSi    = 0;
+  cut_track_nPix   = 0;
+  cut_track_nTRT   = 15;
+
+  cut_elec_p       = 0;
+  cut_elec_pT      = 1000;
+  cut_elec_eta     = 5;
+  cut_elec_nSi     = 0;
+  cut_elec_nPix    = 0;
+  cut_elec_nTRT    = 15;
+
+  cut_muon_p       = 0;
+  cut_muon_pT      = 1000;
+  cut_muon_eta     = 5;
+  cut_muon_nSi     = 0;
+  cut_muon_nPix    = 0;
+  cut_muon_nTRT    = 15;
+
   return true;
 }
