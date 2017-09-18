@@ -17,15 +17,15 @@
 ClassImp(xTRT::Algo)
 
 xTRT::Algo::Algo()
-: m_GRLToolHandle("GRLTool",this),
+: m_config(),
+  m_GRLToolHandle("GRLTool",this),
   m_PRWToolHandle("PRWTool",this),
   m_trigConfToolHandle("xAODConfigTool",this),
   m_trigDecToolHandle("TrigDecisionTool",this),
   m_trigMatchingToolHandle("TrigMatchingTool",this),
   m_trackSelToolHandle("TrackSelTool",this),
   m_trackElecSelToolHandle("TrackElecSelTool",this),
-  m_trackMuonSelToolHandle("TrackMuonSelTool",this),
-  m_config()
+  m_trackMuonSelToolHandle("TrackMuonSelTool",this)
 {
   SetName("xTRT::Algo");
 }
