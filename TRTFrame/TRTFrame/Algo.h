@@ -67,12 +67,11 @@ namespace xTRT {
     xTRT::Config m_config;
 
     std::map<std::string,TObject*> m_objStore; //!
-    int m_eventCounter; //!
 
+    int m_eventCounter;                 //!
     const xAOD::EventInfo* m_eventInfo; //!
     xAOD::TEvent* m_event;              //!
     xAOD::TStore* m_store;              //!
-    std::shared_ptr<xTRT::ParticleIdSvc> m_pidSvc; //!
 
   protected:
 
@@ -87,18 +86,6 @@ namespace xTRT {
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackSelToolHandle;     //!
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackElecSelToolHandle; //!
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackMuonSelToolHandle; //!
-
-    xTRT::Config m_config;
-
-    std::string m_outputName;
-
-    std::map<std::string,TObject*> m_objStore; //!
-
-    int m_eventCounter; //!
-
-    const xAOD::EventInfo* m_eventInfo; //!
-    xAOD::TEvent* m_event;              //!
-    xAOD::TStore* m_store;              //!
 
   public:
 
