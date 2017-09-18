@@ -36,6 +36,7 @@
 #include <xAODTracking/TrackParticlexAODHelpers.h>
 
 // TRTFrame
+#include <TRTFrame/Utils.h>
 #include <TRTFrame/Accessors.h>
 #include <TRTFrame/HitSummary.h>
 #include <TRTFrame/ParticleId.h>
@@ -61,6 +62,7 @@ namespace xTRT {
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackMuonSelToolHandle; //!
 
     xTRT::Config m_config;
+
     std::string m_outputName;
 
     std::map<std::string,TObject*> m_objStore; //!
@@ -71,12 +73,12 @@ namespace xTRT {
     xAOD::TEvent* m_event;              //!
     xAOD::TStore* m_store;              //!
 
-    std::shared_ptr<xTRT::ParticleIdSvc> m_pidSvc; //!
-
   public:
 
     Algo();
     virtual ~Algo();
+
+    void feedConfig(const std::string fileName, bool print_conf = false);
 
     /// Creates a ROOT object to be stored.
     /**
@@ -84,6 +86,8 @@ namespace xTRT {
      *  ROOT object (such as a TH1F or TProfile). The name given to the
      *  object constructor will be used to manipulate the pointer to
      *  the copy which is stored.
+     *
+     *  @param obj the ROOT output object (THx, TProfile, etc.)
      */
     template <typename T>
     void create(const T obj);
@@ -93,11 +97,11 @@ namespace xTRT {
      *  Using the name of the TObject staged for storage with the
      *  Algo::create function, retrieve and manipulate the object, used
      *  for e.g. filling a histogram.
+     *
+     *  @param name the name of the created ROOT object to update/modify.
      */
     template <typename T>
     T* grab(const std::string& name);
-
-    void feedConfig(const std::string fileName, bool print_conf = false);
 
     /// const pointer access to the configuration class
     const xTRT::Config* config() const;
@@ -123,8 +127,6 @@ namespace xTRT {
     EL::StatusCode enablePRWTool();
     /// creates and sets up the ConfigTool, DecisionTool, and MatchingTool
     EL::StatusCode enableTriggerTools();
-
-    std::shared_ptr<xTRT::ParticleIdSvc> particleIdSvc() const;
 
     /// returns the raw track container (no selection applied)
     const xAOD::TrackParticleContainer* trackContainer();
@@ -162,7 +164,7 @@ namespace xTRT {
     /// applies selectedContainer on muons
     const xAOD::MuonContainer*          selectedMuons();
 
-    /// retrieves the TruthParticle from a given TrackParticle
+    /// retrieves the TruthParticle associated with the input TrackParticle
     const xAOD::TruthParticle* truthParticle(const xAOD::TrackParticle* track);
 
     /// return the total event weight
@@ -172,8 +174,11 @@ namespace xTRT {
     /// return whether the lumi block is good
     bool  passGRL() const;
 
+    /// get pointer to current xAOD::TEvent
     xAOD::TEvent* event();
+    /// get pointer to current xAOD::TStore
     xAOD::TStore* store();
+    /// get const pointer to the current event's xAOD::EventInfo
     const xAOD::EventInfo* eventInfo();
 
     /// get a hit summary object based on the track, surface measurement, and drift circle
@@ -186,14 +191,48 @@ namespace xTRT {
     /// check whether a list of triggers fired
     bool triggersPassed(const std::vector<std::string>& trigNames) const;
 
-    uint8_t nSilicon(const xAOD::TrackParticle* track) const;
-    uint8_t nSiliconHoles(const xAOD::TrackParticle* track) const;
-    uint8_t nSiliconShared(const xAOD::TrackParticle* track) const;
-    float   deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) const;
-    double  d0signif(const xAOD::TrackParticle *track) const;
+    /// return the number of TRT hits on the track
+    static uint8_t nTRT(const xAOD::TrackParticle* track);
+    /// return the number of silicon hits (Pixel + SCT)
+    static  uint8_t nSilicon(const xAOD::TrackParticle* track);
+    /// return the number of silicon holes (Pixel + SCT)
+    static uint8_t nSiliconHoles(const xAOD::TrackParticle* track);
+    /// return the number of silicon shared hits (Pixel + SCT)
+    static uint8_t nSiliconShared(const xAOD::TrackParticle* track);
+    /// return the (delta z0)*sin(theta) of the track
+    static float   deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx);
 
+    /// return the d0 significance of the track
+    /**
+     *  This function requires the EventInfo so it cannt be static
+     */
+    double d0signif(const xAOD::TrackParticle *track) const;
+
+    /// grab aux data by using ConstAccessor and some object
+    /**
+     *  Using a ConstAccessor, look to see if the object has the
+     *  auxdata and then return it.
+     *
+     *  @param acc the const accessor object
+     *  @param xobj the xAOD object to grab the auxdata from
+     *  @param adn the auxdata variable name
+     */
     template <class T1, class T2>
-    T1 get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* cont, std::string vn = "") const;
+    T1 get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* xobj, std::string adn = "") const;
+
+    /// grab aux data from an xAOD object based on name
+    /**
+     *  This function will create a ConstAccessor to retrieve some aux
+     *  data from the object. This is differen from the get function
+     *  in that you must supply the return type, where with get the
+     *  return type is deduced by the compiler from the already
+     *  declared ConstAccessor.
+     *
+     *  @param xobj the xAOD object to retrieve the auxdata from
+     *  @param adn the aux data variable name
+     */
+    template <typename T1, typename T2 = SG::AuxElement>
+    T1 retrieve(const T2* xobj, const char* adn) const;
 
     ClassDef(xTRT::Algo, 1);
 

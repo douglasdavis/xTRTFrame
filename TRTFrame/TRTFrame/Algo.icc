@@ -36,10 +36,6 @@ inline xAOD::TStore* xTRT::Algo::store() {
   return m_store;
 }
 
-inline std::shared_ptr<xTRT::ParticleIdSvc> xTRT::Algo::particleIdSvc() const {
-  return m_pidSvc;
-}
-
 inline const xAOD::EventInfo* xTRT::Algo::eventInfo() {
   const xAOD::EventInfo* evtinfo = nullptr;
   if ( evtStore()->retrieve(evtinfo,"EventInfo").isFailure() ) {
@@ -49,12 +45,24 @@ inline const xAOD::EventInfo* xTRT::Algo::eventInfo() {
 }
 
 template <class T1, class T2>
-inline T1 xTRT::Algo::get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* cont, std::string vn ) const {
-  if ( acc.isAvailable(*cont) ) {
-    return acc(*cont);
+inline T1 xTRT::Algo::get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* xobj, std::string adn) const {
+  if ( acc.isAvailable(*xobj) ) {
+    return acc(*xobj);
   }
-  ANA_MSG_WARNING("AuxElement: " << vn << " is not available! Returning 0!");
+  ANA_MSG_WARNING("AuxElement: " << adn << " is not available! Returning 0!");
   return 0;
+}
+
+template <class T1, class T2>
+inline T1 xTRT::Algo::retrieve(const T2* xobj, const char* adn) const {
+  static const SG::AuxElement::ConstAccessor<T1> acc{adn};
+  if ( acc.isAvailable(*xobj) ) {
+    return acc(*xobj);
+  }
+  else {
+    ANA_MSG_WARNING("Cannot find " << adn);
+    return 0;
+  }
 }
 
 template <class C, class T>

@@ -28,7 +28,6 @@ xTRT::Algo::Algo()
   m_config()
 {
   SetName("xTRT::Algo");
-  m_pidSvc = std::make_shared<xTRT::ParticleIdSvc>();
 }
 
 xTRT::Algo::~Algo() {}

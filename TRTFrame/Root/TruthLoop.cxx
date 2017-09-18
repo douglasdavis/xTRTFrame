@@ -53,10 +53,6 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
     itree->Branch("phi",        &m_phi);
     itree->Branch("theta",      &m_theta);
     itree->Branch("eProbHT",    &m_eProbHT);
-    itree->Branch("eProbToT",   &m_eProbToT);
-    itree->Branch("eProbToT2",  &m_eProbToT2);
-    itree->Branch("eProbComb",  &m_eProbComb);
-    itree->Branch("eProbComb2", &m_eProbComb2);
     itree->Branch("nTRThits",   &m_nTRThits);
     itree->Branch("nTRThitsMan",&m_nTRThitsMan);
     itree->Branch("nArhits",    &m_nArhits);
@@ -108,7 +104,6 @@ EL::StatusCode xTRT::TruthLoop::execute() {
   m_weight = eventWeight();
   grab<TH1F>("h_averageMu")->Fill(averageMu(),m_weight);
 
-  //auto tracks = trackContainer();
   auto tracks = selectedTracks();
 
   int nthPion = 0;
@@ -165,12 +160,6 @@ EL::StatusCode xTRT::TruthLoop::execute() {
     m_trkOcc    = get(xTRT::Acc::TRTTrackOccupancy,track);
     m_eProbToT  = get(xTRT::Acc::eProbabilityToT,track);
     m_eProbHT   = get(xTRT::Acc::eProbabilityHT,track);
-    m_eProbToT2 = 0; //particleIdSvc()->ToT_getTest(get(xTRT::Acc::ToT_dEdx_noHT_divByL,track),
-                     //                          m_p,xTRT::Hyp::Electron,xTRT::Hyp::Pion,
-                     //                          get(xTRT::Acc::ToT_usedHits_noHT_divByL,track), st);
-
-    m_eProbComb  = 0; //combinedProb(m_eProbHT,m_eProbToT);
-    m_eProbComb2 = 0; //combinedProb(m_eProbHT,m_eProbToT2);
 
     m_dEdxNoHT  = get(xTRT::Acc::ToT_dEdx_noHT_divByL,track);
     m_nHitsdEdx = get(xTRT::Acc::ToT_usedHits_noHT_divByL,track);

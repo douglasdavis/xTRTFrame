@@ -8,7 +8,7 @@
 const xAOD::TrackParticleContainer* xTRT::Algo::trackContainer() {
   const xAOD::TrackParticleContainer* trackContainerPtr = nullptr;
   if ( evtStore()->retrieve(trackContainerPtr,"InDetTrackParticles").isFailure() ) {
-    ANA_MSG_WARNING("InDetTrackParticles unavailable!");
+    ANA_MSG_ERROR("InDetTrackParticles unavailable!");
     return nullptr;
   }
   return trackContainerPtr;
@@ -17,7 +17,7 @@ const xAOD::TrackParticleContainer* xTRT::Algo::trackContainer() {
 const xAOD::ElectronContainer* xTRT::Algo::electronContainer() {
   const xAOD::ElectronContainer* electronContainerPtr = nullptr;
   if ( evtStore()->retrieve(electronContainerPtr,"Electrons").isFailure() ) {
-    ANA_MSG_WARNING("Electrons unavailable!");
+    ANA_MSG_ERROR("Electrons unavailable!");
     return nullptr;
   }
   return electronContainerPtr;
@@ -26,7 +26,7 @@ const xAOD::ElectronContainer* xTRT::Algo::electronContainer() {
 const xAOD::MuonContainer* xTRT::Algo::muonContainer() {
   const xAOD::MuonContainer* muonContainerPtr = nullptr;
   if ( evtStore()->retrieve(muonContainerPtr,"Muons").isFailure() ) {
-    ANA_MSG_WARNING("Muons unavailable!");
+    ANA_MSG_ERROR("Muons unavailable!");
     return nullptr;
   }
   return muonContainerPtr;
@@ -97,31 +97,37 @@ bool xTRT::Algo::passGRL() const {
   return m_GRLToolHandle->passRunLB(*m_eventInfo);
 }
 
-uint8_t xTRT::Algo::nSilicon(const xAOD::TrackParticle* track) const {
+uint8_t xTRT::Algo::nTRT(const xAOD::TrackParticle* track) {
+  uint8_t nTRThits = -1;
+  if ( !track->summaryValue(nTRThits,xAOD::numberOfTRTHits) ) XTRT_FATAL("No TRT hits");
+  return nTRThits;
+}
+
+uint8_t xTRT::Algo::nSilicon(const xAOD::TrackParticle* track) {
   uint8_t nPix = -1;
   uint8_t nSCT = -1;
-  if ( !track->summaryValue(nPix,xAOD::numberOfPixelHits) ) ANA_MSG_ERROR("No Pix hits?");
-  if ( !track->summaryValue(nSCT,xAOD::numberOfSCTHits)   ) ANA_MSG_ERROR("No SCT hits?");
+  if ( !track->summaryValue(nPix,xAOD::numberOfPixelHits) ) XTRT_FATAL("No Pix hits?");
+  if ( !track->summaryValue(nSCT,xAOD::numberOfSCTHits)   ) XTRT_FATAL("No SCT hits?");
   return (nPix + nSCT);
 }
 
-uint8_t xTRT::Algo::nSiliconHoles(const xAOD::TrackParticle* track) const {
+uint8_t xTRT::Algo::nSiliconHoles(const xAOD::TrackParticle* track) {
   uint8_t nPixHole = -1;
   uint8_t nSCTHole = -1;
-  if ( !track->summaryValue(nPixHole,xAOD::numberOfPixelHoles) ) ANA_MSG_ERROR("No Pix holes?");
-  if ( !track->summaryValue(nSCTHole,xAOD::numberOfSCTHoles)   ) ANA_MSG_ERROR("No SCT holes?");
+  if ( !track->summaryValue(nPixHole,xAOD::numberOfPixelHoles) ) XTRT_FATAL("No Pix holes?");
+  if ( !track->summaryValue(nSCTHole,xAOD::numberOfSCTHoles)   ) XTRT_FATAL("No SCT holes?");
   return (nPixHole + nSCTHole);
 }
 
-uint8_t xTRT::Algo::nSiliconShared(const xAOD::TrackParticle* track) const {
+uint8_t xTRT::Algo::nSiliconShared(const xAOD::TrackParticle* track) {
   uint8_t nSCTSh = -1;
   uint8_t nPixSh = -1;
-  if ( !track->summaryValue(nPixSh,xAOD::numberOfPixelSharedHits) ) ANA_MSG_ERROR("No Pix shared?");
-  if ( !track->summaryValue(nSCTSh,xAOD::numberOfSCTSharedHits)   ) ANA_MSG_ERROR("No SCT shared?");
+  if ( !track->summaryValue(nPixSh,xAOD::numberOfPixelSharedHits) ) XTRT_FATAL("No Pix shared?");
+  if ( !track->summaryValue(nSCTSh,xAOD::numberOfSCTSharedHits)   ) XTRT_FATAL("No SCT shared?");
   return (nPixSh + nSCTSh);
 }
 
-float xTRT::Algo::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) const {
+float xTRT::Algo::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) {
   float delta_z0 = std::fabs(track->z0() + track->vz() - vtx->z());
   float dz0sinth = std::fabs(delta_z0*std::sin(track->theta()));
   return dz0sinth;
@@ -136,19 +142,24 @@ double xTRT::Algo::d0signif(const xAOD::TrackParticle *track) const {
 }
 
 bool xTRT::Algo::passTrackSelection(const xAOD::TrackParticle* track, const xTRT::Config* conf) {
+  if ( xTRT::Algo::nTRT(track) < conf->track_nTRT() ) return false;
   if ( track->pt() < conf->track_pT() ) return false;
   if ( std::abs(track->eta()) > conf->track_eta() ) return false;
+  if ( track->p4().P() < conf->track_p() ) return false;
+  if ( xTRT::Algo::nSilicon(track) < conf->track_nSi() ) return false;
   return true;
 }
 
 bool xTRT::Algo::passElectronSelection(const xAOD::Electron* electron, const xTRT::Config* conf) {
   if ( electron->pt() < conf->elec_pT() ) return false;
+  if ( electron->p4().P() < conf->elec_p() ) return false;
   if ( std::abs(electron->eta()) > conf->elec_eta() ) return false;
   return true;
 }
 
 bool xTRT::Algo::passMuonSelection(const xAOD::Muon* muon, const xTRT::Config* conf) {
   if ( muon->pt() < conf->muon_pT() ) return false;
+  if ( muon->p4().P() < conf->muon_p() ) return false;
   if ( std::abs(muon->eta()) > conf->muon_eta() ) return false;
   return true;
 }
@@ -197,4 +208,3 @@ xTRT::HitSummary xTRT::Algo::getHitSummary(const xAOD::TrackParticle* track,
 
   return hit;
 }
-
