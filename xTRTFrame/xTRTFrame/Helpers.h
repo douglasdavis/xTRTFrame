@@ -1,5 +1,5 @@
-#ifndef TRTFrame_Helpers_h
-#define TRTFrame_Helpers_h
+#ifndef xTRTFrame_Helpers_h
+#define xTRTFrame_Helpers_h
 
 namespace xTRT {
   enum StrawRegion {

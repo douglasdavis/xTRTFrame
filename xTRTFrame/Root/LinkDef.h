@@ -1,8 +1,8 @@
 // -*- c++ -*-
 
-#include <TRTFrame/Algo.h>
-#include <TRTFrame/TruthLoop.h>
-#include <TRTFrame/Config.h>
+#include <xTRTFrame/Algo.h>
+#include <xTRTFrame/TruthLoop.h>
+#include <xTRTFrame/Config.h>
 
 #ifdef __CINT__
 

@@ -1,11 +1,11 @@
-#ifndef TRTFrame_ParticleId_h
-#define TRTFrame_ParticleId_h
+#ifndef xTRTFrame_ParticleId_h
+#define xTRTFrame_ParticleId_h
 
 // C++
 #include <array>
 
-// TRTFrame
-#include <TRTFrame/Helpers.h>
+// xTRTFrame
+#include <xTRTFrame/Helpers.h>
 
 namespace xTRT {
   enum Hyp {

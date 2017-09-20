@@ -1,5 +1,5 @@
-#ifndef TRTFrame_Accessors_h
-#define TRTFrame_Accessors_h
+#ifndef xTRTFrame_Accessors_h
+#define xTRTFrame_Accessors_h
 
 // ATLAS
 #include <AthContainers/AuxElement.h>

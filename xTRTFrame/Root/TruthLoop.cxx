@@ -10,8 +10,8 @@
 #include <TFile.h>
 #include <TH1F.h>
 
-// TRTFrame
-#include <TRTFrame/TruthLoop.h>
+// xTRTFrame
+#include <xTRTFrame/TruthLoop.h>
 
 // C++
 #include <sstream>

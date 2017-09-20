@@ -1,6 +1,6 @@
-#include <TRTFrame/Runner.h>
-#include <TRTFrame/Algo.h>
-#include <TRTFrame/Externals/CLI11.hpp>
+#include <xTRTFrame/Runner.h>
+#include <xTRTFrame/Algo.h>
+#include <xTRTFrame/Externals/CLI11.hpp>
 
 #include <EventLoopGrid/PrunDriver.h>
 #include <EventLoopGrid/GridDriver.h>
@@ -16,7 +16,7 @@
 
 namespace xTRT {
   int Runner(int argc, char **argv, xTRT::Algo* alg) {
-    CLI::App app("TRTFrame Job");
+    CLI::App app("xTRTFrame Job");
 
     std::string configFile;
     std::string inputTextFile;
@@ -66,7 +66,7 @@ namespace xTRT {
       job.sampleHandler(sh);
       EL::PrunDriver driver;
       driver.options()->setString("nc_outputSampleName",outDS);
-      driver.submitOnly(job,"TRTFrameGridJob_"+outputDir);
+      driver.submitOnly(job,"xTRTFrameGridJob_"+outputDir);
     }
     else {
       std::cout << "Require -i and -o OR --gridDS and --outDS and -o!" << std::endl;

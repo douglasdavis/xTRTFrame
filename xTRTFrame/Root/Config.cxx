@@ -1,4 +1,4 @@
-#include <TRTFrame/Config.h>
+#include <xTRTFrame/Config.h>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -16,7 +16,7 @@ bool xTRT::Config::parse(const std::string fileName, bool print_conf) {
 
   if ( print_conf ) {
     std::cout << std::endl;
-    std::cout << "====== TRTFrame YAML Configuration ======" << std::endl;
+    std::cout << "====== xTRTFrame YAML Configuration ======" << std::endl;
     std::cout << std::endl;
     std::cout << m_fileAsString << std::endl;
     std::cout << std::endl;

@@ -1,5 +1,5 @@
-#ifndef TRTFrame_Hit_h
-#define TRTFrame_Hit_h
+#ifndef xTRTFrame_Hit_h
+#define xTRTFrame_Hit_h
 
 namespace xTRT {
 

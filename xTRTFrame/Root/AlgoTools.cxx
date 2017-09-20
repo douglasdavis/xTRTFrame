@@ -1,5 +1,5 @@
-// TRTFrame
-#include <TRTFrame/Algo.h>
+// xTRTFrame
+#include <xTRTFrame/Algo.h>
 
 // ROOT
 #include <TSystem.h>

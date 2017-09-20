@@ -2,18 +2,18 @@
  *  @brief xTRT::Algo class header
  *  @class xTRT::Algo
  *  @brief Base class for running a
- *         TRTFrame analysis algorithm
+ *         xTRTFrame analysis algorithm
  *
  *  This class has two purposes: one is to be a skeleton for the steps
- *  needed to run a TRTFrame algorithm. The second is the supply many
+ *  needed to run a xTRTFrame algorithm. The second is the supply many
  *  helper functions and utilities for creating an algorithm for TRT
  *  work.
  *
  *  @author Douglas Davis < ddavis@cern.ch >
  */
 
-#ifndef TRTFrame_Algo_h
-#define TRTFrame_Algo_h
+#ifndef xTRTFrame_Algo_h
+#define xTRTFrame_Algo_h
 
 // C++
 #include <memory>
@@ -49,12 +49,12 @@
 #include <xAODTracking/TrackStateValidationContainer.h>
 #include <xAODTracking/TrackParticlexAODHelpers.h>
 
-// TRTFrame
-#include <TRTFrame/Utils.h>
-#include <TRTFrame/Accessors.h>
-#include <TRTFrame/HitSummary.h>
-#include <TRTFrame/ParticleId.h>
-#include <TRTFrame/Config.h>
+// xTRTFrame
+#include <xTRTFrame/Utils.h>
+#include <xTRTFrame/Accessors.h>
+#include <xTRTFrame/HitSummary.h>
+#include <xTRTFrame/ParticleId.h>
+#include <xTRTFrame/Config.h>
 
 // ROOT
 #include <TTree.h>

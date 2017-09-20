@@ -1,8 +1,8 @@
-#ifndef TRTFrame_TruthLoop_h
-#define TRTFrame_TruthLoop_h
+#ifndef xTRTFrame_TruthLoop_h
+#define xTRTFrame_TruthLoop_h
 
-// TRTFrame
-#include <TRTFrame/Algo.h>
+// xTRTFrame
+#include <xTRTFrame/Algo.h>
 
 namespace xTRT {
 

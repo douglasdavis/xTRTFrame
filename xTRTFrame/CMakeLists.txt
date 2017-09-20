@@ -1,5 +1,5 @@
 # Declare the name of this package:
-atlas_subdir(TRTFrame None)
+atlas_subdir(xTRTFrame None)
 
 # This package depends on other packages:
 atlas_depends_on_subdirs(PUBLIC
@@ -32,14 +32,14 @@ find_package(yamlcpp REQUIRED)
 add_definitions(-g -O3 -std=c++14)
 
 # Generate a CINT dictionary source file:
-atlas_add_root_dictionary(TRTFrame _cintDictSource
+atlas_add_root_dictionary(xTRTFrame _cintDictSource
   ROOT_HEADERS Root/LinkDef.h
   EXTERNAL_PACKAGES ROOT
   )
 
 # Build a library that other components can link against:
-atlas_add_library(TRTFrame Root/*.cxx TRTFrame/*.h TRTFrame/*.icc TRTFrame/*.hpp ${_cintDictSource}
-  PUBLIC_HEADERS TRTFrame
+atlas_add_library(xTRTFrame Root/*.cxx xTRTFrame/*.h xTRTFrame/*.icc xTRTFrame/*.hpp ${_cintDictSource}
+  PUBLIC_HEADERS xTRTFrame
   LINK_LIBRARIES
   AsgTools
   GoodRunsListsLib
@@ -65,7 +65,7 @@ atlas_add_library(TRTFrame Root/*.cxx TRTFrame/*.h TRTFrame/*.icc TRTFrame/*.hpp
 
 atlas_add_executable(runTruthAlg
   util/runTruthAlg.cxx
-  LINK_LIBRARIES ${ROOT_LIBRARIES} TRTFrame
+  LINK_LIBRARIES ${ROOT_LIBRARIES} xTRTFrame
   )
 
 atlas_install_scripts(scripts/*.py)

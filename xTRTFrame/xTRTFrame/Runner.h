@@ -1,5 +1,5 @@
-#ifndef TRTFrame_Runner_h
-#define TRTFrame_Runner_h
+#ifndef xTRTFrame_Runner_h
+#define xTRTFrame_Runner_h
 
 namespace xTRT {
   class Algo;

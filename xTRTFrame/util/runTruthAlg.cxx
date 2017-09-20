@@ -1,5 +1,5 @@
-#include <TRTFrame/TruthLoop.h>
-#include <TRTFrame/Runner.h>
+#include <xTRTFrame/TruthLoop.h>
+#include <xTRTFrame/Runner.h>
 
 int main(int argc, char **argv) {
   xTRT::TruthLoop *alg = new xTRT::TruthLoop();

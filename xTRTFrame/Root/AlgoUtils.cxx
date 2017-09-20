@@ -1,4 +1,4 @@
-#include <TRTFrame/Algo.h>
+#include <xTRTFrame/Algo.h>
 
 #include <AsgTools/StatusCode.h>
 #include <xAODCore/AuxContainerBase.h>

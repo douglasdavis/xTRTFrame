@@ -9,7 +9,7 @@ import time
 import datetime
 
 parser = argparse.ArgumentParser(
-    description='TRTFrame python steering script'
+    description='xTRTFrame python steering script'
 )
 
 ## i/o arguments
@@ -56,7 +56,7 @@ def main():
         driver = ROOT.EL.DirectDriver()
         outDir = args.outdir
         if outDir == 'ts':
-            outDir = 'TRTFrame_TruthLoop_'+ts
+            outDir = 'xTRTFrame_TruthLoop_'+ts
         driver.submit(job, outDir)
         exit(0)
 
@@ -70,7 +70,7 @@ def main():
 
         driver = ROOT.EL.PrunDriver()
         driver.options().setString("nc_outputSampleName", args.outDS)
-        driver.submitOnly(job, "runTRTFrameOnGrid_"+ts)
+        driver.submitOnly(job, "runxTRTFrameOnGrid_"+ts)
         exit(0)
 
     else:

@@ -1,12 +1,12 @@
-#ifndef TRTFrame_Config_h
-#define TRTFrame_Config_h
+#ifndef xTRTFrame_Config_h
+#define xTRTFrame_Config_h
 
 #include <vector>
 #include <string>
 #include <map>
 #include <yaml-cpp/yaml.h>
 
-#include <TRTFrame/Utils.h>
+#include <xTRTFrame/Utils.h>
 
 namespace xTRT {
 

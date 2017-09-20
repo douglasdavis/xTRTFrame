@@ -10,8 +10,8 @@
 #include <TFile.h>
 #include <TH1.h>
 
-// TRTFrame
-#include <TRTFrame/Algo.h>
+// xTRTFrame
+#include <xTRTFrame/Algo.h>
 
 // this is needed to distribute the algorithm to the workers
 ClassImp(xTRT::Algo)
@@ -36,7 +36,7 @@ EL::StatusCode xTRT::Algo::setupJob(EL::Job& job) {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   job.options()->setDouble(EL::Job::optXAODSummaryReport, 0);
   job.useXAOD();
-  ANA_CHECK(xAOD::Init("TRTFrame"));
+  ANA_CHECK(xAOD::Init("xTRTFrame"));
 
   return EL::StatusCode::SUCCESS;
 }
