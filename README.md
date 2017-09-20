@@ -2,6 +2,6 @@
 
 This project is a playground.
 
-See the [`xTRTFramework` GitLab
-wiki](https://gitlab.cern.ch/atlas-trt-software/xTRTFramework/wikis/home)
-for the real xTRTFramework.
+See the [`TRTFramework` GitLab
+wiki](https://gitlab.cern.ch/atlas-trt-software/TRTFramework/wikis/home)
+for the real TRTFramework.
