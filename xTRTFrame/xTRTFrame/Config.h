@@ -1,3 +1,15 @@
+/** @file  Config.h
+ *  @brief xTRT::Config class header
+ *  @class xTRT::Config
+ *  @brief Class for handling algorithm configuration options
+ *
+ *  This class stores all of the options defined in the configuration
+ *  YAML file. There are standard options which must be defined and
+ *  users also have the ability to define custom options.
+ *
+ *  @author Douglas Davis < ddavis@cern.ch >
+ */
+
 #ifndef xTRTFrame_Config_h
 #define xTRTFrame_Config_h
 

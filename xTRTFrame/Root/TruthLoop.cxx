@@ -34,15 +34,12 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
 
   TFile *outFile = wk()->getOutputFile(m_outputName);
 
-  m_elTree = new TTree("elTree","elTree");
-  m_muTree = new TTree("muTree","muTree");
-  m_piTree = new TTree("piTree","piTree");
-  m_otTree = new TTree("otTree","otTree");
   m_zdTree = new TTree("zdTree","zdTree");
   m_jdTree = new TTree("jdTree","jdTree");
 
-  for ( TTree* itree : { m_elTree, m_muTree, m_piTree, m_otTree, m_zdTree, m_jdTree } ) {
+  for ( TTree* itree : { m_zdTree, m_jdTree } ) {
     itree->SetDirectory(outFile);
+    itree->Branch("avgmu",      &m_avgMu);
     itree->Branch("weight",     &m_weight);
     itree->Branch("pdgId",      &m_pdgId);
     itree->Branch("trkOcc",     &m_trkOcc);
@@ -102,12 +99,13 @@ EL::StatusCode xTRT::TruthLoop::execute() {
   if ( !passGRL() ) return EL::StatusCode::SUCCESS;
 
   m_weight = eventWeight();
-  grab<TH1F>("h_averageMu")->Fill(averageMu(),m_weight);
+  m_avgMu  = averageMu();
+  grab<TH1F>("h_averageMu")->Fill(m_avgMu,m_weight);
 
   auto tracks = selectedTracks();
 
   int nthPion = 0;
-  for ( auto const& track : *tracks ) {
+  for ( const auto& track : *tracks ) {
 
     auto truth = truthParticle(track);
     if ( truth == nullptr ) continue;
@@ -115,12 +113,13 @@ EL::StatusCode xTRT::TruthLoop::execute() {
     if ( vtx == nullptr ) continue;
     m_pdgId = std::abs(truth->pdgId());
 
-    if ( m_fillLeptonsOnly && ( m_pdgId != 11 && m_pdgId != 13 ) ) continue;
+    bool el_or_mu = (m_pdgId == 11 || m_pdgId == 13);
+    if ( !el_or_mu ) continue;
 
     bool failTrkSel = false;
     if      ( m_pdgId == 11 ) failTrkSel = !(trackElecSelToolHandle()->accept(*track,vtx));
     else if ( m_pdgId == 13 ) failTrkSel = !(trackMuonSelToolHandle()->accept(*track,vtx));
-    else                      failTrkSel = !(trackSelToolHandle()->accept(*track,vtx));
+    else continue;
     if ( failTrkSel ) continue;
 
     uint8_t ntrthits = -1;
@@ -182,18 +181,6 @@ EL::StatusCode xTRT::TruthLoop::execute() {
     if ( parent != nullptr ) {
       if ( parent->isZ()          ) { m_zdTree->Fill(); }
       if ( parent->pdgId() == 443 ) { m_jdTree->Fill(); }
-    }
-
-    if ( m_fillLeptonsOnly ) {
-      if      ( m_pdgId == 11  ) { m_elTree->Fill(); }
-      else if ( m_pdgId == 13  ) { m_muTree->Fill(); }
-      else                       { continue;         }
-    }
-    else {
-      if      ( m_pdgId == 11  ) { m_elTree->Fill(); }
-      else if ( m_pdgId == 13  ) { m_muTree->Fill(); }
-      else if ( m_pdgId == 211 ) { m_piTree->Fill(); }
-      else                       { m_otTree->Fill(); }
     }
 
     clearVectors();

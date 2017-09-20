@@ -1,5 +1,7 @@
 /** @file  Algo.h
  *  @brief xTRT::Algo class header
+ *  @namespace xTRT
+ *  @brief main xTRTFrame namespace
  *  @class xTRT::Algo
  *  @brief Base class for running a
  *         xTRTFrame analysis algorithm
@@ -73,10 +75,6 @@ namespace xTRT {
     xAOD::TEvent* m_event;              //!
     xAOD::TStore* m_store;              //!
 
-  protected:
-
-    std::string m_outputName;
-
     asg::AnaToolHandle<IGoodRunsListSelectionTool> m_GRLToolHandle;          //!
     asg::AnaToolHandle<CP::IPileupReweightingTool> m_PRWToolHandle;          //!
     asg::AnaToolHandle<TrigConf::ITrigConfigTool>  m_trigConfToolHandle;     //!
@@ -86,6 +84,10 @@ namespace xTRT {
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackSelToolHandle;     //!
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackElecSelToolHandle; //!
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackMuonSelToolHandle; //!
+
+  protected:
+
+    std::string m_outputName;
 
   public:
 

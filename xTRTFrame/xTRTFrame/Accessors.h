@@ -1,3 +1,11 @@
+/** @file  Accessors.h
+ *  @brief xTRT supplied Accessors header
+ *  @namespace xTRT::Acc
+ *  @brief namespace for const xAOD AuxElement accessors
+ *
+ *  @author Douglas Davis < ddavis@cern.ch >
+ */
+
 #ifndef xTRTFrame_Accessors_h
 #define xTRTFrame_Accessors_h
 

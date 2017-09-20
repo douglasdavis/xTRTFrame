@@ -21,6 +21,7 @@ namespace xTRT {
     TTree*      m_zdTree; //!
     TTree*      m_jdTree; //!
 
+    float       m_avgMu;        //!
     float       m_weight;       //!
     int         m_pdgId;        //!
     float       m_trkOcc;       //!
