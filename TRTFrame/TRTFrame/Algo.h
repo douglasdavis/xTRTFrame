@@ -123,14 +123,23 @@ namespace xTRT {
     /// Sets the treeOutput name for the EL::NTupleSvc
     void setTreeOutputName(const std::string name);
 
+    /// EventLoop API function
     virtual EL::StatusCode setupJob(EL::Job& job);
+    /// EventLoop API function
     virtual EL::StatusCode fileExecute();
+    /// EventLoop API function
     virtual EL::StatusCode histInitialize();
+    /// EventLoop API function
     virtual EL::StatusCode changeInput(bool firstFile);
+    /// EventLoop API function
     virtual EL::StatusCode initialize();
+    /// EventLoop API function
     virtual EL::StatusCode execute();
+    /// EventLoop API function
     virtual EL::StatusCode postExecute();
+    /// EventLoop API function
     virtual EL::StatusCode finalize();
+    /// EventLoop API function
     virtual EL::StatusCode histFinalize();
 
     /// creates and sets up the InDetTrackSelectionTool
@@ -185,6 +194,8 @@ namespace xTRT {
     float eventWeight() const;
     /// return the average number of collisions per bunch crossing
     float averageMu();
+    /// return the number of primary vertices
+    std::size_t NPV() const;
     /// return whether the lumi block is good
     bool  passGRL() const;
 
@@ -247,6 +258,13 @@ namespace xTRT {
      */
     template <typename T1, typename T2 = SG::AuxElement>
     T1 retrieve(const T2* xobj, const char* adn) const;
+
+    /// get reference to the InDetTrackSelectionTool handle for tracks
+    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelToolHandle()     const;
+    /// get reference to the InDetTrackSelectionTool handle for electrons
+    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackElecSelToolHandle() const;
+    /// get reference to the InDetTrackSelectionTool handle for muon
+    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackMuonSelToolHandle() const;
 
     ClassDef(xTRT::Algo, 1);
 

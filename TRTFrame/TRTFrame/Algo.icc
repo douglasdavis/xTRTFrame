@@ -94,3 +94,15 @@ inline const C* xTRT::Algo::selectedContainer(const C* raw,
   }
   return retObjs;
 }
+
+inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& xTRT::Algo::trackSelToolHandle() const {
+  return m_trackSelToolHandle;
+}
+
+inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& xTRT::Algo::trackElecSelToolHandle() const {
+  return m_trackElecSelToolHandle;
+}
+
+inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& xTRT::Algo::trackMuonSelToolHandle() const {
+  return m_trackMuonSelToolHandle;
+}

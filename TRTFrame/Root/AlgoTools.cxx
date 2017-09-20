@@ -14,27 +14,18 @@ EL::StatusCode xTRT::Algo::setupTrackSelectionTools() {
 
   ANA_CHECK(ASG_MAKE_ANA_TOOL(m_trackSelToolHandle, InDet::InDetTrackSelectionTool));
   ANA_CHECK(m_trackSelToolHandle.setProperty("CutLevel","TightPrimary"));
-  ANA_CHECK(m_trackSelToolHandle.setProperty("maxAbsEta",2.0));
-  ANA_CHECK(m_trackSelToolHandle.setProperty("maxTrtEtaAcceptance",0.0));
-  ANA_CHECK(m_trackSelToolHandle.setProperty("maxEtaForTrtHitCuts",2.0));
-  ANA_CHECK(m_trackSelToolHandle.setProperty("minNTrtHits",15));
   ANA_CHECK(m_trackSelToolHandle.retrieve());
-    
+  ANA_MSG_INFO("Set up InDetTrackSelectionTool for Tracks");
+
   ANA_CHECK(ASG_MAKE_ANA_TOOL(m_trackElecSelToolHandle, InDet::InDetTrackSelectionTool));
   ANA_CHECK(m_trackElecSelToolHandle.setProperty("CutLevel","LooseElectron"));
-  ANA_CHECK(m_trackElecSelToolHandle.setProperty("maxAbsEta",2.0));
-  ANA_CHECK(m_trackElecSelToolHandle.setProperty("maxTrtEtaAcceptance",0.0));
-  ANA_CHECK(m_trackElecSelToolHandle.setProperty("maxEtaForTrtHitCuts",2.0));
-  ANA_CHECK(m_trackElecSelToolHandle.setProperty("minNTrtHits",15));
   ANA_CHECK(m_trackElecSelToolHandle.retrieve());
+  ANA_MSG_INFO("Set up InDetTrackSelectionTool for Electrons");
 
   ANA_CHECK(ASG_MAKE_ANA_TOOL(m_trackMuonSelToolHandle, InDet::InDetTrackSelectionTool));
   ANA_CHECK(m_trackMuonSelToolHandle.setProperty("CutLevel","LooseMuon"));
-  ANA_CHECK(m_trackMuonSelToolHandle.setProperty("maxAbsEta",2.0));
-  ANA_CHECK(m_trackMuonSelToolHandle.setProperty("maxTrtEtaAcceptance",0.1));
-  ANA_CHECK(m_trackMuonSelToolHandle.setProperty("maxEtaForTrtHitCuts",2.0));
-  ANA_CHECK(m_trackMuonSelToolHandle.setProperty("minNTrtHits",15));
   ANA_CHECK(m_trackMuonSelToolHandle.retrieve());
+  ANA_MSG_INFO("Set up InDetTrackSelectionTool for Muons");
 
   return EL::StatusCode::SUCCESS;
 }

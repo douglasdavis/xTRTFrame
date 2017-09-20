@@ -1,3 +1,8 @@
+###################################
+## Default options for xTRTFrame ##
+###################################
+
+## PRW options
 PRW:
   Use: False
   ConfFiles:
@@ -5,12 +10,14 @@ PRW:
   LumiFiles:
     - "none"
 
+## GoodRunsList options
 GRL:
   Use: True
   XMLs:
     - "GoodRunsLists/data15_13TeV/20160720/physics_25ns_20.7.xml"
     - "GoodRunsLists/data16_13TeV/20161101/physics_25ns_20.7.xml"
 
+## Trigger options
 Trig:
   Use: False
   electron:
@@ -23,6 +30,28 @@ Trig:
     - "none"
   misc:
     - "none"
+
+## InDetTrackSelectionTool options
+IDTS:
+  Use: True
+
+Tracks:
+  p: 1000
+  pT: 1000
+  eta: 2.0
+  nSi: -1
+  nPix: -1
+  nTRT: 15
+
+Electrons:
+  p: 1000
+  pT: 1000
+  eta: 2.0
+
+Muons:
+  p: 1000
+  pT: 1000
+  eta: 2.0
 
 ####################
 ## Custom options ##

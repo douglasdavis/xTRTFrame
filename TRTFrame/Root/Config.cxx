@@ -23,7 +23,7 @@ bool xTRT::Config::parse(const std::string fileName, bool print_conf) {
   }
 
   auto node_GRL = config["GRL"];
-  m_useGRL = node_GRL["Use"].as<bool>();
+  m_useGRL = checkAndGet<bool>(node_GRL,"Use","(from GRL node)");
   if ( m_useGRL) {
     for ( const auto& grlf : node_GRL["XMLs"] ) {
       m_GRLFiles.push_back(grlf.as<std::string>());
@@ -31,22 +31,37 @@ bool xTRT::Config::parse(const std::string fileName, bool print_conf) {
   }
 
   auto node_PRW = config["PRW"];
-  m_usePRW = node_PRW["Use"].as<bool>();
+  m_usePRW = checkAndGet<bool>(node_PRW,"Use","(from PRW node)");
   if ( m_usePRW ) {
-    for ( const auto& prwcf : node_PRW["ConfFiles"] ) {
-      m_PRWConfFiles.push_back(prwcf.as<std::string>());
+    if ( node_PRW["ConfFiles"] ) {
+      for ( const auto& prwcf : node_PRW["ConfFiles"] ) {
+        m_PRWConfFiles.push_back(prwcf.as<std::string>());
+      }
     }
-    for ( const auto& prwlf : node_PRW["LumiFiles"] ) {
-      m_PRWConfFiles.push_back(prwlf.as<std::string>());
+    else {
+      XTRT_FATAL("No ConfFiles list in PRW section of  YAML config");
+    }
+    if ( node_PRW["LumiFiles"] ) {
+      for ( const auto& prwlf : node_PRW["LumiFiles"] ) {
+        m_PRWConfFiles.push_back(prwlf.as<std::string>());
+      }
+    }
+    else {
+      XTRT_FATAL("No LumiFiles list in PRW section of YAML config");
     }
   }
 
   auto node_Trig = config["Trig"];
-  m_useTrig = node_Trig["Use"].as<bool>();
+  m_useTrig = checkAndGet<bool>(node_Trig,"Use","(from Trig node)");
   if ( m_useTrig ) {
     auto fillTrigs = [&node_Trig](auto& vec, const std::string& cat) {
-      for ( const auto& trig : node_Trig[cat] ) {
-        vec.push_back(trig.as<std::string>());
+      if ( node_Trig[cat] ) {
+        for ( const auto& trig : node_Trig[cat] ) {
+          vec.push_back(trig.as<std::string>());
+        }
+      }
+      else {
+        XTRT_FATAL("Cannot find " << cat << " in Trigger node.");
       }
     };
     fillTrigs(m_elTrigs,   "electron");
@@ -56,20 +71,27 @@ bool xTRT::Config::parse(const std::string fileName, bool print_conf) {
     fillTrigs(m_miscTrigs, "misc");
   }
 
-  cut_track_p      = 0;
-  cut_track_pT     = 1000;
-  cut_track_eta    = 5;
-  cut_track_nSi    = 0;
-  cut_track_nPix   = 0;
-  cut_track_nTRT   = 15;
+  auto node_IDTS = config["IDTS"];
+  m_useIDTS = checkAndGet<bool>(node_IDTS,"Use","(from IDTS node)");
 
-  cut_elec_p       = 0;
-  cut_elec_pT      = 1000;
-  cut_elec_eta     = 5;
+  auto node_tracks = config["Tracks"];
+  auto node_elecs  = config["Electrons"];
+  auto node_muons  = config["Muons"];
 
-  cut_muon_p       = 0;
-  cut_muon_pT      = 1000;
-  cut_muon_eta     = 5;
+  cut_track_p      = checkAndGet<float>(node_tracks,"p","(from Tracks node)");
+  cut_track_pT     = checkAndGet<float>(node_tracks,"pT","(from Tracks node)");
+  cut_track_eta    = checkAndGet<float>(node_tracks,"eta","(from Tracks node)");
+  cut_track_nSi    = checkAndGet<int>(node_tracks,"nSi","(from Tracks node)");
+  cut_track_nPix   = checkAndGet<int>(node_tracks,"nPix","(from Tracks node)");
+  cut_track_nTRT   = checkAndGet<int>(node_tracks,"nTRT","(from Tracks node)");
+
+  cut_elec_p   = checkAndGet<float>(node_elecs,"p","(from Electrons node)");
+  cut_elec_pT  = checkAndGet<float>(node_elecs,"pT","(from Electrons node)");
+  cut_elec_eta = checkAndGet<float>(node_elecs,"eta","(from Electrons node)");
+
+  cut_muon_p   = checkAndGet<float>(node_muons,"p","(from Muons node)");
+  cut_muon_pT  = checkAndGet<float>(node_muons,"pT","(from Muons node)");
+  cut_muon_eta = checkAndGet<float>(node_muons,"eta","(from Muons node)");
 
   return true;
 }

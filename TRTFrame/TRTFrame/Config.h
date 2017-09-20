@@ -6,6 +6,8 @@
 #include <map>
 #include <yaml-cpp/yaml.h>
 
+#include <TRTFrame/Utils.h>
+
 namespace xTRT {
 
   class Config {
@@ -15,6 +17,7 @@ namespace xTRT {
     bool                     m_useGRL;
     bool                     m_usePRW;
     bool                     m_useTrig;
+    bool                     m_useIDTS;
     std::vector<std::string> m_GRLFiles;
     std::vector<std::string> m_PRWConfFiles;
     std::vector<std::string> m_PRWLumiFiles;
@@ -40,6 +43,9 @@ namespace xTRT {
     float cut_muon_pT;
     float cut_muon_eta;
 
+    template <typename T>
+    T checkAndGet(const YAML::Node& node, const std::string& name, const char* extraMsg = "") const;
+
   public:
     Config();
     virtual ~Config();
@@ -49,6 +55,7 @@ namespace xTRT {
     bool useGRL()  const;
     bool usePRW()  const;
     bool useTrig() const;
+    bool useIDTS() const;
 
     const std::vector<std::string>& GRLFiles()     const;
     const std::vector<std::string>& PRWConfFiles() const;
@@ -59,9 +66,6 @@ namespace xTRT {
     const std::vector<std::string>& muonTriggers()       const;
     const std::vector<std::string>& dimuonTriggers()     const;
     const std::vector<std::string>& miscTriggers()       const;
-
-    template <typename T>
-    T customOpt(const std::string& name) const;
 
     float track_p()    const;
     float track_pT()   const;
@@ -78,12 +82,26 @@ namespace xTRT {
     float elec_pT()   const;
     float elec_eta()  const;
 
+    template <typename T>
+    T customOpt(const std::string& name) const;
+
   };
+}
+
+template <typename T>
+inline T xTRT::Config::checkAndGet(const YAML::Node& node, const std::string& name, const char* extraMsg) const {
+  if ( node[name] ) {
+    return node[name].as<T>();
+  }
+  else {
+    XTRT_FATAL(name << " not found in config, big issue! " << extraMsg);
+  }
 }
 
 inline bool xTRT::Config::useGRL()  const { return m_useGRL;  }
 inline bool xTRT::Config::usePRW()  const { return m_usePRW;  }
 inline bool xTRT::Config::useTrig() const { return m_useTrig; }
+inline bool xTRT::Config::useIDTS() const { return m_useIDTS; }
 
 inline const std::vector<std::string>& xTRT::Config::GRLFiles()     const { return m_GRLFiles;     }
 inline const std::vector<std::string>& xTRT::Config::PRWConfFiles() const { return m_PRWConfFiles; }
@@ -94,11 +112,6 @@ inline const std::vector<std::string>& xTRT::Config::dielectronTriggers() const 
 inline const std::vector<std::string>& xTRT::Config::muonTriggers()       const { return m_muTrigs;   }
 inline const std::vector<std::string>& xTRT::Config::dimuonTriggers()     const { return m_dimuTrigs; }
 inline const std::vector<std::string>& xTRT::Config::miscTriggers()       const { return m_miscTrigs; }
-
-template <typename T>
-inline T xTRT::Config::customOpt(const std::string& name) const {
-  return YAML::Load(m_fileAsString)[name].as<T>();
-}
 
 inline float xTRT::Config::track_p()    const { return cut_track_p;    }
 inline float xTRT::Config::track_pT()   const { return cut_track_pT;   }
@@ -114,5 +127,16 @@ inline float xTRT::Config::elec_eta()  const { return cut_elec_eta;  }
 inline float xTRT::Config::muon_p()    const { return cut_muon_p;    }
 inline float xTRT::Config::muon_pT()   const { return cut_muon_pT;   }
 inline float xTRT::Config::muon_eta()  const { return cut_muon_eta;  }
+
+template <typename T>
+inline T xTRT::Config::customOpt(const std::string& name) const {
+  auto temp_node = YAML::Load(m_fileAsString);
+  if ( temp_node[name] ) {
+    return temp_node[name].as<T>();
+  }
+  else {
+    XTRT_FATAL("custom option " << name << " not found in YAML config");
+  }
+}
 
 #endif

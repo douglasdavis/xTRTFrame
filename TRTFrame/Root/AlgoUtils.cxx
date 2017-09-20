@@ -90,6 +90,15 @@ float xTRT::Algo::averageMu() {
   }
 }
 
+std::size_t xTRT::Algo::NPV() const {
+  const xAOD::VertexContainer* verts = nullptr;
+  if ( evtStore()->retrieve(verts,"PrimaryVertices").isFailure() ) {
+    ANA_MSG_WARNING("Cannot retrieve PrimaryVertices, returning 0");
+    return 0;
+  }
+  return verts->size();
+}
+
 bool xTRT::Algo::passGRL() const {
   if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) || !config()->useGRL() ) {
     return true;

@@ -17,15 +17,15 @@
 ClassImp(xTRT::Algo)
 
 xTRT::Algo::Algo()
-: m_config(),
-  m_GRLToolHandle("GRLTool",this),
-  m_PRWToolHandle("PRWTool",this),
-  m_trigConfToolHandle("xAODConfigTool",this),
-  m_trigDecToolHandle("TrigDecisionTool",this),
-  m_trigMatchingToolHandle("TrigMatchingTool",this),
-  m_trackSelToolHandle("TrackSelTool",this),
-  m_trackElecSelToolHandle("TrackElecSelTool",this),
-  m_trackMuonSelToolHandle("TrackMuonSelTool",this)
+  : m_config(),
+    m_GRLToolHandle("GRLTool",this),
+    m_PRWToolHandle("PRWTool",this),
+    m_trigConfToolHandle("xAODConfigTool",this),
+    m_trigDecToolHandle("TrigDecisionTool",this),
+    m_trigMatchingToolHandle("TrigMatchingTool",this),
+    m_trackSelToolHandle("TrackSelTool",this),
+    m_trackElecSelToolHandle("TrackElecSelTool",this),
+    m_trackMuonSelToolHandle("TrackMuonSelTool",this)
 {
   SetName("xTRT::Algo");
 }
@@ -36,7 +36,7 @@ EL::StatusCode xTRT::Algo::setupJob(EL::Job& job) {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   job.options()->setDouble(EL::Job::optXAODSummaryReport, 0);
   job.useXAOD();
-  ANA_CHECK(xAOD::Init("xTRTrame"));
+  ANA_CHECK(xAOD::Init("TRTFrame"));
 
   return EL::StatusCode::SUCCESS;
 }
@@ -69,8 +69,7 @@ EL::StatusCode xTRT::Algo::initialize() {
   if ( config()->usePRW()  ) ANA_CHECK(enablePRWTool());
   if ( config()->useGRL()  ) ANA_CHECK(enableGRLTool());
   if ( config()->useTrig() ) ANA_CHECK(enableTriggerTools());
-
-  ANA_CHECK(setupTrackSelectionTools());
+  if ( config()->useIDTS() ) ANA_CHECK(setupTrackSelectionTools());
 
   return EL::StatusCode::SUCCESS;
 }
@@ -97,9 +96,11 @@ EL::StatusCode xTRT::Algo::postExecute() {
 
 EL::StatusCode xTRT::Algo::finalize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(m_trackSelToolHandle->finalize());
-  ANA_CHECK(m_trackElecSelToolHandle->finalize());
-  ANA_CHECK(m_trackMuonSelToolHandle->finalize());
+  if ( config()->useIDTS() ) {
+    ANA_CHECK(m_trackSelToolHandle->finalize());
+    ANA_CHECK(m_trackElecSelToolHandle->finalize());
+    ANA_CHECK(m_trackMuonSelToolHandle->finalize());
+  }
   return EL::StatusCode::SUCCESS;
 }
 

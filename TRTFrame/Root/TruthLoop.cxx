@@ -118,9 +118,9 @@ EL::StatusCode xTRT::TruthLoop::execute() {
     if ( m_fillLeptonsOnly && ( m_pdgId != 11 && m_pdgId != 13 ) ) continue;
 
     bool failTrkSel = false;
-    if      ( m_pdgId == 11 ) failTrkSel = !m_trackElecSelToolHandle->accept(*track,vtx);
-    else if ( m_pdgId == 13 ) failTrkSel = !m_trackMuonSelToolHandle->accept(*track,vtx);
-    else                      failTrkSel = !m_trackSelToolHandle->accept(*track,vtx);
+    if      ( m_pdgId == 11 ) failTrkSel = !(trackElecSelToolHandle()->accept(*track,vtx));
+    else if ( m_pdgId == 13 ) failTrkSel = !(trackMuonSelToolHandle()->accept(*track,vtx));
+    else                      failTrkSel = !(trackSelToolHandle()->accept(*track,vtx));
     if ( failTrkSel ) continue;
 
     uint8_t ntrthits = -1;
