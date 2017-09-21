@@ -26,6 +26,19 @@ namespace xTRT {
     static const SG::AuxElement::ConstAccessor<float> ToT_dEdx_noHT_divByL     {"ToT_dEdx_noHT_divByL"};
     static const SG::AuxElement::ConstAccessor<float> ToT_usedHits_noHT_divByL {"ToT_usedHits_noHT_divByL"};
 
+
+    static const SG::AuxElement::ConstAccessor<unsigned char> numberOfTRTHits     {"numberOfTRTHits"};
+    static const SG::AuxElement::ConstAccessor<unsigned char> numberOfTRTOutliers {"numberOfTRTOutliers"};
+    static const SG::AuxElement::ConstAccessor<unsigned char> numberOfInnermostPixelLayerHits
+    {"numberOfInnermostPixelLayerHits"};
+    static const SG::AuxElement::ConstAccessor<unsigned char> numberOfNextToInnermostPixelLayerHits
+    {"numberOfNextToInnermostPixelLayerHits"};
+    static const SG::AuxElement::ConstAccessor<unsigned char> numberOfPixelHits {"numberOfPixelHits"};
+    static const SG::AuxElement::ConstAccessor<unsigned char> numberOfSCTHits   {"numberOfSCTHits"};
+
+    static const SG::AuxElement::ConstAccessor<float> numberDoF  {"numberDoF"};
+    static const SG::AuxElement::ConstAccessor<float> chiSquared {"chiSquared"};
+
     static const SG::AuxElement::ConstAccessor<
       ElementLink<xAOD::TruthParticleContainer>
       > truthParticleLink{"truthParticleLink"};

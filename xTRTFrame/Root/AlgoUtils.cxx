@@ -106,34 +106,48 @@ bool xTRT::Algo::passGRL() const {
   return m_GRLToolHandle->passRunLB(*m_eventInfo);
 }
 
-uint8_t xTRT::Algo::nTRT(const xAOD::TrackParticle* track) {
+int xTRT::Algo::nTRT(const xAOD::TrackParticle* track) {
   uint8_t nTRThits = -1;
-  if ( !track->summaryValue(nTRThits,xAOD::numberOfTRTHits) ) XTRT_FATAL("No TRT hits");
-  return nTRThits;
+  uint8_t nTRTouts = -1;
+  if ( !track->summaryValue(nTRThits,xAOD::numberOfTRTHits)     ) XTRT_FATAL("No TRT hits");
+  if ( !track->summaryValue(nTRTouts,xAOD::numberOfTRTOutliers) ) XTRT_FATAL("No TRT outliers");
+  return ((int)nTRThits + (int)nTRTouts);
 }
 
-uint8_t xTRT::Algo::nSilicon(const xAOD::TrackParticle* track) {
+int xTRT::Algo::nTRT_PrecTube(const xAOD::TrackParticle* track) {
+  uint8_t nTRThits = -1;
+  if ( !track->summaryValue(nTRThits,xAOD::numberOfTRTHits) ) XTRT_FATAL("No TRT hits");
+  return ((int)nTRThits);
+}
+
+int xTRT::Algo::nTRT_Outlier(const xAOD::TrackParticle* track) {
+  uint8_t nTRTouts = -1;
+  if ( !track->summaryValue(nTRTouts,xAOD::numberOfTRTOutliers) ) XTRT_FATAL("No TRT outliers");
+  return ((int)nTRTouts);
+}
+
+int xTRT::Algo::nSilicon(const xAOD::TrackParticle* track) {
   uint8_t nPix = -1;
   uint8_t nSCT = -1;
   if ( !track->summaryValue(nPix,xAOD::numberOfPixelHits) ) XTRT_FATAL("No Pix hits?");
   if ( !track->summaryValue(nSCT,xAOD::numberOfSCTHits)   ) XTRT_FATAL("No SCT hits?");
-  return (nPix + nSCT);
+  return ((int)nPix + (int)nSCT);
 }
 
-uint8_t xTRT::Algo::nSiliconHoles(const xAOD::TrackParticle* track) {
+int xTRT::Algo::nSiliconHoles(const xAOD::TrackParticle* track) {
   uint8_t nPixHole = -1;
   uint8_t nSCTHole = -1;
   if ( !track->summaryValue(nPixHole,xAOD::numberOfPixelHoles) ) XTRT_FATAL("No Pix holes?");
   if ( !track->summaryValue(nSCTHole,xAOD::numberOfSCTHoles)   ) XTRT_FATAL("No SCT holes?");
-  return (nPixHole + nSCTHole);
+  return ((int)nPixHole + (int)nSCTHole);
 }
 
-uint8_t xTRT::Algo::nSiliconShared(const xAOD::TrackParticle* track) {
+int xTRT::Algo::nSiliconShared(const xAOD::TrackParticle* track) {
   uint8_t nSCTSh = -1;
   uint8_t nPixSh = -1;
   if ( !track->summaryValue(nPixSh,xAOD::numberOfPixelSharedHits) ) XTRT_FATAL("No Pix shared?");
   if ( !track->summaryValue(nSCTSh,xAOD::numberOfSCTSharedHits)   ) XTRT_FATAL("No SCT shared?");
-  return (nPixSh + nSCTSh);
+  return ((int)nSCTSh + (int)nPixSh);
 }
 
 float xTRT::Algo::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) {
@@ -152,6 +166,7 @@ double xTRT::Algo::d0signif(const xAOD::TrackParticle *track) const {
 
 bool xTRT::Algo::passTrackSelection(const xAOD::TrackParticle* track, const xTRT::Config* conf) {
   if ( xTRT::Algo::nTRT(track) < conf->track_nTRT() ) return false;
+  if ( xTRT::Algo::nTRT_PrecTube(track) < conf->track_nTRTprec() ) return false;
   if ( track->pt() < conf->track_pT() ) return false;
   if ( std::abs(track->eta()) > conf->track_eta() ) return false;
   if ( track->p4().P() < conf->track_p() ) return false;

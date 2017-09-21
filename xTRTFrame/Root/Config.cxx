@@ -78,12 +78,13 @@ bool xTRT::Config::parse(const std::string fileName, bool print_conf) {
   auto node_elecs  = config["Electrons"];
   auto node_muons  = config["Muons"];
 
-  cut_track_p      = checkAndGet<float>(node_tracks,"p","(from Tracks node)");
-  cut_track_pT     = checkAndGet<float>(node_tracks,"pT","(from Tracks node)");
-  cut_track_eta    = checkAndGet<float>(node_tracks,"eta","(from Tracks node)");
-  cut_track_nSi    = checkAndGet<int>(node_tracks,"nSi","(from Tracks node)");
-  cut_track_nPix   = checkAndGet<int>(node_tracks,"nPix","(from Tracks node)");
-  cut_track_nTRT   = checkAndGet<int>(node_tracks,"nTRT","(from Tracks node)");
+  cut_track_p        = checkAndGet<float>(node_tracks,"p","(from Tracks node)");
+  cut_track_pT       = checkAndGet<float>(node_tracks,"pT","(from Tracks node)");
+  cut_track_eta      = checkAndGet<float>(node_tracks,"eta","(from Tracks node)");
+  cut_track_nSi      = checkAndGet<int>(node_tracks,"nSi","(from Tracks node)");
+  cut_track_nPix     = checkAndGet<int>(node_tracks,"nPix","(from Tracks node)");
+  cut_track_nTRT     = checkAndGet<int>(node_tracks,"nTRT","(from Tracks node)");
+  cut_track_nTRTprec = checkAndGet<int>(node_tracks,"nTRTprec","(from Tracks node)");
 
   cut_elec_p   = checkAndGet<float>(node_elecs,"p","(from Electrons node)");
   cut_elec_pT  = checkAndGet<float>(node_elecs,"pT","(from Electrons node)");

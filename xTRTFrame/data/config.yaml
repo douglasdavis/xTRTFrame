@@ -42,6 +42,7 @@ Tracks:
   nSi: -1
   nPix: -1
   nTRT: 15
+  nTRTprec: 11
 
 Electrons:
   p: 1000
@@ -58,4 +59,4 @@ Muons:
 ####################
 LeptonsOnly: True
 StoreHits: True
-Type0HitOnly: True
+Type0HitOnly: False

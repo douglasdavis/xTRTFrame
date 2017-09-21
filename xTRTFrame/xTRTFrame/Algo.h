@@ -218,16 +218,20 @@ namespace xTRT {
     /// check whether a list of triggers fired
     bool triggersPassed(const std::vector<std::string>& trigNames) const;
 
-    /// return the number of TRT hits on the track
-    static uint8_t nTRT(const xAOD::TrackParticle* track);
+    /// return the number of TRT hits on the track (all)
+    static int nTRT(const xAOD::TrackParticle* track);
+    /// return the number of TRT prec+tube (non outlier)
+    static int nTRT_PrecTube(const xAOD::TrackParticle* track);
+    /// return the number of TRT outliers
+    static int nTRT_Outlier(const xAOD::TrackParticle* track);
     /// return the number of silicon hits (Pixel + SCT)
-    static  uint8_t nSilicon(const xAOD::TrackParticle* track);
+    static int nSilicon(const xAOD::TrackParticle* track);
     /// return the number of silicon holes (Pixel + SCT)
-    static uint8_t nSiliconHoles(const xAOD::TrackParticle* track);
+    static int nSiliconHoles(const xAOD::TrackParticle* track);
     /// return the number of silicon shared hits (Pixel + SCT)
-    static uint8_t nSiliconShared(const xAOD::TrackParticle* track);
+    static int nSiliconShared(const xAOD::TrackParticle* track);
     /// return the (delta z0)*sin(theta) of the track
-    static float   deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx);
+    static float deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx);
 
     /// return the d0 significance of the track
     /**

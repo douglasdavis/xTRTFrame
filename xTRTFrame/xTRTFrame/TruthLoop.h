@@ -38,6 +38,8 @@ namespace xTRT {
     float       m_eProbComb2;   //!
     int         m_nTRThits;     //!
     int         m_nTRThitsMan;  //!
+    int         m_nTRTouts;     //!
+    int         m_nTRToutsMan;  //!
     int         m_nHThits;      //!
     int         m_nHThitsMan;   //!
     int         m_nArhits;      //!
@@ -48,6 +50,8 @@ namespace xTRT {
     int         m_nHitsdEdx;    //!
     float       m_sumL;         //!
     float       m_sumToT;       //!
+    float       m_fAr;          //!
+    float       m_fHTMB;        //!
 
     std::vector<int>   m_HTMB;        //!
     std::vector<int>   m_gasType;     //!

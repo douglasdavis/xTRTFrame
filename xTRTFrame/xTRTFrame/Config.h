@@ -43,9 +43,10 @@ namespace xTRT {
     float cut_track_p;
     float cut_track_pT;
     float cut_track_eta;
-    int   cut_track_nSi;
-    int   cut_track_nPix;
-    int   cut_track_nTRT;
+    int cut_track_nSi;
+    int cut_track_nPix;
+    int cut_track_nTRT;
+    int cut_track_nTRTprec;
 
     float cut_elec_p;
     float cut_elec_pT;
@@ -56,7 +57,7 @@ namespace xTRT {
     float cut_muon_eta;
 
     template <typename T>
-    T checkAndGet(const YAML::Node& node, const std::string& name, const char* extraMsg = "") const;
+    T checkAndGet(const YAML::Node& node, const std::string& name, const char* extMsg = "") const;
 
   public:
     Config();
@@ -79,12 +80,13 @@ namespace xTRT {
     const std::vector<std::string>& dimuonTriggers()     const;
     const std::vector<std::string>& miscTriggers()       const;
 
-    float track_p()    const;
-    float track_pT()   const;
-    float track_eta()  const;
-    int   track_nSi()  const;
-    int   track_nPix() const;
-    int   track_nTRT() const;
+    float track_p()        const;
+    float track_pT()       const;
+    float track_eta()      const;
+    int   track_nSi()      const;
+    int   track_nPix()     const;
+    int   track_nTRT()     const;
+    int   track_nTRTprec() const;
 
     float muon_p()    const;
     float muon_pT()   const;
@@ -101,12 +103,12 @@ namespace xTRT {
 }
 
 template <typename T>
-inline T xTRT::Config::checkAndGet(const YAML::Node& node, const std::string& name, const char* extraMsg) const {
+inline T xTRT::Config::checkAndGet(const YAML::Node& node, const std::string& name, const char* extMsg) const {
   if ( node[name] ) {
     return node[name].as<T>();
   }
   else {
-    XTRT_FATAL(name << " not found in config, big issue! " << extraMsg);
+    XTRT_FATAL(name << " not found in config, big issue! " << extMsg);
   }
 }
 
@@ -125,12 +127,13 @@ inline const std::vector<std::string>& xTRT::Config::muonTriggers()       const 
 inline const std::vector<std::string>& xTRT::Config::dimuonTriggers()     const { return m_dimuTrigs; }
 inline const std::vector<std::string>& xTRT::Config::miscTriggers()       const { return m_miscTrigs; }
 
-inline float xTRT::Config::track_p()    const { return cut_track_p;    }
-inline float xTRT::Config::track_pT()   const { return cut_track_pT;   }
-inline float xTRT::Config::track_eta()  const { return cut_track_eta;  }
-inline int   xTRT::Config::track_nSi()  const { return cut_track_nSi;  }
-inline int   xTRT::Config::track_nPix() const { return cut_track_nPix; }
-inline int   xTRT::Config::track_nTRT() const { return cut_track_nTRT; }
+inline float xTRT::Config::track_p()        const { return cut_track_p;        }
+inline float xTRT::Config::track_pT()       const { return cut_track_pT;       }
+inline float xTRT::Config::track_eta()      const { return cut_track_eta;      }
+inline int   xTRT::Config::track_nSi()      const { return cut_track_nSi;      }
+inline int   xTRT::Config::track_nPix()     const { return cut_track_nPix;     }
+inline int   xTRT::Config::track_nTRT()     const { return cut_track_nTRT;     }
+inline int   xTRT::Config::track_nTRTprec() const { return cut_track_nTRTprec; }
 
 inline float xTRT::Config::elec_p()    const { return cut_elec_p;    }
 inline float xTRT::Config::elec_pT()   const { return cut_elec_pT;   }

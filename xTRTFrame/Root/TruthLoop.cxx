@@ -51,17 +51,16 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
     itree->Branch("theta",      &m_theta);
     itree->Branch("eProbHT",    &m_eProbHT);
     itree->Branch("nTRThits",   &m_nTRThits);
-    itree->Branch("nTRThitsMan",&m_nTRThitsMan);
+    itree->Branch("nTRTouts",   &m_nTRTouts);
     itree->Branch("nArhits",    &m_nArhits);
-    itree->Branch("nArhitsMan", &m_nArhitsMan);
     itree->Branch("nXehits",    &m_nXehits);
-    itree->Branch("nXehitsMan", &m_nXehitsMan);
-    itree->Branch("nHThits",    &m_nHThits);
     itree->Branch("nHThitsMan", &m_nHThitsMan);
     itree->Branch("dEdxNoHT",   &m_dEdxNoHT);
     itree->Branch("NhitsdEdx",  &m_nHitsdEdx);
     itree->Branch("sumToT",     &m_sumToT);
     itree->Branch("sumL",       &m_sumL);
+    itree->Branch("fAr",        &m_fAr);
+    itree->Branch("fHTMB",      &m_fHTMB);
 
     if ( m_saveHits ) {
       itree->Branch("hit_HTMB",       &m_HTMB);
@@ -104,18 +103,26 @@ EL::StatusCode xTRT::TruthLoop::execute() {
 
   auto tracks = selectedTracks();
 
-  int nthPion = 0;
   for ( const auto& track : *tracks ) {
 
+    // check for truth particle and el or mu
     auto truth = truthParticle(track);
     if ( truth == nullptr ) continue;
-    auto vtx = track->vertex();
-    if ( vtx == nullptr ) continue;
     m_pdgId = std::abs(truth->pdgId());
-
     bool el_or_mu = (m_pdgId == 11 || m_pdgId == 13);
     if ( !el_or_mu ) continue;
 
+    // check for Z or jpsi
+    auto parent = truth->parent();
+    if ( parent == nullptr ) continue;
+    bool is_z_or_jpsi = (parent->isZ() || (parent->pdgId() == 443));
+    if ( !is_z_or_jpsi ) continue;
+
+    // check for vertex
+    auto vtx = track->vertex();
+    if ( vtx == nullptr ) continue;
+
+    // more track selection
     bool failTrkSel = false;
     if      ( m_pdgId == 11 ) failTrkSel = !(trackElecSelToolHandle()->accept(*track,vtx));
     else if ( m_pdgId == 13 ) failTrkSel = !(trackMuonSelToolHandle()->accept(*track,vtx));
@@ -124,30 +131,18 @@ EL::StatusCode xTRT::TruthLoop::execute() {
 
     uint8_t ntrthits = -1;
     uint8_t nxehits  = -1;
-    uint8_t nhthits  = -1;
-    track->summaryValue(ntrthits,xAOD::numberOfTRTHits);
+    uint8_t nouthits = -1;
+    track->summaryValue(ntrthits,xAOD::numberOfTRTHits); // type 0 only!
     track->summaryValue(nxehits, xAOD::numberOfTRTXenonHits);
-    track->summaryValue(nhthits, xAOD::numberOfTRTHighThresholdHitsTotal);
+    track->summaryValue(nouthits,xAOD::numberOfTRTOutliers);
 
-    m_nTRThits = ntrthits;
-    m_nXehits  = nxehits;
-    m_nArhits  = ntrthits-nxehits;
-    m_nHThits  = nhthits;
-    m_nTRThitsMan = 0;
-    m_nXehitsMan  = 0;
-    m_nArhitsMan  = 0;
+    m_nTRThits = ntrthits; // type 0 only
+    m_nTRTouts = nouthits;
+    m_nXehits  = nxehits;  // all xenon hits
+    m_nArhits  = ntrthits + nouthits -nxehits; // all argon hits
     m_nHThitsMan  = 0;
-    m_sumL   = 0.0;
-    m_sumToT = 0.0;
-    //m_nHThits  = nhthits;
-
-    // only take every 5th pion.
-    if ( m_pdgId == 211 ) {
-      nthPion++;
-      if ( nthPion%5 != 0 ) {
-        continue;
-      }
-    }
+    m_sumL        = 0.0;
+    m_sumToT      = 0.0;
 
     m_truthMass = truth->m();
     m_pT        = track->pt();
@@ -177,11 +172,11 @@ EL::StatusCode xTRT::TruthLoop::execute() {
       }
     }
 
-    auto parent = truth->parent();
-    if ( parent != nullptr ) {
-      if ( parent->isZ()          ) { m_zdTree->Fill(); }
-      if ( parent->pdgId() == 443 ) { m_jdTree->Fill(); }
-    }
+    m_fHTMB = (float)m_nHThitsMan / (m_nTRThits+m_nTRTouts);
+    m_fAr   = (float)m_nArhits / (m_nTRThits+m_nTRTouts);
+
+    if ( parent->isZ()          ) { m_zdTree->Fill(); }
+    if ( parent->pdgId() == 443 ) { m_jdTree->Fill(); }
 
     clearVectors();
   } // loop over tracks
@@ -196,12 +191,9 @@ bool xTRT::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
   auto hit = getHitSummary(track,msos,driftCircle);
   //if ( hit.tot < 0.005 ) return false;
   if ( type0only && (hit.type != 0) ) return false;
-  m_nTRThitsMan++;
   m_type.push_back(hit.type);
   m_HTMB.push_back(hit.HTMB);
-  if ( hit.HTMB == 1 ) m_nHThitsMan++;
-  if ( hit.gasType == 1 || hit.gasType == 6 ) m_nArhitsMan++;
-  if ( hit.gasType == 0 ) m_nXehitsMan++;
+  if ( hit.HTMB ) m_nHThitsMan++;
   m_gasType.push_back(hit.gasType);
   m_bec.push_back(hit.bec);
   m_layer.push_back(hit.layer);
