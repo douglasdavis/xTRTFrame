@@ -189,7 +189,6 @@ bool xTRT::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
                                             const xAOD::TrackMeasurementValidation* driftCircle,
                                             const bool type0only) {
   auto hit = getHitSummary(track,msos,driftCircle);
-  //if ( hit.tot < 0.005 ) return false;
   if ( type0only && (hit.type != 0) ) return false;
   m_type.push_back(hit.type);
   m_HTMB.push_back(hit.HTMB);
@@ -201,7 +200,6 @@ bool xTRT::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
   m_strawnumber.push_back(hit.strawnumber);
   m_drifttime.push_back(hit.drifttime);
   m_tot.push_back(hit.tot);
-  m_sumToT += hit.tot;
   m_T0.push_back(hit.T0);
 
   m_localTheta.push_back(hit.localTheta);
@@ -210,7 +208,11 @@ bool xTRT::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
   m_HitR.push_back(hit.HitR);
   m_rTrkWire.push_back(hit.rTrkWire);
   m_L.push_back(hit.L);
-  m_sumL += hit.L;
+
+  if ( hit.tot > 0.005 && hit.L > 0.00005 ) {
+    m_sumL += hit.L;
+    m_sumToT += hit.tot;
+  }
   return true;
 }
 
