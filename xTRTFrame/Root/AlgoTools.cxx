@@ -34,12 +34,20 @@ EL::StatusCode xTRT::Algo::enableGRLTool() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_MSG_INFO("Setting up GRL tool");
 
+  std::vector<std::string> grlfiles = {
+    "GoodRunsLists/data15_13TeV/20160720/physics_25ns_20.7.xml",
+    "GoodRunsLists/data16_13TeV/20161101/physics_25ns_20.7.xml"
+  };
   for ( auto const& entry : config()->GRLFiles() ) {
-    ANA_MSG_INFO("GRL File: " << entry.c_str());
+    if ( entry == "default" ) continue;
+    grlfiles.push_back(entry);
+  }
+  for ( auto const& entry : grlfiles ) {
+    ANA_MSG_INFO("GRL File: " << entry);
   }
 
   ANA_CHECK(ASG_MAKE_ANA_TOOL(m_GRLToolHandle, GoodRunsListSelectionTool));
-  ANA_CHECK(m_GRLToolHandle.setProperty("GoodRunsListVec", config()->GRLFiles()));
+  ANA_CHECK(m_GRLToolHandle.setProperty("GoodRunsListVec", grlfiles));
   ANA_CHECK(m_GRLToolHandle.setProperty("PassThrough",     false));
   ANA_CHECK(m_GRLToolHandle.setProperty("OutputLevel",     msg().level()));
   ANA_CHECK(m_GRLToolHandle.retrieve());

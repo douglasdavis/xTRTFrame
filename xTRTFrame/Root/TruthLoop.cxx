@@ -103,9 +103,16 @@ EL::StatusCode xTRT::TruthLoop::execute() {
   m_avgMu  = averageMu();
   grab<TH1F>("h_averageMu")->Fill(m_avgMu,m_weight);
 
-  auto tracks = selectedTracks();
+  //auto tracks = selectedTracks();
+  //auto electrons = electronContainer();
+  auto muons = selectedMuons();
 
-  for ( const auto& track : *tracks ) {
+  //for ( const auto& track : *tracks ) {
+  for ( const auto& muon : *muons ) {
+    auto tracklink = muon->inDetTrackParticleLink();//trackParticle();
+    if ( not tracklink.isValid() ) continue;
+    auto track = *tracklink;
+    if ( not track ) continue;
 
     // check for truth particle and el or mu
     auto truth = truthParticle(track);
@@ -155,25 +162,32 @@ EL::StatusCode xTRT::TruthLoop::execute() {
     m_phi       = track->phi();
     m_theta     = track->theta();
 
-    m_trkOcc    = get(xTRT::Acc::TRTTrackOccupancy,track);
-    m_eProbToT  = get(xTRT::Acc::eProbabilityToT,track);
-    m_eProbHT   = get(xTRT::Acc::eProbabilityHT,track);
+    m_trkOcc    = get(xTRT::Acc::TRTTrackOccupancy,track,"TRTTrackOccupancy");
+    //m_eProbToT  = get(xTRT::Acc::eProbabilityToT,track,"eProbabilityToT");
+    m_eProbHT   = get(xTRT::Acc::eProbabilityHT,track,"eProbabilityHT");
 
-    m_dEdxNoHT  = get(xTRT::Acc::ToT_dEdx_noHT_divByL,track);
-    m_nHitsdEdx = get(xTRT::Acc::ToT_usedHits_noHT_divByL,track);
+    //m_dEdxNoHT  = get(xTRT::Acc::ToT_dEdx_noHT_divByL,track,"ToT_dEdx_noHT_divByL");
+    //m_nHitsdEdx = get(xTRT::Acc::ToT_usedHits_noHT_divByL,track,"ToT_usedHits_noHT_divByL");
 
     const xAOD::TrackStateValidation* msos = nullptr;
     const xAOD::TrackMeasurementValidation* driftCircle = nullptr;
     if ( xTRT::Acc::msosLink.isAvailable(*track) ) {
+      std::cout << "got msosLink" << std::endl;
       for ( auto trackMeasurement : xTRT::Acc::msosLink(*track) ) {
+        std::cout << "on a tm" << std::endl;
         if ( trackMeasurement.isValid() ) {
+          std::cout << "it was valid" << std::endl;
           msos = *trackMeasurement;
           if ( msos->detType() != 3 ) continue; // TRT hits only.
           if ( !(msos->trackMeasurementValidationLink().isValid()) ) continue;
+          std::cout << "drift circle is valid" << std::endl;
           driftCircle = *(msos->trackMeasurementValidationLink());
           if ( !fillHitBasedVariables(track,msos,driftCircle,m_type0only) ) continue;
         }
       }
+    }
+    else {
+      std::cout << "msosLink not available" << std::endl;
     }
 
     m_fHTMB = (float)m_nHThitsMan / (m_nTRThits+m_nTRTouts);

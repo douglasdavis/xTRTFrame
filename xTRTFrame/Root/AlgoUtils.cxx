@@ -175,6 +175,20 @@ bool xTRT::Algo::passTrackSelection(const xAOD::TrackParticle* track, const xTRT
 }
 
 bool xTRT::Algo::passElectronSelection(const xAOD::Electron* electron, const xTRT::Config* conf) {
+  if ( conf->elec_UTC() ) {
+    auto trk = electron->trackParticle();
+    if ( not trk ) return false;
+    if ( not passTrackSelection(trk,conf) ) return false;
+  }
+  if ( conf->elec_relpT() > 0 ) {
+    auto trk = electron->trackParticle();
+    if ( not trk ) {
+      XTRT_FATAL("No electron->trackParticle()");
+      return false;
+    }
+    if ( trk->pt() < conf->elec_relpT()*electron->pt() ) return false;
+  }
+
   if ( electron->pt() < conf->elec_pT() ) return false;
   if ( electron->p4().P() < conf->elec_p() ) return false;
   if ( std::abs(electron->eta()) > conf->elec_eta() ) return false;
@@ -182,6 +196,23 @@ bool xTRT::Algo::passElectronSelection(const xAOD::Electron* electron, const xTR
 }
 
 bool xTRT::Algo::passMuonSelection(const xAOD::Muon* muon, const xTRT::Config* conf) {
+  if ( conf->muon_UTC() ) {
+    auto idtl = muon->inDetTrackParticleLink();
+    if ( not idtl.isValid() ) return false;
+    auto trk = *idtl;
+    if ( not trk ) return false;
+    if ( not passTrackSelection(trk,conf) ) return false;
+  }
+  if ( conf->muon_relpT() > 0 ) {
+    auto idtl = muon->inDetTrackParticleLink();
+    if ( not idtl.isValid() ) return false;
+    auto trk = *idtl;
+    if ( not trk ) {
+      XTRT_FATAL("No valid muon->inDetTrackParticleLink()");
+      return false;
+    }
+    if ( trk->pt() < conf->muon_relpT()*muon->pt() ) return false;
+  }
   if ( muon->pt() < conf->muon_pT() ) return false;
   if ( muon->p4().P() < conf->muon_p() ) return false;
   if ( std::abs(muon->eta()) > conf->muon_eta() ) return false;
