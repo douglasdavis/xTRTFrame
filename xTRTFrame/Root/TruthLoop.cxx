@@ -124,9 +124,11 @@ EL::StatusCode xTRT::TruthLoop::execute() {
 
     // more track selection
     bool failTrkSel = false;
-    if      ( m_pdgId == 11 ) failTrkSel = !(trackElecSelToolHandle()->accept(*track,vtx));
-    else if ( m_pdgId == 13 ) failTrkSel = !(trackMuonSelToolHandle()->accept(*track,vtx));
-    else continue;
+    if ( config()->useIDTS() ) {
+      if      ( m_pdgId == 11 ) failTrkSel = !(trackElecSelToolHandle()->accept(*track,vtx));
+      else if ( m_pdgId == 13 ) failTrkSel = !(trackMuonSelToolHandle()->accept(*track,vtx));
+      else continue;
+    }
     if ( failTrkSel ) continue;
 
     uint8_t ntrthits = -1;

@@ -8,91 +8,110 @@ xTRT::Config::Config() {}
 xTRT::Config::~Config() {}
 
 bool xTRT::Config::parse(const std::string fileName, bool print_conf) {
-  YAML::Node config = YAML::LoadFile(fileName);
-  std::ifstream ifs(fileName.c_str());
-  std::stringstream buffer;
-  buffer << ifs.rdbuf();
-  m_fileAsString = buffer.str();
+  m_rootEnv = std::make_unique<TEnv>(fileName.c_str());
+
+  m_useGRL  = m_rootEnv->GetValue("GRL",false);
+  m_usePRW  = m_rootEnv->GetValue("PRW",false);
+  m_useTrig = m_rootEnv->GetValue("Trig",false);
+  m_useIDTS = m_rootEnv->GetValue("IDTS",false);
+
+  auto fillVecFromSplit = [](const std::string& fullString, std::vector<std::string>& strVec) {
+    if ( fullString.find(",") != std::string::npos ) {
+      auto splits = xTRT::stringSplit(fullString,',');
+      for ( auto sitr : splits ) {
+        strVec.push_back(sitr);
+      }
+    }
+  };
+
+  if ( m_useGRL ) {
+    std::string grlfull = m_rootEnv->GetValue("GRLFiles","None");
+    fillVecFromSplit(grlfull,m_GRLFiles);
+  }
+
+  if ( m_usePRW ) {
+    std::string prwconffull = m_rootEnv->GetValue("PRWConf","None");
+    std::string prwlumifull = m_rootEnv->GetValue("PRWLumi","None");
+    fillVecFromSplit(prwconffull,m_PRWConfFiles);
+    fillVecFromSplit(prwlumifull,m_PRWLumiFiles);
+  }
+
+  if ( m_useTrig ) {
+    std::string eltrigs   = m_rootEnv->GetValue("Trig.Electron","none");
+    std::string mutrigs   = m_rootEnv->GetValue("Trig.Muon","none");
+    std::string dieltrigs = m_rootEnv->GetValue("Trig.Dielectron","none");
+    std::string dimuTrigs = m_rootEnv->GetValue("Trig.Dimuon","none");
+    std::string miscTrigs = m_rootEnv->GetValue("Trig.Misc","none");
+    fillVecFromSplit(eltrigs,m_elTrigs);
+    fillVecFromSplit(mutrigs,m_muTrigs);
+    fillVecFromSplit(dieltrigs,m_dielTrigs);
+    fillVecFromSplit(dimuTrigs,m_dimuTrigs);
+    fillVecFromSplit(miscTrigs,m_miscTrigs);
+  }
+
+  cut_track_p        = m_rootEnv->GetValue("Tracks.p",0.0);
+  cut_track_pT       = m_rootEnv->GetValue("Tracks.pT",0.0);
+  cut_track_eta      = m_rootEnv->GetValue("Tracks.eta",2.0);
+  cut_track_nSi      = m_rootEnv->GetValue("Tracks.nSi",-1);
+  cut_track_nPix     = m_rootEnv->GetValue("Tracks.nPix",-1);
+  cut_track_nTRT     = m_rootEnv->GetValue("Tracks.nTRT",15);
+  cut_track_nTRTprec = m_rootEnv->GetValue("Tracks.nTRTprec",5);
+
+  cut_elec_p   = m_rootEnv->GetValue("Electrons.p",0.0);
+  cut_elec_pT  = m_rootEnv->GetValue("Electrons.pT",0.0);
+  cut_elec_eta = m_rootEnv->GetValue("Electrons.eta",2.0);
+
+  cut_muon_p   = m_rootEnv->GetValue("Muons.p",0.0);
+  cut_muon_pT  = m_rootEnv->GetValue("Muons.pT",0.0);
+  cut_muon_eta = m_rootEnv->GetValue("Muons.eta",2.0);
 
   if ( print_conf ) {
-    std::cout << std::endl;
-    std::cout << "====== xTRTFrame YAML Configuration ======" << std::endl;
-    std::cout << std::endl;
-    std::cout << m_fileAsString << std::endl;
-    std::cout << std::endl;
+    printConf();
   }
-
-  auto node_GRL = config["GRL"];
-  m_useGRL = checkAndGet<bool>(node_GRL,"Use","(from GRL node)");
-  if ( m_useGRL) {
-    for ( const auto& grlf : node_GRL["XMLs"] ) {
-      m_GRLFiles.push_back(grlf.as<std::string>());
-    }
-  }
-
-  auto node_PRW = config["PRW"];
-  m_usePRW = checkAndGet<bool>(node_PRW,"Use","(from PRW node)");
-  if ( m_usePRW ) {
-    if ( node_PRW["ConfFiles"] ) {
-      for ( const auto& prwcf : node_PRW["ConfFiles"] ) {
-        m_PRWConfFiles.push_back(prwcf.as<std::string>());
-      }
-    }
-    else {
-      XTRT_FATAL("No ConfFiles list in PRW section of  YAML config");
-    }
-    if ( node_PRW["LumiFiles"] ) {
-      for ( const auto& prwlf : node_PRW["LumiFiles"] ) {
-        m_PRWConfFiles.push_back(prwlf.as<std::string>());
-      }
-    }
-    else {
-      XTRT_FATAL("No LumiFiles list in PRW section of YAML config");
-    }
-  }
-
-  auto node_Trig = config["Trig"];
-  m_useTrig = checkAndGet<bool>(node_Trig,"Use","(from Trig node)");
-  if ( m_useTrig ) {
-    auto fillTrigs = [&node_Trig](auto& vec, const std::string& cat) {
-      if ( node_Trig[cat] ) {
-        for ( const auto& trig : node_Trig[cat] ) {
-          vec.push_back(trig.as<std::string>());
-        }
-      }
-      else {
-        XTRT_FATAL("Cannot find " << cat << " in Trigger node.");
-      }
-    };
-    fillTrigs(m_elTrigs,   "electron");
-    fillTrigs(m_dielTrigs, "dielectron");
-    fillTrigs(m_muTrigs,   "muon");
-    fillTrigs(m_dimuTrigs, "dimuon");
-    fillTrigs(m_miscTrigs, "misc");
-  }
-
-  auto node_IDTS = config["IDTS"];
-  m_useIDTS = checkAndGet<bool>(node_IDTS,"Use","(from IDTS node)");
-
-  auto node_tracks = config["Tracks"];
-  auto node_elecs  = config["Electrons"];
-  auto node_muons  = config["Muons"];
-
-  cut_track_p        = checkAndGet<float>(node_tracks,"p","(from Tracks node)");
-  cut_track_pT       = checkAndGet<float>(node_tracks,"pT","(from Tracks node)");
-  cut_track_eta      = checkAndGet<float>(node_tracks,"eta","(from Tracks node)");
-  cut_track_nSi      = checkAndGet<int>(node_tracks,"nSi","(from Tracks node)");
-  cut_track_nPix     = checkAndGet<int>(node_tracks,"nPix","(from Tracks node)");
-  cut_track_nTRT     = checkAndGet<int>(node_tracks,"nTRT","(from Tracks node)");
-  cut_track_nTRTprec = checkAndGet<int>(node_tracks,"nTRTprec","(from Tracks node)");
-
-  cut_elec_p   = checkAndGet<float>(node_elecs,"p","(from Electrons node)");
-  cut_elec_pT  = checkAndGet<float>(node_elecs,"pT","(from Electrons node)");
-  cut_elec_eta = checkAndGet<float>(node_elecs,"eta","(from Electrons node)");
-
-  cut_muon_p   = checkAndGet<float>(node_muons,"p","(from Muons node)");
-  cut_muon_pT  = checkAndGet<float>(node_muons,"pT","(from Muons node)");
-  cut_muon_eta = checkAndGet<float>(node_muons,"eta","(from Muons node)");
 
   return true;
+}
+
+void xTRT::Config::printConf() const {
+  std::cout << "======== xTRT Config ========" << std::endl;
+
+  std::cout << std::boolalpha << "GRL: " << m_useGRL  << std::endl;
+  for ( auto const& gf : m_GRLFiles ) {
+    std::cout << "GRLFile: " << gf << std::endl;
+  }
+  std::cout << std::boolalpha << "PRW: " << m_usePRW  << std::endl;
+  for ( auto const& pf : m_PRWConfFiles ) {
+    std::cout << "PRWConfFile: " << pf << std::endl;
+  }
+  for ( auto const& pf : m_PRWConfFiles ) {
+    std::cout << "PRWLumiFile: " << pf << std::endl;
+  }
+  std::cout << std::boolalpha << "Trig: " << m_useTrig << std::endl;
+  std::cout << std::boolalpha << "IDTS: " << m_useIDTS << std::endl;
+  auto printtrig = [](const std::string& pref, const std::vector<std::string>& v) {
+    for ( const auto& t : v ) {
+      std::cout << pref << ": " << t << std::endl;
+    }
+  };
+  printtrig("Electron Trigs",m_elTrigs);
+  printtrig("Muon Trigs",m_muTrigs);
+  printtrig("Dielectron Trigs",m_dielTrigs);
+  printtrig("Dimuon Trigs",m_dimuTrigs);
+  printtrig("Misc Trigs",m_miscTrigs);
+
+  std::cout << "Track p cut: " << cut_track_p << std::endl;
+  std::cout << "Track pT cut: " << cut_track_pT << std::endl;
+  std::cout << "Track eta cut: " << cut_track_eta << std::endl;
+  std::cout << "Track nSi cut: " << cut_track_nSi << std::endl;
+  std::cout << "Track nPix cut: " << cut_track_nPix << std::endl;
+  std::cout << "Track nTRT cut: " << cut_track_nTRT << std::endl;
+  std::cout << "Track nTRTprec cut: " << cut_track_nTRTprec << std::endl;
+
+  std::cout << "Electron p cut: " << cut_elec_p << std::endl;
+  std::cout << "Electron pT cut: " << cut_elec_pT << std::endl;
+  std::cout << "Electron eta cut: " << cut_elec_eta << std::endl;
+
+  std::cout << "Muon p cut: " << cut_muon_p << std::endl;
+  std::cout << "Muon pT cut: " << cut_muon_pT << std::endl;
+  std::cout << "Muon eta cut: " << cut_muon_eta << std::endl;
 }

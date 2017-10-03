@@ -1,5 +1,5 @@
 ###################################
-## Default options for xxTRTFrame ##
+## Default options for xTRTFrame ##
 ###################################
 
 ## PRW options
@@ -42,7 +42,7 @@ Tracks:
   nSi: -1
   nPix: -1
   nTRT: 15
-  nTRTprec: 11
+  nTRTprec: 10
 
 Electrons:
   p: 1000
@@ -58,5 +58,5 @@ Muons:
 ## Custom options ##
 ####################
 LeptonsOnly: True
-StoreHits: True
+StoreHits: False
 Type0HitOnly: False

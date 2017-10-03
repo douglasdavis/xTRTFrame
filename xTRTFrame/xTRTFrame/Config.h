@@ -4,8 +4,8 @@
  *  @brief Class for handling algorithm configuration options
  *
  *  This class stores all of the options defined in the configuration
- *  YAML file. There are standard options which must be defined and
- *  users also have the ability to define custom options.
+ *  file. There are standard options which must be defined and users
+ *  also have the ability to define custom options.
  *
  *  @author Douglas Davis < ddavis@cern.ch >
  */
@@ -16,7 +16,10 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <yaml-cpp/yaml.h>
+#include <type_traits>
+#include <memory>
+
+#include <TEnv.h>
 
 #include <xTRTFrame/Utils.h>
 
@@ -25,7 +28,9 @@ namespace xTRT {
   class Config {
 
   private:
-    std::string              m_fileAsString;
+
+    std::unique_ptr<TEnv>    m_rootEnv;
+
     bool                     m_useGRL;
     bool                     m_usePRW;
     bool                     m_useTrig;
@@ -56,8 +61,7 @@ namespace xTRT {
     float cut_muon_pT;
     float cut_muon_eta;
 
-    template <typename T>
-    T checkAndGet(const YAML::Node& node, const std::string& name, const char* extMsg = "") const;
+    void printConf() const;
 
   public:
     Config();
@@ -97,19 +101,9 @@ namespace xTRT {
     float elec_eta()  const;
 
     template <typename T>
-    T customOpt(const std::string& name) const;
+    T customOpt(const char* name) const;
 
   };
-}
-
-template <typename T>
-inline T xTRT::Config::checkAndGet(const YAML::Node& node, const std::string& name, const char* extMsg) const {
-  if ( node[name] ) {
-    return node[name].as<T>();
-  }
-  else {
-    XTRT_FATAL(name << " not found in config, big issue! " << extMsg);
-  }
 }
 
 inline bool xTRT::Config::useGRL()  const { return m_useGRL;  }
@@ -144,14 +138,15 @@ inline float xTRT::Config::muon_pT()   const { return cut_muon_pT;   }
 inline float xTRT::Config::muon_eta()  const { return cut_muon_eta;  }
 
 template <typename T>
-inline T xTRT::Config::customOpt(const std::string& name) const {
-  auto temp_node = YAML::Load(m_fileAsString);
-  if ( temp_node[name] ) {
-    return temp_node[name].as<T>();
+inline T xTRT::Config::customOpt(const char* name) const {
+  if ( not m_rootEnv->Defined(name) ) {
+    XTRT_FATAL("The option " << name << " is not defined in your config file");
   }
-  else {
-    XTRT_FATAL("custom option " << name << " not found in YAML config");
-  }
+  if      ( std::is_same<T,bool>::value   ) return m_rootEnv->GetValue(name,false);
+  else if ( std::is_same<T,int>::value    ) return m_rootEnv->GetValue(name,(int)0);
+  else if ( std::is_same<T,float>::value  ) return m_rootEnv->GetValue(name,(double)0);
+  else if ( std::is_same<T,double>::value ) return m_rootEnv->GetValue(name,(double)0);
+  else                                      return m_rootEnv->GetValue(name,"trash");
 }
 
 #endif
