@@ -29,6 +29,7 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
   m_fillLeptonsOnly = config()->customOpt<bool>("LeptonsOnly");
   m_saveHits        = config()->customOpt<bool>("StoreHits");
   m_type0only       = config()->customOpt<bool>("Type0HitOnly");
+  m_divZweightBy1k  = config()->customOpt<bool>("DivZweightBy1k");
 
   create(TH1F("h_averageMu","",70,-0.5,69.5));
 
@@ -98,6 +99,7 @@ EL::StatusCode xTRT::TruthLoop::execute() {
   if ( !passGRL() ) return EL::StatusCode::SUCCESS;
 
   m_weight = eventWeight();
+  if ( m_divZweightBy1k ) m_weight = m_weight/1000.0;
   m_avgMu  = averageMu();
   grab<TH1F>("h_averageMu")->Fill(m_avgMu,m_weight);
 

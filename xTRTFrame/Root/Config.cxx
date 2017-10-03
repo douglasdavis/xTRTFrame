@@ -75,19 +75,20 @@ bool xTRT::Config::parse(const std::string fileName, bool print_conf) {
 void xTRT::Config::printConf() const {
   std::cout << "======== xTRT Config ========" << std::endl;
 
-  std::cout << std::boolalpha << "GRL: " << m_useGRL  << std::endl;
+  std::cout << std::boolalpha;
+  std::cout << "GRL: " << m_useGRL  << std::endl;
   for ( auto const& gf : m_GRLFiles ) {
     std::cout << "GRLFile: " << gf << std::endl;
   }
-  std::cout << std::boolalpha << "PRW: " << m_usePRW  << std::endl;
+  std::cout << "PRW: " << m_usePRW  << std::endl;
   for ( auto const& pf : m_PRWConfFiles ) {
     std::cout << "PRWConfFile: " << pf << std::endl;
   }
   for ( auto const& pf : m_PRWConfFiles ) {
     std::cout << "PRWLumiFile: " << pf << std::endl;
   }
-  std::cout << std::boolalpha << "Trig: " << m_useTrig << std::endl;
-  std::cout << std::boolalpha << "IDTS: " << m_useIDTS << std::endl;
+  std::cout << "Trig: " << m_useTrig << std::endl;
+  std::cout << "IDTS: " << m_useIDTS << std::endl;
   auto printtrig = [](const std::string& pref, const std::vector<std::string>& v) {
     for ( const auto& t : v ) {
       std::cout << pref << ": " << t << std::endl;

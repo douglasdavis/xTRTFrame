@@ -10,9 +10,10 @@ namespace xTRT {
 
   private:
 
-    bool m_fillLeptonsOnly;
-    bool m_saveHits;
-    bool m_type0only;
+    bool m_fillLeptonsOnly; //!
+    bool m_saveHits;        //!
+    bool m_type0only;       //!
+    bool m_divZweightBy1k;  //!
 
     TTree*      m_elTree; //!
     TTree*      m_muTree; //!
