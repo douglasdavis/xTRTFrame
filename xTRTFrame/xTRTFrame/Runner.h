@@ -8,11 +8,11 @@
 #define xTRTFrame_Runner_h
 
 namespace xTRT {
-  class Algo;
+  class Algorithm;
 }
 
 namespace xTRT {
-  int Runner(int argc, char **argv, xTRT::Algo *alg);
+  int Runner(int argc, char **argv, xTRT::Algorithm *alg);
 }
 
 #endif

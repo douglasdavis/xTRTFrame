@@ -1,8 +1,8 @@
-/** @file  Algo.h
- *  @brief xTRT::Algo class header
+/** @file  Algorithm.h
+ *  @brief xTRT::Algorithm class header
  *  @namespace xTRT
  *  @brief main xTRTFrame namespace
- *  @class xTRT::Algo
+ *  @class xTRT::Algorithm
  *  @brief Base class for running a
  *         xTRTFrame analysis algorithm
  *
@@ -14,8 +14,8 @@
  *  @author Douglas Davis < ddavis@cern.ch >
  */
 
-#ifndef xTRTFrame_Algo_h
-#define xTRTFrame_Algo_h
+#ifndef xTRTFrame_Algorithm_h
+#define xTRTFrame_Algorithm_h
 
 // C++
 #include <memory>
@@ -63,7 +63,7 @@
 
 namespace xTRT {
 
-  class Algo : public EL::Algorithm {
+  class Algorithm : public EL::Algorithm {
 
   private:
     xTRT::Config m_config;
@@ -75,15 +75,15 @@ namespace xTRT {
     xAOD::TEvent* m_event;              //!
     xAOD::TStore* m_store;              //!
 
-    asg::AnaToolHandle<IGoodRunsListSelectionTool> m_GRLToolHandle;          //!
-    asg::AnaToolHandle<CP::IPileupReweightingTool> m_PRWToolHandle;          //!
-    asg::AnaToolHandle<TrigConf::ITrigConfigTool>  m_trigConfToolHandle;     //!
-    asg::AnaToolHandle<Trig::TrigDecisionTool>     m_trigDecToolHandle;      //!
-    asg::AnaToolHandle<Trig::IMatchingTool>        m_trigMatchingToolHandle; //!
+    asg::AnaToolHandle<IGoodRunsListSelectionTool> m_GRLToolHandle{"GoodRunsListSelectionTool/GRLTool",this}; //!
+    asg::AnaToolHandle<CP::IPileupReweightingTool> m_PRWToolHandle{"CP::PileupReweightingTool/PRWTool",this}; //!
+    asg::AnaToolHandle<TrigConf::ITrigConfigTool>  m_trigConfToolHandle{"TrigConf::xAODConfigTool/xAODConfigTool",this}; //!
+    asg::AnaToolHandle<Trig::TrigDecisionTool>     m_trigDecToolHandle{"Trig::TrigDecisionTool/TrigDecisionTool",this}; //!
+    asg::AnaToolHandle<Trig::IMatchingTool>        m_trigMatchingToolHandle{"Trig::MatchingTool/TrigMatchingTool",this}; //!
 
-    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackSelToolHandle;     //!
-    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackElecSelToolHandle; //!
-    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackMuonSelToolHandle; //!
+    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackSelToolHandle{"InDet::InDetTrackSelectionTool/IDTSTracks",this}; //!
+    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackSelElecToolHandle{"InDet::InDetTrackSelectionTool/IDTSElecs",this}; //!
+    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackSelMuonToolHandle{"InDet::InDetTrackSelectionTool/IDTSMuons",this}; //!
 
   protected:
 
@@ -91,8 +91,8 @@ namespace xTRT {
 
   public:
 
-    Algo();
-    virtual ~Algo();
+    Algorithm();
+    virtual ~Algorithm();
 
     void feedConfig(const std::string fileName, bool print_conf = false);
 
@@ -111,7 +111,7 @@ namespace xTRT {
     /// Get access to a ROOT object which will be stored
     /**
      *  Using the name of the TObject staged for storage with the
-     *  Algo::create function, retrieve and manipulate the object, used
+     *  Algorithm::create function, retrieve and manipulate the object, used
      *  for e.g. filling a histogram.
      *
      *  @param name the name of the created ROOT object to update/modify.
@@ -272,16 +272,16 @@ namespace xTRT {
     /// get reference to the InDetTrackSelectionTool handle for tracks
     const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelToolHandle()     const;
     /// get reference to the InDetTrackSelectionTool handle for electrons
-    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackElecSelToolHandle() const;
-    /// get reference to the InDetTrackSelectionTool handle for muon
-    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackMuonSelToolHandle() const;
+    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelElecToolHandle() const;
+    /// get reference to the InDetTrackSelectionTool handle for muons
+    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelMuonToolHandle() const;
 
-    ClassDef(xTRT::Algo, 1);
+    ClassDef(xTRT::Algorithm, 1);
 
   };
 
 }
 
-#include "Algo.icc"
+#include "Algorithm.icc"
 
 #endif

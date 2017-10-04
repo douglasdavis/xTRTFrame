@@ -1,14 +1,14 @@
 // inline definitions
 
 template <class T>
-inline void xTRT::Algo::create(const T obj) {
+inline void xTRT::Algorithm::create(const T obj) {
   auto clone = obj.Clone();
   wk()->addOutput(clone);
   m_objStore.emplace(std::make_pair(clone->GetName(),clone));
 }
 
 template <class T>
-inline T* xTRT::Algo::grab(const std::string& name) {
+inline T* xTRT::Algorithm::grab(const std::string& name) {
   auto iter = m_objStore.find(name);
   if ( iter == m_objStore.end() ) {
     ANA_MSG_FATAL("Cannot find object with name:" << name);
@@ -16,27 +16,27 @@ inline T* xTRT::Algo::grab(const std::string& name) {
   return dynamic_cast<T*>(iter->second);
 }
 
-inline void xTRT::Algo::setTreeOutputName(const std::string name) {
+inline void xTRT::Algorithm::setTreeOutputName(const std::string name) {
   m_outputName = name;
 }
 
-inline void xTRT::Algo::feedConfig(const std::string fileName, bool print_conf) {
+inline void xTRT::Algorithm::feedConfig(const std::string fileName, bool print_conf) {
   m_config.parse(fileName, print_conf);
 }
 
-inline const xTRT::Config* xTRT::Algo::config() const {
+inline const xTRT::Config* xTRT::Algorithm::config() const {
   return &m_config;
 }
 
-inline xAOD::TEvent* xTRT::Algo::event() {
+inline xAOD::TEvent* xTRT::Algorithm::event() {
   return m_event;
 }
 
-inline xAOD::TStore* xTRT::Algo::store() {
+inline xAOD::TStore* xTRT::Algorithm::store() {
   return m_store;
 }
 
-inline const xAOD::EventInfo* xTRT::Algo::eventInfo() {
+inline const xAOD::EventInfo* xTRT::Algorithm::eventInfo() {
   const xAOD::EventInfo* evtinfo = nullptr;
   if ( evtStore()->retrieve(evtinfo,"EventInfo").isFailure() ) {
     ANA_MSG_ERROR("Cannot retrieve EventInfo for some reason");
@@ -45,7 +45,7 @@ inline const xAOD::EventInfo* xTRT::Algo::eventInfo() {
 }
 
 template <class T1, class T2>
-inline T1 xTRT::Algo::get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* xobj, std::string adn) const {
+inline T1 xTRT::Algorithm::get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* xobj, std::string adn) const {
   if ( acc.isAvailable(*xobj) ) {
     return acc(*xobj);
   }
@@ -54,7 +54,7 @@ inline T1 xTRT::Algo::get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2
 }
 
 template <class T1, class T2>
-inline T1 xTRT::Algo::retrieve(const T2* xobj, const char* adn) const {
+inline T1 xTRT::Algorithm::retrieve(const T2* xobj, const char* adn) const {
   static const SG::AuxElement::ConstAccessor<T1> acc{adn};
   if ( acc.isAvailable(*xobj) ) {
     return acc(*xobj);
@@ -66,9 +66,9 @@ inline T1 xTRT::Algo::retrieve(const T2* xobj, const char* adn) const {
 }
 
 template <class C, class T>
-inline const C* xTRT::Algo::selectedContainer(const C* raw,
-                                              std::function<bool(const T*,const xTRT::Config*)> selector,
-                                              const std::string& contName) {
+inline const C* xTRT::Algorithm::selectedContainer(const C* raw,
+                                                   std::function<bool(const T*,const xTRT::Config*)> selector,
+                                                   const std::string& contName) {
   auto goodObjects    = std::make_unique<C>();
   auto goodObjectsAux = std::make_unique<xAOD::AuxContainerBase>();
   goodObjects->setStore(goodObjectsAux.get());
@@ -95,14 +95,14 @@ inline const C* xTRT::Algo::selectedContainer(const C* raw,
   return retObjs;
 }
 
-inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& xTRT::Algo::trackSelToolHandle() const {
+inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& xTRT::Algorithm::trackSelToolHandle() const {
   return m_trackSelToolHandle;
 }
 
-inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& xTRT::Algo::trackElecSelToolHandle() const {
-  return m_trackElecSelToolHandle;
+inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& xTRT::Algorithm::trackSelElecToolHandle() const {
+  return m_trackSelElecToolHandle;
 }
 
-inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& xTRT::Algo::trackMuonSelToolHandle() const {
-  return m_trackMuonSelToolHandle;
+inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& xTRT::Algorithm::trackSelMuonToolHandle() const {
+  return m_trackSelMuonToolHandle;
 }

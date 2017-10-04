@@ -11,28 +11,20 @@
 #include <TH1.h>
 
 // xTRTFrame
-#include <xTRTFrame/Algo.h>
+#include <xTRTFrame/Algorithm.h>
 
 // this is needed to distribute the algorithm to the workers
-ClassImp(xTRT::Algo)
+ClassImp(xTRT::Algorithm)
 
-xTRT::Algo::Algo()
-  : m_config(),
-    m_GRLToolHandle("GRLTool",this),
-    m_PRWToolHandle("PRWTool",this),
-    m_trigConfToolHandle("xAODConfigTool",this),
-    m_trigDecToolHandle("TrigDecisionTool",this),
-    m_trigMatchingToolHandle("TrigMatchingTool",this),
-    m_trackSelToolHandle("TrackSelTool",this),
-    m_trackElecSelToolHandle("TrackElecSelTool",this),
-    m_trackMuonSelToolHandle("TrackMuonSelTool",this)
+xTRT::Algorithm::Algorithm()
+  : m_config()
 {
-  SetName("xTRT::Algo");
+  SetName("xTRT::Algorithm");
 }
 
-xTRT::Algo::~Algo() {}
+xTRT::Algorithm::~Algorithm() {}
 
-EL::StatusCode xTRT::Algo::setupJob(EL::Job& job) {
+EL::StatusCode xTRT::Algorithm::setupJob(EL::Job& job) {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   job.options()->setDouble(EL::Job::optXAODSummaryReport, 0);
   job.useXAOD();
@@ -41,24 +33,24 @@ EL::StatusCode xTRT::Algo::setupJob(EL::Job& job) {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::Algo::histInitialize() {
+EL::StatusCode xTRT::Algorithm::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   TH1::SetDefaultSumw2();
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::Algo::fileExecute() {
+EL::StatusCode xTRT::Algorithm::fileExecute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::Algo::changeInput(bool firstFile) {
+EL::StatusCode xTRT::Algorithm::changeInput(bool firstFile) {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   (void)firstFile;
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::Algo::initialize() {
+EL::StatusCode xTRT::Algorithm::initialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   m_event = wk()->xaodEvent();
   m_store = wk()->xaodStore();
@@ -74,7 +66,7 @@ EL::StatusCode xTRT::Algo::initialize() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::Algo::execute() {
+EL::StatusCode xTRT::Algorithm::execute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
 
   if ( m_eventCounter % 5000 == 0 ) {
@@ -89,22 +81,22 @@ EL::StatusCode xTRT::Algo::execute() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::Algo::postExecute() {
+EL::StatusCode xTRT::Algorithm::postExecute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::Algo::finalize() {
+EL::StatusCode xTRT::Algorithm::finalize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   if ( config()->useIDTS() ) {
     ANA_CHECK(m_trackSelToolHandle->finalize());
-    ANA_CHECK(m_trackElecSelToolHandle->finalize());
-    ANA_CHECK(m_trackMuonSelToolHandle->finalize());
+    ANA_CHECK(m_trackSelElecToolHandle->finalize());
+    ANA_CHECK(m_trackSelMuonToolHandle->finalize());
   }
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::Algo::histFinalize() {
+EL::StatusCode xTRT::Algorithm::histFinalize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   return EL::StatusCode::SUCCESS;
 }

@@ -2,11 +2,11 @@
 #define xTRTFrame_TruthLoop_h
 
 // xTRTFrame
-#include <xTRTFrame/Algo.h>
+#include <xTRTFrame/Algorithm.h>
 
 namespace xTRT {
 
-  class TruthLoop : public xTRT::Algo {
+  class TruthLoop : public xTRT::Algorithm {
 
   private:
 

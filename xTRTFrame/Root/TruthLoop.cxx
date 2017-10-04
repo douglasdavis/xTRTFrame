@@ -18,13 +18,13 @@
 
 ClassImp(xTRT::TruthLoop)
 
-xTRT::TruthLoop::TruthLoop() : xTRT::Algo() {}
+xTRT::TruthLoop::TruthLoop() : xTRT::Algorithm() {}
 
 xTRT::TruthLoop::~TruthLoop() {}
 
 EL::StatusCode xTRT::TruthLoop::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(xTRT::Algo::histInitialize());
+  ANA_CHECK(xTRT::Algorithm::histInitialize());
 
   m_fillLeptonsOnly = config()->customOpt<bool>("LeptonsOnly");
   m_saveHits        = config()->customOpt<bool>("StoreHits");
@@ -91,14 +91,14 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
 
 EL::StatusCode xTRT::TruthLoop::initialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(xTRT::Algo::initialize());
+  ANA_CHECK(xTRT::Algorithm::initialize());
 
   return EL::StatusCode::SUCCESS;
 }
 
 EL::StatusCode xTRT::TruthLoop::execute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(xTRT::Algo::execute());
+  ANA_CHECK(xTRT::Algorithm::execute());
 
   if ( !passGRL() ) return EL::StatusCode::SUCCESS;
 
@@ -135,7 +135,7 @@ void xTRT::TruthLoop::analyzeTrack(const xAOD::TrackParticle* track) {
   // check for truth particle and el or mu
   auto truth = getTruth(track);
   if ( truth == nullptr ) {
-    ANA_MSG_WARNING("truth is nullptr!");
+    ANA_MSG_DEBUG("truth is nullptr!");
     return;
   }
   m_pdgId = std::abs(truth->pdgId());
@@ -155,8 +155,8 @@ void xTRT::TruthLoop::analyzeTrack(const xAOD::TrackParticle* track) {
   // more track selection
   bool failTrkSel = false;
   if ( config()->useIDTS() ) {
-    if      ( m_pdgId == 11 ) failTrkSel = !(trackElecSelToolHandle()->accept(*track,vtx));
-    else if ( m_pdgId == 13 ) failTrkSel = !(trackMuonSelToolHandle()->accept(*track,vtx));
+    if      ( m_pdgId == 11 ) failTrkSel = !(trackSelElecToolHandle()->accept(*track,vtx));
+    else if ( m_pdgId == 13 ) failTrkSel = !(trackSelMuonToolHandle()->accept(*track,vtx));
     else return;
   }
   if ( failTrkSel ) return;

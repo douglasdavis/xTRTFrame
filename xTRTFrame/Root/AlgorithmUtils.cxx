@@ -1,11 +1,11 @@
-#include <xTRTFrame/Algo.h>
+#include <xTRTFrame/Algorithm.h>
 
 #include <AsgTools/StatusCode.h>
 #include <xAODCore/AuxContainerBase.h>
 #include <xAODTracking/Vertex.h>
 #include <xAODTracking/TrackParticlexAODHelpers.h>
 
-const xAOD::TrackParticleContainer* xTRT::Algo::trackContainer() {
+const xAOD::TrackParticleContainer* xTRT::Algorithm::trackContainer() {
   const xAOD::TrackParticleContainer* trackContainerPtr = nullptr;
   if ( evtStore()->retrieve(trackContainerPtr,"InDetTrackParticles").isFailure() ) {
     ANA_MSG_ERROR("InDetTrackParticles unavailable!");
@@ -14,7 +14,7 @@ const xAOD::TrackParticleContainer* xTRT::Algo::trackContainer() {
   return trackContainerPtr;
 }
 
-const xAOD::ElectronContainer* xTRT::Algo::electronContainer() {
+const xAOD::ElectronContainer* xTRT::Algorithm::electronContainer() {
   const xAOD::ElectronContainer* electronContainerPtr = nullptr;
   if ( evtStore()->retrieve(electronContainerPtr,"Electrons").isFailure() ) {
     ANA_MSG_ERROR("Electrons unavailable!");
@@ -23,7 +23,7 @@ const xAOD::ElectronContainer* xTRT::Algo::electronContainer() {
   return electronContainerPtr;
 }
 
-const xAOD::MuonContainer* xTRT::Algo::muonContainer() {
+const xAOD::MuonContainer* xTRT::Algorithm::muonContainer() {
   const xAOD::MuonContainer* muonContainerPtr = nullptr;
   if ( evtStore()->retrieve(muonContainerPtr,"Muons").isFailure() ) {
     ANA_MSG_ERROR("Muons unavailable!");
@@ -32,22 +32,22 @@ const xAOD::MuonContainer* xTRT::Algo::muonContainer() {
   return muonContainerPtr;
 }
 
-const xAOD::TrackParticleContainer* xTRT::Algo::selectedTracks() {
+const xAOD::TrackParticleContainer* xTRT::Algorithm::selectedTracks() {
   return selectedContainer<xAOD::TrackParticleContainer,xAOD::TrackParticle>
     (trackContainer(),passTrackSelection,"GoodTracks");
 }
 
-const xAOD::ElectronContainer* xTRT::Algo::selectedElectrons() {
+const xAOD::ElectronContainer* xTRT::Algorithm::selectedElectrons() {
   return selectedContainer<xAOD::ElectronContainer,xAOD::Electron>
     (electronContainer(),passElectronSelection,"GoodElectrons");
 }
 
-const xAOD::MuonContainer* xTRT::Algo::selectedMuons() {
+const xAOD::MuonContainer* xTRT::Algorithm::selectedMuons() {
   return selectedContainer<xAOD::MuonContainer,xAOD::Muon>
     (muonContainer(),passMuonSelection,"GoodMuons");
 }
 
-const xAOD::TruthParticle* xTRT::Algo::getTruth(const xAOD::TrackParticle* track) {
+const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* track) {
   const xAOD::TruthParticle* truthParticle = nullptr;
   if ( xTRT::Acc::truthParticleLink.isAvailable(*track) ) {
     const auto truthLink = xTRT::Acc::truthParticleLink(*track);
@@ -58,7 +58,7 @@ const xAOD::TruthParticle* xTRT::Algo::getTruth(const xAOD::TrackParticle* track
   return truthParticle;
 }
 
-const xAOD::TrackParticle* xTRT::Algo::getTrack(const xAOD::Electron* electron) {
+const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Electron* electron) {
   const xAOD::TrackParticle *track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
   if ( not track ) {
     XTRT_FATAL("No original track particle from electron");
@@ -67,7 +67,7 @@ const xAOD::TrackParticle* xTRT::Algo::getTrack(const xAOD::Electron* electron) 
   return track;
 }
 
-const xAOD::TrackParticle* xTRT::Algo::getTrack(const xAOD::Muon* muon) {
+const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Muon* muon) {
   auto idtl = muon->inDetTrackParticleLink();
   if ( not idtl.isValid() ) {
     XTRT_FATAL("No valid muon->inDetTrackParticleLink()");
@@ -81,13 +81,13 @@ const xAOD::TrackParticle* xTRT::Algo::getTrack(const xAOD::Muon* muon) {
   return trk;
 }
 
-bool xTRT::Algo::triggerPassed(const std::string trigName) const {
+bool xTRT::Algorithm::triggerPassed(const std::string trigName) const {
   auto chainGroup = m_trigDecToolHandle->getChainGroup(trigName);
   auto passed = chainGroup->isPassed();
   return passed;
 }
 
-bool xTRT::Algo::triggersPassed(const std::vector<std::string>& trigNames) const {
+bool xTRT::Algorithm::triggersPassed(const std::vector<std::string>& trigNames) const {
   for ( auto const& name : trigNames ) {
     auto chainGroup = m_trigDecToolHandle->getChainGroup(name);
     if ( chainGroup->isPassed() ) return true;
@@ -95,7 +95,7 @@ bool xTRT::Algo::triggersPassed(const std::vector<std::string>& trigNames) const
   return false;
 }
 
-float xTRT::Algo::eventWeight() const {
+float xTRT::Algorithm::eventWeight() const {
   if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) ) {
     auto weights = m_eventInfo->mcEventWeights();
     if ( !(weights.empty()) ) return weights.at(0);
@@ -104,7 +104,7 @@ float xTRT::Algo::eventWeight() const {
   return 1.0;
 }
 
-float xTRT::Algo::averageMu() {
+float xTRT::Algorithm::averageMu() {
   if ( !(m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION)) && config()->usePRW() ) {
     return m_PRWToolHandle->getCorrectedAverageInteractionsPerCrossing(*m_eventInfo,true);
   }
@@ -113,7 +113,7 @@ float xTRT::Algo::averageMu() {
   }
 }
 
-std::size_t xTRT::Algo::NPV() const {
+std::size_t xTRT::Algorithm::NPV() const {
   const xAOD::VertexContainer* verts = nullptr;
   if ( evtStore()->retrieve(verts,"PrimaryVertices").isFailure() ) {
     ANA_MSG_WARNING("Cannot retrieve PrimaryVertices, returning 0");
@@ -122,14 +122,14 @@ std::size_t xTRT::Algo::NPV() const {
   return verts->size();
 }
 
-bool xTRT::Algo::passGRL() const {
+bool xTRT::Algorithm::passGRL() const {
   if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) || !config()->useGRL() ) {
     return true;
   }
   return m_GRLToolHandle->passRunLB(*m_eventInfo);
 }
 
-int xTRT::Algo::nTRT(const xAOD::TrackParticle* track) {
+int xTRT::Algorithm::nTRT(const xAOD::TrackParticle* track) {
   uint8_t nTRThits = -1;
   uint8_t nTRTouts = -1;
   if ( !track->summaryValue(nTRThits,xAOD::numberOfTRTHits)     ) XTRT_FATAL("No TRT hits");
@@ -137,19 +137,19 @@ int xTRT::Algo::nTRT(const xAOD::TrackParticle* track) {
   return ((int)nTRThits + (int)nTRTouts);
 }
 
-int xTRT::Algo::nTRT_PrecTube(const xAOD::TrackParticle* track) {
+int xTRT::Algorithm::nTRT_PrecTube(const xAOD::TrackParticle* track) {
   uint8_t nTRThits = -1;
   if ( !track->summaryValue(nTRThits,xAOD::numberOfTRTHits) ) XTRT_FATAL("No TRT hits");
   return ((int)nTRThits);
 }
 
-int xTRT::Algo::nTRT_Outlier(const xAOD::TrackParticle* track) {
+int xTRT::Algorithm::nTRT_Outlier(const xAOD::TrackParticle* track) {
   uint8_t nTRTouts = -1;
   if ( !track->summaryValue(nTRTouts,xAOD::numberOfTRTOutliers) ) XTRT_FATAL("No TRT outliers");
   return ((int)nTRTouts);
 }
 
-int xTRT::Algo::nSilicon(const xAOD::TrackParticle* track) {
+int xTRT::Algorithm::nSilicon(const xAOD::TrackParticle* track) {
   uint8_t nPix = -1;
   uint8_t nSCT = -1;
   if ( !track->summaryValue(nPix,xAOD::numberOfPixelHits) ) XTRT_FATAL("No Pix hits?");
@@ -157,7 +157,7 @@ int xTRT::Algo::nSilicon(const xAOD::TrackParticle* track) {
   return ((int)nPix + (int)nSCT);
 }
 
-int xTRT::Algo::nSiliconHoles(const xAOD::TrackParticle* track) {
+int xTRT::Algorithm::nSiliconHoles(const xAOD::TrackParticle* track) {
   uint8_t nPixHole = -1;
   uint8_t nSCTHole = -1;
   if ( !track->summaryValue(nPixHole,xAOD::numberOfPixelHoles) ) XTRT_FATAL("No Pix holes?");
@@ -165,7 +165,7 @@ int xTRT::Algo::nSiliconHoles(const xAOD::TrackParticle* track) {
   return ((int)nPixHole + (int)nSCTHole);
 }
 
-int xTRT::Algo::nSiliconShared(const xAOD::TrackParticle* track) {
+int xTRT::Algorithm::nSiliconShared(const xAOD::TrackParticle* track) {
   uint8_t nSCTSh = -1;
   uint8_t nPixSh = -1;
   if ( !track->summaryValue(nPixSh,xAOD::numberOfPixelSharedHits) ) XTRT_FATAL("No Pix shared?");
@@ -173,13 +173,13 @@ int xTRT::Algo::nSiliconShared(const xAOD::TrackParticle* track) {
   return ((int)nSCTSh + (int)nPixSh);
 }
 
-float xTRT::Algo::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) {
+float xTRT::Algorithm::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) {
   float delta_z0 = std::fabs(track->z0() + track->vz() - vtx->z());
   float dz0sinth = std::fabs(delta_z0*std::sin(track->theta()));
   return dz0sinth;
 }
 
-double xTRT::Algo::d0signif(const xAOD::TrackParticle *track) const {
+double xTRT::Algorithm::d0signif(const xAOD::TrackParticle *track) const {
   double d0sig = xAOD::TrackingHelpers::d0significance(track,
                                                        m_eventInfo->beamPosSigmaX(),
                                                        m_eventInfo->beamPosSigmaY(),
@@ -187,17 +187,17 @@ double xTRT::Algo::d0signif(const xAOD::TrackParticle *track) const {
   return d0sig;
 }
 
-bool xTRT::Algo::passTrackSelection(const xAOD::TrackParticle* track, const xTRT::Config* conf) {
-  if ( xTRT::Algo::nTRT(track) < conf->track_nTRT() ) return false;
-  if ( xTRT::Algo::nTRT_PrecTube(track) < conf->track_nTRTprec() ) return false;
+bool xTRT::Algorithm::passTrackSelection(const xAOD::TrackParticle* track, const xTRT::Config* conf) {
+  if ( xTRT::Algorithm::nTRT(track) < conf->track_nTRT() ) return false;
+  if ( xTRT::Algorithm::nTRT_PrecTube(track) < conf->track_nTRTprec() ) return false;
   if ( track->pt() < conf->track_pT() ) return false;
   if ( std::abs(track->eta()) > conf->track_eta() ) return false;
   if ( track->p4().P() < conf->track_p() ) return false;
-  if ( xTRT::Algo::nSilicon(track) < conf->track_nSi() ) return false;
+  if ( xTRT::Algorithm::nSilicon(track) < conf->track_nSi() ) return false;
   return true;
 }
 
-bool xTRT::Algo::passElectronSelection(const xAOD::Electron* electron, const xTRT::Config* conf) {
+bool xTRT::Algorithm::passElectronSelection(const xAOD::Electron* electron, const xTRT::Config* conf) {
   auto trk = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
   if ( conf->elec_UTC() ) {
     if ( not trk ) return false;
@@ -216,7 +216,7 @@ bool xTRT::Algo::passElectronSelection(const xAOD::Electron* electron, const xTR
   return true;
 }
 
-bool xTRT::Algo::passMuonSelection(const xAOD::Muon* muon, const xTRT::Config* conf) {
+bool xTRT::Algorithm::passMuonSelection(const xAOD::Muon* muon, const xTRT::Config* conf) {
   auto idtl = muon->inDetTrackParticleLink();
   if ( not idtl.isValid() ) return false;
   auto trk = *idtl;
@@ -236,9 +236,9 @@ bool xTRT::Algo::passMuonSelection(const xAOD::Muon* muon, const xTRT::Config* c
   return true;
 }
 
-xTRT::HitSummary xTRT::Algo::getHitSummary(const xAOD::TrackParticle* track,
-                                           const xAOD::TrackStateValidation* msos,
-                                           const xAOD::TrackMeasurementValidation* driftCircle) {
+xTRT::HitSummary xTRT::Algorithm::getHitSummary(const xAOD::TrackParticle* track,
+                                                const xAOD::TrackStateValidation* msos,
+                                                const xAOD::TrackMeasurementValidation* driftCircle) {
   xTRT::HitSummary hit;
   hit.HTMB        = (get(xTRT::Acc::bitPattern, driftCircle,"bitPattern") & 131072) ? 1 : 0;
   hit.tot         =  get(xTRT::Acc::tot,        driftCircle,"tot");

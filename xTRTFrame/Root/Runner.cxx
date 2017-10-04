@@ -1,5 +1,5 @@
 #include <xTRTFrame/Runner.h>
-#include <xTRTFrame/Algo.h>
+#include <xTRTFrame/Algorithm.h>
 #include <xTRTFrame/Externals/CLI11.hpp>
 
 #include <EventLoopGrid/PrunDriver.h>
@@ -15,7 +15,7 @@
 #include "xAODRootAccess/Init.h"
 
 namespace xTRT {
-  int Runner(int argc, char **argv, xTRT::Algo* alg) {
+  int Runner(int argc, char **argv, xTRT::Algorithm* alg) {
     CLI::App app("xTRTFrame Job");
 
     std::string configFile;
@@ -44,8 +44,8 @@ namespace xTRT {
     job.algsAdd(ntuple);
 
     alg->feedConfig(configFile.c_str(),printConf);
-    job.algsAdd(alg);
     alg->setTreeOutputName("treeOutput");
+    job.algsAdd(alg);
 
     SH::SampleHandler sh;
     sh.setMetaString("nc_tree","CollectionTree");

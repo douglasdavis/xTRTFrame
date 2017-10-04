@@ -1,5 +1,5 @@
 // xTRTFrame
-#include <xTRTFrame/Algo.h>
+#include <xTRTFrame/Algorithm.h>
 
 // ROOT
 #include <TSystem.h>
@@ -8,29 +8,26 @@
 #include <PileupReweighting/PileupReweightingTool.h>
 #include <GoodRunsLists/GoodRunsListSelectionTool.h>
 
-EL::StatusCode xTRT::Algo::setupTrackSelectionTools() {
+EL::StatusCode xTRT::Algorithm::setupTrackSelectionTools() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_MSG_INFO("Setting up track selections tools");
 
-  ANA_CHECK(ASG_MAKE_ANA_TOOL(m_trackSelToolHandle, InDet::InDetTrackSelectionTool));
   ANA_CHECK(m_trackSelToolHandle.setProperty("CutLevel","TightPrimary"));
   ANA_CHECK(m_trackSelToolHandle.retrieve());
   ANA_MSG_INFO("Set up InDetTrackSelectionTool for Tracks");
 
-  ANA_CHECK(ASG_MAKE_ANA_TOOL(m_trackElecSelToolHandle, InDet::InDetTrackSelectionTool));
-  ANA_CHECK(m_trackElecSelToolHandle.setProperty("CutLevel","LooseElectron"));
-  ANA_CHECK(m_trackElecSelToolHandle.retrieve());
+  ANA_CHECK(m_trackSelElecToolHandle.setProperty("CutLevel","LooseElectron"));
+  ANA_CHECK(m_trackSelElecToolHandle.retrieve());
   ANA_MSG_INFO("Set up InDetTrackSelectionTool for Electrons");
 
-  ANA_CHECK(ASG_MAKE_ANA_TOOL(m_trackMuonSelToolHandle, InDet::InDetTrackSelectionTool));
-  ANA_CHECK(m_trackMuonSelToolHandle.setProperty("CutLevel","LooseMuon"));
-  ANA_CHECK(m_trackMuonSelToolHandle.retrieve());
+  ANA_CHECK(m_trackSelMuonToolHandle.setProperty("CutLevel","LooseMuon"));
+  ANA_CHECK(m_trackSelMuonToolHandle.retrieve());
   ANA_MSG_INFO("Set up InDetTrackSelectionTool for Muons");
 
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::Algo::enableGRLTool() {
+EL::StatusCode xTRT::Algorithm::enableGRLTool() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_MSG_INFO("Setting up GRL tool");
 
@@ -46,7 +43,6 @@ EL::StatusCode xTRT::Algo::enableGRLTool() {
     ANA_MSG_INFO("GRL File: " << entry);
   }
 
-  ANA_CHECK(ASG_MAKE_ANA_TOOL(m_GRLToolHandle, GoodRunsListSelectionTool));
   ANA_CHECK(m_GRLToolHandle.setProperty("GoodRunsListVec", grlfiles));
   ANA_CHECK(m_GRLToolHandle.setProperty("PassThrough",     false));
   ANA_CHECK(m_GRLToolHandle.setProperty("OutputLevel",     msg().level()));
@@ -54,13 +50,23 @@ EL::StatusCode xTRT::Algo::enableGRLTool() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::Algo::enablePRWTool() {
+EL::StatusCode xTRT::Algorithm::enablePRWTool() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_MSG_INFO("Setting up PRW tool");
 
-  ANA_CHECK(ASG_MAKE_ANA_TOOL(m_PRWToolHandle, CP::PileupReweightingTool));
-  ANA_CHECK(m_PRWToolHandle.setProperty("ConfigFiles",        config()->PRWConfFiles()));
-  ANA_CHECK(m_PRWToolHandle.setProperty("LumiCalcFiles",      config()->PRWLumiFiles()));
+  std::vector<std::string> cf;
+  std::vector<std::string> lf;
+  for ( const auto& s : config()->PRWConfFiles() ) {
+    if ( s == "none" || s == "default" ) continue;
+    cf.push_back(s);
+  }
+  for ( auto const& s : config()->PRWLumiFiles() ) {
+    if ( s == "none" || s == "default" ) continue;
+    lf.push_back(s);
+  }
+
+  ANA_CHECK(m_PRWToolHandle.setProperty("ConfigFiles",        cf));
+  ANA_CHECK(m_PRWToolHandle.setProperty("LumiCalcFiles",      lf));
   ANA_CHECK(m_PRWToolHandle.setProperty("DataScaleFactor",    1.0/1.09));
   ANA_CHECK(m_PRWToolHandle.setProperty("DataScaleFactorUP",  1.0));
   ANA_CHECK(m_PRWToolHandle.setProperty("DataScaleFactorDOWN",1.0/1.18));
@@ -70,23 +76,20 @@ EL::StatusCode xTRT::Algo::enablePRWTool() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::Algo::enableTriggerTools() {
+EL::StatusCode xTRT::Algorithm::enableTriggerTools() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_MSG_INFO("Setting up trigger tools");
 
-  ANA_CHECK(ASG_MAKE_ANA_TOOL(m_trigConfToolHandle, TrigConf::xAODConfigTool));
   ANA_CHECK(m_trigConfToolHandle.setProperty("OutputLevel", msg().level()));
   ANA_CHECK(m_trigConfToolHandle.retrieve());
   ANA_MSG_DEBUG("Retrieved tool: " << m_trigConfToolHandle);
 
-  ANA_CHECK(ASG_MAKE_ANA_TOOL(m_trigDecToolHandle, Trig::TrigDecisionTool));
   ANA_CHECK(m_trigDecToolHandle.setProperty("ConfigTool",      m_trigConfToolHandle.getHandle()));
   ANA_CHECK(m_trigDecToolHandle.setProperty("TrigDecisionKey", "xTrigDecision"));
   ANA_CHECK(m_trigDecToolHandle.setProperty("OutputLevel",     msg().level()));
   ANA_CHECK(m_trigDecToolHandle.retrieve());
   ANA_MSG_DEBUG("Retrieved tool: " << m_trigDecToolHandle);
 
-  ANA_CHECK(ASG_MAKE_ANA_TOOL(m_trigMatchingToolHandle, Trig::MatchingTool));
   ANA_CHECK(m_trigMatchingToolHandle.setProperty("TrigDecisionTool",m_trigDecToolHandle.getHandle()));
   ANA_CHECK(m_trigMatchingToolHandle.setProperty("OutputLevel",     msg().level()));
   ANA_CHECK(m_trigMatchingToolHandle.retrieve());
