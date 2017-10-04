@@ -103,16 +103,23 @@ EL::StatusCode xTRT::TruthLoop::execute() {
   m_avgMu  = averageMu();
   grab<TH1F>("h_averageMu")->Fill(m_avgMu,m_weight);
 
-  //auto tracks = selectedTracks();
-  //auto electrons = electronContainer();
-  auto muons = selectedMuons();
+  auto tracks = selectedTracks();
+  //auto muons = selectedMuons();
+  //auto electrons = selectedElectrons();
 
-  //for ( const auto& track : *tracks ) {
-  for ( const auto& muon : *muons ) {
+  for ( const auto& track : *tracks ) {
+  //for ( const auto& muon : *muons ) {
+  //for ( const auto& electron : *electrons ) {
+    /* // *****For Muons*****
     auto tracklink = muon->inDetTrackParticleLink();//trackParticle();
     if ( not tracklink.isValid() ) continue;
     auto track = *tracklink;
     if ( not track ) continue;
+    */
+
+    // *****For Electrons******
+    //const xAOD::TrackParticle* track = electron->trackParticle();
+    //if ( not track ) continue;
 
     // check for truth particle and el or mu
     auto truth = truthParticle(track);

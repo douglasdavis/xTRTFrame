@@ -4,7 +4,7 @@
 // file LICENSE or https://github.com/CLIUtils/CLI11 for details.
 
 // This file was generated using MakeSingleHeader.py in CLI11/scripts
-// from: v1.1.0
+// from: v1.2.0
 
 // This has the complete CLI library in one file.
 
@@ -257,9 +257,8 @@ constexpr const char *type_name() {
 // Lexical cast
 
 /// Integers / enums
-template <typename T, enable_if_t<std::is_integral<T>::value
-    || std::is_enum<T>::value
-    , detail::enabler> = detail::dummy>
+template <typename T,
+          enable_if_t<std::is_integral<T>::value || std::is_enum<T>::value, detail::enabler> = detail::dummy>
 bool lexical_cast(std::string input, T &output) {
     try {
         output = static_cast<T>(std::stoll(input));
@@ -285,11 +284,9 @@ bool lexical_cast(std::string input, T &output) {
 }
 
 /// String and similar
-template <
-    typename T,
-    enable_if_t<!std::is_floating_point<T>::value
-                && !std::is_integral<T>::value
-                && !std::is_enum<T>::value, detail::enabler> = detail::dummy>
+template <typename T,
+          enable_if_t<!std::is_floating_point<T>::value && !std::is_integral<T>::value && !std::is_enum<T>::value,
+                      detail::enabler> = detail::dummy>
 bool lexical_cast(std::string input, T &output) {
     output = input;
     return true;
@@ -515,10 +512,10 @@ inline std::vector<std::string> split_names(std::string current) {
     std::vector<std::string> output;
     size_t val;
     while((val = current.find(",")) != std::string::npos) {
-        output.push_back(current.substr(0, val));
+        output.push_back(trim_copy(current.substr(0, val)));
         current = current.substr(val + 1);
     }
-    output.push_back(current);
+    output.push_back(trim_copy(current));
     return output;
 }
 
@@ -1153,11 +1150,19 @@ class Option {
     }
 
     /// Set the default value string representation
-    void set_default_val(std::string val) { defaultval_ = val; }
+    void set_default_str(std::string val) { defaultval_ = val; }
 
+    /// Set the default value string representation and evaluate
+    void set_default_val(std::string val) {
+        set_default_str(val);
+        auto old_results = results_;
+        results_ = {val};
+        run_callback();
+        results_ = std::move(old_results);
+    }
 
     /// Set the type name displayed on this option
-    void set_type_name(std::string val) {typeval_ = val;}
+    void set_type_name(std::string val) { typeval_ = val; }
 
     ///@}
 
@@ -1176,6 +1181,15 @@ class Option {
 // From CLI/App.hpp
 
 namespace CLI {
+
+#ifndef CLI11_PARSE
+#define CLI11_PARSE(app, argc, argv)                                                                                   \
+    try {                                                                                                              \
+        (app).parse((argc), (argv));                                                                                   \
+    } catch(const CLI::ParseError &e) {                                                                                \
+        return (app).exit(e);                                                                                          \
+    }
+#endif
 
 namespace detail {
 enum class Classifer { NONE, POSITIONAL_MARK, SHORT, LONG, SUBCOMMAND };
@@ -1211,7 +1225,7 @@ class App {
 
     ///  If true, return immediatly on an unrecognised option (implies allow_extras)
     bool prefix_command_{false};
-    
+
     /// This is a function that runs when complete. Great for subcommands. Can throw.
     std::function<void()> callback_;
 
@@ -1312,7 +1326,7 @@ class App {
         prefix_command_ = allow;
         return this;
     }
-    
+
     /// Ignore case. Subcommand inherit value.
     App *ignore_case(bool value = true) {
         ignore_case_ = value;
@@ -1377,8 +1391,6 @@ class App {
         } else
             throw OptionAlreadyAdded(myopt.get_name());
     }
-    
-    
 
     /// Add option for non-vectors (duplicate copy needed without defaulted to avoid `iostream << value`)
     template <typename T, enable_if_t<!is_vector<T>::value, detail::enabler> = detail::dummy>
@@ -1403,29 +1415,29 @@ class App {
                        T &variable, ///< The variable to set
                        std::string description,
                        bool defaulted) {
-        
+
         CLI::callback_t fun = [&variable](CLI::results_t res) {
             if(res.size() != 1)
                 return false;
             return detail::lexical_cast(res[0], variable);
         };
-        
+
         Option *opt = add_option(name, fun, description, defaulted);
         opt->set_custom_option(detail::type_name<T>());
         if(defaulted) {
             std::stringstream out;
             out << variable;
-            opt->set_default_val(out.str());
+            opt->set_default_str(out.str());
         }
         return opt;
     }
-    
+
     /// Add option for vectors (no default)
     template <typename T>
     Option *add_option(std::string name,
                        std::vector<T> &variable, ///< The variable vector to set
                        std::string description = "") {
-        
+
         CLI::callback_t fun = [&variable](CLI::results_t res) {
             bool retval = true;
             variable.clear();
@@ -1435,12 +1447,12 @@ class App {
             }
             return (!variable.empty()) && retval;
         };
-        
+
         Option *opt = add_option(name, fun, description, false);
         opt->set_custom_option(detail::type_name<T>(), -1, true);
         return opt;
     }
-    
+
     /// Add option for vectors
     template <typename T>
     Option *add_option(std::string name,
@@ -1461,7 +1473,7 @@ class App {
         Option *opt = add_option(name, fun, description, defaulted);
         opt->set_custom_option(detail::type_name<T>(), -1, true);
         if(defaulted)
-            opt->set_default_val("[" + detail::join(variable) + "]");
+            opt->set_default_str("[" + detail::join(variable) + "]");
         return opt;
     }
 
@@ -1515,6 +1527,33 @@ class App {
         return opt;
     }
 
+    /// Add option for callback
+    Option *add_flag_function(std::string name,
+                              std::function<void(size_t)> function, ///< A function to call, void(size_t)
+                              std::string description = "") {
+
+        CLI::callback_t fun = [function](CLI::results_t res) {
+            auto count = static_cast<size_t>(res.size());
+            function(count);
+            return true;
+        };
+
+        Option *opt = add_option(name, fun, description, false);
+        if(opt->get_positional())
+            throw IncorrectConstruction("Flags cannot be positional");
+        opt->set_custom_option("", 0);
+        return opt;
+    }
+
+#if __cplusplus >= 201402L
+    /// Add option for callback (C++14 or better only)
+    Option *add_flag(std::string name,
+                     std::function<void(size_t)> function, ///< A function to call, void(size_t)
+                     std::string description = "") {
+        return add_flag_function(name, function, description);
+    }
+#endif
+
     /// Add set of options (No default)
     template <typename T>
     Option *add_set(std::string name,
@@ -1538,7 +1577,7 @@ class App {
         opt->set_custom_option(typeval);
         return opt;
     }
-    
+
     /// Add set of options
     template <typename T>
     Option *add_set(std::string name,
@@ -1546,7 +1585,7 @@ class App {
                     std::set<T> options, ///< The set of posibilities
                     std::string description,
                     bool defaulted) {
-        
+
         CLI::callback_t fun = [&member, options](CLI::results_t res) {
             if(res.size() != 1) {
                 return false;
@@ -1556,7 +1595,7 @@ class App {
                 return false;
             return std::find(std::begin(options), std::end(options), member) != std::end(options);
         };
-        
+
         Option *opt = add_option(name, fun, description, defaulted);
         std::string typeval = detail::type_name<T>();
         typeval += " in {" + detail::join(options) + "}";
@@ -1564,7 +1603,7 @@ class App {
         if(defaulted) {
             std::stringstream out;
             out << member;
-            opt->set_default_val(out.str());
+            opt->set_default_str(out.str());
         }
         return opt;
     }
@@ -1595,17 +1634,17 @@ class App {
         std::string typeval = detail::type_name<std::string>();
         typeval += " in {" + detail::join(options) + "}";
         opt->set_custom_option(typeval);
-        
+
         return opt;
     }
-    
+
     /// Add set of options, string only, ignore case
     Option *add_set_ignore_case(std::string name,
                                 std::string &member,           ///< The selected member of the set
                                 std::set<std::string> options, ///< The set of posibilities
                                 std::string description,
                                 bool defaulted) {
-        
+
         CLI::callback_t fun = [&member, options](CLI::results_t res) {
             if(res.size() != 1) {
                 return false;
@@ -1621,13 +1660,13 @@ class App {
                 return true;
             }
         };
-        
+
         Option *opt = add_option(name, fun, description, defaulted);
         std::string typeval = detail::type_name<std::string>();
         typeval += " in {" + detail::join(options) + "}";
         opt->set_custom_option(typeval);
         if(defaulted) {
-            opt->set_default_val(member);
+            opt->set_default_str(member);
         }
         return opt;
     }
@@ -1654,7 +1693,7 @@ class App {
         if(defaulted) {
             std::stringstream out;
             out << variable;
-            opt->set_default_val(out.str());
+            opt->set_default_str(out.str());
         }
         return opt;
     }
@@ -2007,7 +2046,7 @@ class App {
 
     bool _valid_subcommand(const std::string &current) const {
         for(const App_p &com : subcommands_)
-            if(com->check_name(current))
+            if(com->check_name(current) && !*com)
                 return true;
         if(parent_ != nullptr)
             return parent_->_valid_subcommand(current);
@@ -2044,17 +2083,23 @@ class App {
         }
 
         // Process an INI file
-        if(config_ptr_ != nullptr && config_name_ != "") {
-            try {
-                std::vector<detail::ini_ret_t> values = detail::parse_ini(config_name_);
-                while(!values.empty()) {
-                    if(!_parse_ini(values)) {
-                        throw ExtrasINIError(values.back().fullname);
+        if(config_ptr_ != nullptr) {
+            if(*config_ptr_) {
+                config_ptr_->run_callback();
+                config_required_ = true;
+            }
+            if(config_name_ != "") {
+                try {
+                    std::vector<detail::ini_ret_t> values = detail::parse_ini(config_name_);
+                    while(!values.empty()) {
+                        if(!_parse_ini(values)) {
+                            throw ExtrasINIError(values.back().fullname);
+                        }
                     }
+                } catch(const FileError &) {
+                    if(config_required_)
+                        throw;
                 }
-            } catch(const FileError &) {
-                if(config_required_)
-                    throw;
             }
         }
 
@@ -2064,19 +2109,19 @@ class App {
                 char *buffer = nullptr;
                 std::string ename_string;
 
-                #ifdef _MSC_VER
+#ifdef _MSC_VER
                 // Windows version
                 size_t sz = 0;
                 if(_dupenv_s(&buffer, &sz, opt->envname_.c_str()) == 0 && buffer != nullptr) {
                     ename_string = std::string(buffer);
                     free(buffer);
                 }
-                #else
+#else
                 // This also works on Windows, but gives a warning
                 buffer = std::getenv(opt->envname_.c_str());
                 if(buffer != nullptr)
                     ename_string = std::string(buffer);
-                #endif
+#endif
 
                 if(!ename_string.empty()) {
                     opt->add_result(ename_string);
@@ -2216,6 +2261,17 @@ class App {
         }
     }
 
+    /// Count the required remaining positional arguments
+    size_t _count_remaining_required_positionals() const {
+        size_t retval = 0;
+        for(const Option_p &opt : options_)
+            if(opt->get_positional() && opt->get_required() && opt->get_expected() > 0 &&
+               static_cast<int>(opt->count()) < opt->get_expected())
+                retval = static_cast<size_t>(opt->get_expected()) - opt->count();
+
+        return retval;
+    }
+
     /// Parse a positional, go up the tree to check
     void _parse_positional(std::vector<std::string> &args) {
 
@@ -2237,7 +2293,7 @@ class App {
         else {
             args.pop_back();
             missing()->emplace_back(detail::Classifer::NONE, positional);
-            
+
             if(prefix_command_) {
                 while(!args.empty()) {
                     missing()->emplace_back(detail::Classifer::NONE, args.back());
@@ -2245,13 +2301,14 @@ class App {
                 }
             }
         }
-        
     }
 
     /// Parse a subcommand, modify args and continue
     ///
     /// Unlike the others, this one will always allow fallthrough
     void _parse_subcommand(std::vector<std::string> &args) {
+        if(_count_remaining_required_positionals() > 0)
+            return _parse_positional(args);
         for(const App_p &com : subcommands_) {
             if(com->check_name(args.back())) {
                 args.pop_back();

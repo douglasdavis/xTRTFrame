@@ -19,27 +19,25 @@ namespace xTRT {
     CLI::App app("xTRTFrame Job");
 
     std::string configFile;
-    std::string inputTextFile;
-    std::string outputDir;
-    std::string gridDS;
-    std::string outDS;
-    bool        printConf;
     app.add_option("-c,--config",configFile,"Config file name")->required();
+    std::string outputDir;
     app.add_option("-o,--out-dir",outputDir,"Name for output directory")->required();
-    app.add_flag("--print-config",printConf,"Print YAML config");
+    std::string inputTextFile;
     auto o_infile = app.add_option("-i,--in-file",inputTextFile,"List of samples in a txt file");
+    std::string gridDS;
     auto o_gridds = app.add_option("--gridDS",gridDS,"Grid sample name to process");
+    std::string outDS;
     auto o_outds  = app.add_option("--outDS", outDS, "Output sample name to for grid job");
+    bool printConf;
+    app.add_flag("--print-config",printConf,"Print configuration options");
 
-    try {
-      app.parse(argc,argv);
-    } catch(const CLI::ParseError& err) {
-      return app.exit(err);
-    }
+    CLI11_PARSE(app, argc, argv);
 
     xAOD::Init().ignore();
 
     EL::Job job;
+    job.options()->setDouble(EL::Job::optCacheSize, 10*1024*1024);
+
     EL::OutputStream output("treeOutput");
     job.outputAdd(output);
     EL::NTupleSvc *ntuple = new EL::NTupleSvc("treeOutput");
