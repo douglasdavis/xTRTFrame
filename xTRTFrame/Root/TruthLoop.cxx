@@ -31,6 +31,10 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
   m_type0only       = config()->customOpt<bool>("Type0HitOnly");
   m_divZweightBy1k  = config()->customOpt<bool>("DivZweightBy1k");
 
+  m_anaTracks = config()->customOpt<bool>("AnalyzeTracks");
+  m_anaElecs  = config()->customOpt<bool>("AnalyzeElectrons");
+  m_anaMuons  = config()->customOpt<bool>("AnalyzeMuons");
+
   create(TH1F("h_averageMu","",70,-0.5,69.5));
 
   TFile *outFile = wk()->getOutputFile(m_outputName);
@@ -103,110 +107,113 @@ EL::StatusCode xTRT::TruthLoop::execute() {
   m_avgMu  = averageMu();
   grab<TH1F>("h_averageMu")->Fill(m_avgMu,m_weight);
 
-  auto tracks = selectedTracks();
-  //auto muons = selectedMuons();
-  //auto electrons = selectedElectrons();
-
-  for ( const auto& track : *tracks ) {
-  //for ( const auto& muon : *muons ) {
-  //for ( const auto& electron : *electrons ) {
-    /* // *****For Muons*****
-    auto tracklink = muon->inDetTrackParticleLink();//trackParticle();
-    if ( not tracklink.isValid() ) continue;
-    auto track = *tracklink;
-    if ( not track ) continue;
-    */
-
-    // *****For Electrons******
-    //const xAOD::TrackParticle* track = electron->trackParticle();
-    //if ( not track ) continue;
-
-    // check for truth particle and el or mu
-    auto truth = truthParticle(track);
-    if ( truth == nullptr ) continue;
-    m_pdgId = std::abs(truth->pdgId());
-    bool el_or_mu = (m_pdgId == 11 || m_pdgId == 13);
-    if ( !el_or_mu ) continue;
-
-    // check for Z or jpsi
-    auto parent = truth->parent();
-    if ( parent == nullptr ) continue;
-    bool is_z_or_jpsi = (parent->isZ() || (parent->pdgId() == 443));
-    if ( !is_z_or_jpsi ) continue;
-
-    // check for vertex
-    auto vtx = track->vertex();
-    if ( vtx == nullptr ) continue;
-
-    // more track selection
-    bool failTrkSel = false;
-    if ( config()->useIDTS() ) {
-      if      ( m_pdgId == 11 ) failTrkSel = !(trackElecSelToolHandle()->accept(*track,vtx));
-      else if ( m_pdgId == 13 ) failTrkSel = !(trackMuonSelToolHandle()->accept(*track,vtx));
-      else continue;
+  if ( m_anaTracks ) {
+    auto tracks = selectedTracks();
+    for ( const auto& track : *tracks ) {
+      analyzeTrack(track);
     }
-    if ( failTrkSel ) continue;
+  }
 
-    uint8_t ntrthits = -1;
-    uint8_t nxehits  = -1;
-    uint8_t nouthits = -1;
-    track->summaryValue(ntrthits,xAOD::numberOfTRTHits); // type 0 only!
-    track->summaryValue(nxehits, xAOD::numberOfTRTXenonHits);
-    track->summaryValue(nouthits,xAOD::numberOfTRTOutliers);
-
-    m_nTRThits = ntrthits; // type 0 only
-    m_nTRTouts = nouthits;
-    m_nXehits  = nxehits;  // all xenon hits
-    m_nArhits  = ntrthits + nouthits -nxehits; // all argon hits
-    m_nHThitsMan  = 0;
-    m_sumL        = 0.0;
-    m_sumToT      = 0.0;
-
-    m_truthMass = truth->m();
-    m_pT        = track->pt();
-    m_p         = track->p4().P();
-    m_eta       = track->eta();
-    m_phi       = track->phi();
-    m_theta     = track->theta();
-
-    m_trkOcc    = get(xTRT::Acc::TRTTrackOccupancy,track,"TRTTrackOccupancy");
-    //m_eProbToT  = get(xTRT::Acc::eProbabilityToT,track,"eProbabilityToT");
-    m_eProbHT   = get(xTRT::Acc::eProbabilityHT,track,"eProbabilityHT");
-
-    //m_dEdxNoHT  = get(xTRT::Acc::ToT_dEdx_noHT_divByL,track,"ToT_dEdx_noHT_divByL");
-    //m_nHitsdEdx = get(xTRT::Acc::ToT_usedHits_noHT_divByL,track,"ToT_usedHits_noHT_divByL");
-
-    const xAOD::TrackStateValidation* msos = nullptr;
-    const xAOD::TrackMeasurementValidation* driftCircle = nullptr;
-    if ( xTRT::Acc::msosLink.isAvailable(*track) ) {
-      std::cout << "got msosLink" << std::endl;
-      for ( auto trackMeasurement : xTRT::Acc::msosLink(*track) ) {
-        std::cout << "on a tm" << std::endl;
-        if ( trackMeasurement.isValid() ) {
-          std::cout << "it was valid" << std::endl;
-          msos = *trackMeasurement;
-          if ( msos->detType() != 3 ) continue; // TRT hits only.
-          if ( !(msos->trackMeasurementValidationLink().isValid()) ) continue;
-          std::cout << "drift circle is valid" << std::endl;
-          driftCircle = *(msos->trackMeasurementValidationLink());
-          if ( !fillHitBasedVariables(track,msos,driftCircle,m_type0only) ) continue;
-        }
-      }
+  if ( m_anaElecs ) {
+    auto electrons = selectedElectrons();
+    for ( const auto& electron : *electrons ) {
+      analyzeTrack(getTrack(electron));
     }
-    else {
-      std::cout << "msosLink not available" << std::endl;
+  }
+
+  if ( m_anaMuons ) {
+    auto muons = selectedMuons();
+    for ( const auto& muon : *muons ) {
+      analyzeTrack(getTrack(muon));
     }
-
-    m_fHTMB = (float)m_nHThitsMan / (m_nTRThits+m_nTRTouts);
-    m_fAr   = (float)m_nArhits / (m_nTRThits+m_nTRTouts);
-
-    if ( parent->isZ()          ) { m_zdTree->Fill(); }
-    if ( parent->pdgId() == 443 ) { m_jdTree->Fill(); }
-
-    clearVectors();
-  } // loop over tracks
+  }
 
   return EL::StatusCode::SUCCESS;
+}
+
+void xTRT::TruthLoop::analyzeTrack(const xAOD::TrackParticle* track) {
+  // check for truth particle and el or mu
+  auto truth = getTruth(track);
+  if ( truth == nullptr ) {
+    ANA_MSG_WARNING("truth is nullptr!");
+    return;
+  }
+  m_pdgId = std::abs(truth->pdgId());
+  bool el_or_mu = (m_pdgId == 11 || m_pdgId == 13);
+  if ( !el_or_mu ) return;
+
+  // check for Z or jpsi
+  auto parent = truth->parent();
+  if ( parent == nullptr ) return;
+  bool is_z_or_jpsi = (parent->isZ() || (parent->pdgId() == 443));
+  if ( !is_z_or_jpsi ) return;
+
+  // check for vertex
+  auto vtx = track->vertex();
+  if ( vtx == nullptr ) return;
+
+  // more track selection
+  bool failTrkSel = false;
+  if ( config()->useIDTS() ) {
+    if      ( m_pdgId == 11 ) failTrkSel = !(trackElecSelToolHandle()->accept(*track,vtx));
+    else if ( m_pdgId == 13 ) failTrkSel = !(trackMuonSelToolHandle()->accept(*track,vtx));
+    else return;
+  }
+  if ( failTrkSel ) return;
+
+  uint8_t ntrthits = -1;
+  uint8_t nxehits  = -1;
+  uint8_t nouthits = -1;
+  track->summaryValue(ntrthits,xAOD::numberOfTRTHits); // type 0 only!
+  track->summaryValue(nxehits, xAOD::numberOfTRTXenonHits);
+  track->summaryValue(nouthits,xAOD::numberOfTRTOutliers);
+
+  m_nTRThits = ntrthits; // type 0 only
+  m_nTRTouts = nouthits;
+  m_nXehits  = nxehits;  // all xenon hits
+  m_nArhits  = ntrthits + nouthits -nxehits; // all argon hits
+  m_nHThitsMan  = 0;
+  m_sumL        = 0.0;
+  m_sumToT      = 0.0;
+
+  m_truthMass = truth->m();
+  m_pT        = track->pt();
+  m_p         = track->p4().P();
+  m_eta       = track->eta();
+  m_phi       = track->phi();
+  m_theta     = track->theta();
+
+  m_trkOcc    = get(xTRT::Acc::TRTTrackOccupancy,track,"TRTTrackOccupancy");
+  //m_eProbToT  = get(xTRT::Acc::eProbabilityToT,track,"eProbabilityToT");
+  m_eProbHT   = get(xTRT::Acc::eProbabilityHT,track,"eProbabilityHT");
+
+  //m_dEdxNoHT  = get(xTRT::Acc::ToT_dEdx_noHT_divByL,track,"ToT_dEdx_noHT_divByL");
+  //m_nHitsdEdx = get(xTRT::Acc::ToT_usedHits_noHT_divByL,track,"ToT_usedHits_noHT_divByL");
+
+  const xAOD::TrackStateValidation* msos = nullptr;
+  const xAOD::TrackMeasurementValidation* driftCircle = nullptr;
+  if ( xTRT::Acc::msosLink.isAvailable(*track) ) {
+    for ( auto trackMeasurement : xTRT::Acc::msosLink(*track) ) {
+      if ( trackMeasurement.isValid() ) {
+        msos = *trackMeasurement;
+        if ( msos->detType() != 3 ) continue; // TRT hits only.
+        if ( !(msos->trackMeasurementValidationLink().isValid()) ) continue;
+        driftCircle = *(msos->trackMeasurementValidationLink());
+        if ( !fillHitBasedVariables(track,msos,driftCircle,m_type0only) ) continue;
+      }
+    }
+  }
+  else {
+    ANA_MSG_WARNING("msosLink was not available!");
+  }
+
+  m_fHTMB = (float)m_nHThitsMan / (m_nTRThits+m_nTRTouts);
+  m_fAr   = (float)m_nArhits / (m_nTRThits+m_nTRTouts);
+
+  if ( parent->isZ()          ) { m_zdTree->Fill(); }
+  if ( parent->pdgId() == 443 ) { m_jdTree->Fill(); }
+
+  clearVectors();
 }
 
 bool xTRT::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,

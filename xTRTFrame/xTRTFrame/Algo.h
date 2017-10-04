@@ -189,8 +189,12 @@ namespace xTRT {
     /// applies selectedContainer on muons
     const xAOD::MuonContainer*          selectedMuons();
 
-    /// retrieves the TruthParticle associated with the input TrackParticle
-    const xAOD::TruthParticle* truthParticle(const xAOD::TrackParticle* track);
+    /// retrieves the TruthParticle associated with the input track particle
+    static const xAOD::TruthParticle* getTruth(const xAOD::TrackParticle* track);
+    /// retrieve the "original" xAOD::TrackParticle pointer from the electron
+    static const xAOD::TrackParticle* getTrack(const xAOD::Electron* electron);
+    /// retrieve the xAOD::TrackParticle pointer from the muon
+    static const xAOD::TrackParticle* getTrack(const xAOD::Muon* muon);
 
     /// return the total event weight
     float eventWeight() const;

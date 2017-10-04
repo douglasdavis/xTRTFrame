@@ -14,6 +14,9 @@ namespace xTRT {
     bool m_saveHits;        //!
     bool m_type0only;       //!
     bool m_divZweightBy1k;  //!
+    bool m_anaTracks;       //!
+    bool m_anaElecs;        //!
+    bool m_anaMuons;        //!
 
     TTree*      m_elTree; //!
     TTree*      m_muTree; //!
@@ -80,6 +83,7 @@ namespace xTRT {
     virtual EL::StatusCode initialize();
     virtual EL::StatusCode execute();
 
+    void analyzeTrack(const xAOD::TrackParticle* track);
     void clearVectors();
     bool fillHitBasedVariables(const xAOD::TrackParticle* track,
                                const xAOD::TrackStateValidation* msos,
