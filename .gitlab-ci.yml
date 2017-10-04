@@ -7,7 +7,6 @@ trtframe:
     - source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh
     - mkdir ../build
     - cd ../build
-    - asetup AnalysisBase,21.2,latest
-    - lsetup 'sft releases/LCG_87/yamlcpp/0.5.1'
-    - cmake ../xTRTFrame -DYAMLCPP_ROOT=$SFT_HOME_yamlcpp
+    - asetup 21.2,AnalysisBase,latest
+    - cmake ../xTRTFrame
     - make
