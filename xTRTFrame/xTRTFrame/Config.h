@@ -56,14 +56,14 @@ namespace xTRT {
     float cut_elec_p;
     float cut_elec_pT;
     float cut_elec_eta;
-    bool  cut_elec_UTC;
     float cut_elec_relpT;
+    bool  cut_elec_UTC;
 
     float cut_muon_p;
     float cut_muon_pT;
     float cut_muon_eta;
-    bool  cut_muon_UTC;
     float cut_muon_relpT;
+    bool  cut_muon_UTC;
 
     void printConf() const;
 
@@ -73,43 +73,92 @@ namespace xTRT {
 
     bool parse(const std::string fileName, bool print_conf);
 
+    /// true if config says use GRL
     bool useGRL()  const;
+    /// true if config says use pileup reweighting
     bool usePRW()  const;
+    /// true if config says use trigger tools
     bool useTrig() const;
+    /// true if config says use InDetTrackSelectionTools
     bool useIDTS() const;
 
+    /// get list of GRL files defined in the config file
     const std::vector<std::string>& GRLFiles()     const;
+    /// get list of PRW config files defined in the config file
     const std::vector<std::string>& PRWConfFiles() const;
+    /// get list of PRW lumi files defined in the config file
     const std::vector<std::string>& PRWLumiFiles() const;
 
+    /// get list of electron triggers defined in the config file
     const std::vector<std::string>& electronTriggers()   const;
+    /// get list of dielectron triggers defined in the config file
     const std::vector<std::string>& dielectronTriggers() const;
     const std::vector<std::string>& muonTriggers()       const;
+    /// get list of dimuon triggers defined in the config file
     const std::vector<std::string>& dimuonTriggers()     const;
+    /// get list of misc. triggers defined in the config file
     const std::vector<std::string>& miscTriggers()       const;
 
+    /// get the track momentum cut (minimum cut)
     float track_p()        const;
+    /// get the track transverse momentum cut (minimum cut)
     float track_pT()       const;
+    /// get the track abs(eta) cut (maximum cut)
     float track_eta()      const;
+    /// get the track number of silicon hits cut (Pixel +SCT) (minimum cut)
     int   track_nSi()      const;
+    /// get the track number of pixel hits cut (minimum cut)
     int   track_nPix()     const;
+    /// get the number of total TRT hits cut (minimum cut)
     int   track_nTRT()     const;
+    /// get the number of precision TRT hits cut (minimum cut)
     int   track_nTRTprec() const;
 
+    /// get the muon momentum cut (minimum cut)
     float muon_p()     const;
+    /// get the muon transverse momentum cut (minimum cut)
     float muon_pT()    const;
+    /// get the muon abs(eta) cut (maximum cut)
     float muon_eta()   const;
-    bool  muon_UTC()   const;
+    /// get the muon relative transverse momentum cut
     float muon_relpT() const;
+    /// true if config says muons should also use track cuts
+    bool  muon_UTC()   const;
 
+    /// get the electron momentum cut (minimum cut)
     float elec_p()     const;
+    /// get the electron transverse momentum cut (minimum cut)
     float elec_pT()    const;
+    /// get the abs(eta) cut (maximum cut)
     float elec_eta()   const;
-    bool  elec_UTC()   const;
+    /// get the electron relative transverse momentum cut
     float elec_relpT() const;
+    /// true if config says electrons should also use track cuts
+    bool  elec_UTC()   const;
 
+    /** Get a value defined from in config file
+     *
+     *  This is for all non string types (bools, ints, floats, etc.).
+     *  For strings, use getStr
+     *
+     *  @param name the name of the variable in the configuration file
+     *  @param def the default value
+     */
     template <typename T>
-    T customOpt(const char* name) const;
+    const T getOpt(const char* name, const T def) const;
+
+    /** Get string defined from the config file
+     *
+     *  This is a special function for getting strings defined in the
+     *  config file. We have to make a special case here because the
+     *  TEnv class can only handle const char* for default values and
+     *  we can't call c_str() on the templated version (getOpt<T>)
+     *  which we use for all other types.
+     *
+     *  @param name the name of the variable in the configuration file
+     *  @param def the default string value.
+     */
+    const std::string getStrOpt(const char* name, const std::string def) const;
 
   };
 }
@@ -150,15 +199,19 @@ inline bool  xTRT::Config::muon_UTC()   const { return cut_muon_UTC;   }
 inline float xTRT::Config::muon_relpT() const { return cut_muon_relpT; }
 
 template <typename T>
-inline T xTRT::Config::customOpt(const char* name) const {
+inline const T xTRT::Config::getOpt(const char* name, const T def) const {
   if ( not m_rootEnv->Defined(name) ) {
-    XTRT_FATAL("The option " << name << " is not defined in your config file");
+    std::cout << "WARNING: " << name << " not defined! using default: " << def << std::endl;
   }
-  if      ( std::is_same<T,bool>::value   ) return m_rootEnv->GetValue(name,false);
-  else if ( std::is_same<T,int>::value    ) return m_rootEnv->GetValue(name,(int)0);
-  else if ( std::is_same<T,float>::value  ) return m_rootEnv->GetValue(name,(double)0);
-  else if ( std::is_same<T,double>::value ) return m_rootEnv->GetValue(name,(double)0);
-  else                                      return m_rootEnv->GetValue(name,"trash");
+  return m_rootEnv->GetValue(name,def);
+}
+
+inline const std::string xTRT::Config::getStrOpt(const char* name, const std::string def) const {
+  if ( not m_rootEnv->Defined(name) ) {
+    std::cout << "WARNING: " << name << " not defined! using default: " << def << std::endl;
+  }
+  std::string ret = m_rootEnv->GetValue(name,def.c_str());
+  return ret;
 }
 
 #endif

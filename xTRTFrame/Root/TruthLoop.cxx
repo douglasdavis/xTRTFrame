@@ -26,14 +26,16 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_CHECK(xTRT::Algorithm::histInitialize());
 
-  m_fillLeptonsOnly = config()->customOpt<bool>("LeptonsOnly");
-  m_saveHits        = config()->customOpt<bool>("StoreHits");
-  m_type0only       = config()->customOpt<bool>("Type0HitOnly");
-  m_divZweightBy1k  = config()->customOpt<bool>("DivZweightBy1k");
+  m_fillLeptonsOnly = config()->getOpt<bool>("LeptonsOnly",false);
+  m_saveHits        = config()->getOpt<bool>("StoreHits",false);
+  m_type0only       = config()->getOpt<bool>("Type0HitOnly",false);
+  m_divZweightBy1k  = config()->getOpt<bool>("DivZweightBy1k",false);
 
-  m_anaTracks = config()->customOpt<bool>("AnalyzeTracks");
-  m_anaElecs  = config()->customOpt<bool>("AnalyzeElectrons");
-  m_anaMuons  = config()->customOpt<bool>("AnalyzeMuons");
+  m_anaTracks = config()->getOpt<bool>("AnalyzeTracks",false);
+  m_anaElecs  = config()->getOpt<bool>("AnalyzeElectrons",false);
+  m_anaMuons  = config()->getOpt<bool>("AnalyzeMuons",false);
+
+  auto xx = config()->getStrOpt("TestOpt","lol");
 
   create(TH1F("h_averageMu","",70,-0.5,69.5));
 
