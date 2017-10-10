@@ -69,7 +69,7 @@ EL::StatusCode xTRT::Algorithm::initialize() {
 EL::StatusCode xTRT::Algorithm::execute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
 
-  if ( m_eventCounter % 5000 == 0 ) {
+  if ( m_eventCounter % config()->eventPrintCounter() == 0 ) {
     ATH_MSG_INFO("Event number = " << m_eventCounter);
   }
   m_eventCounter++;
@@ -88,6 +88,7 @@ EL::StatusCode xTRT::Algorithm::postExecute() {
 
 EL::StatusCode xTRT::Algorithm::finalize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
+  ANA_MSG_INFO("Done after " << m_eventCounter << " events.");
   if ( config()->useIDTS() ) {
     ANA_CHECK(m_trackSelToolHandle->finalize());
     ANA_CHECK(m_trackSelElecToolHandle->finalize());

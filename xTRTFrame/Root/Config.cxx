@@ -49,6 +49,8 @@ bool xTRT::Config::parse(const std::string fileName, bool print_conf) {
     fillVecFromSplit(miscTrigs,m_miscTrigs);
   }
 
+  m_eventPrintCounter = m_rootEnv->GetValue("EventPrintCounter",1000);
+
   cut_track_p        = m_rootEnv->GetValue("Tracks.p",0.0);
   cut_track_pT       = m_rootEnv->GetValue("Tracks.pT",0.0);
   cut_track_eta      = m_rootEnv->GetValue("Tracks.eta",2.0);
@@ -103,6 +105,8 @@ void xTRT::Config::printConf() const {
   printtrig("Dielectron Trigs",m_dielTrigs);
   printtrig("Dimuon Trigs",m_dimuTrigs);
   printtrig("Misc Trigs",m_miscTrigs);
+
+  std::cout << "Event print counter: " << m_eventPrintCounter << std::endl;
 
   std::cout << "Track p cut: " << cut_track_p << std::endl;
   std::cout << "Track pT cut: " << cut_track_pT << std::endl;

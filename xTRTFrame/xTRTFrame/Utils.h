@@ -37,8 +37,8 @@ inline auto xTRT::stringSplit(const std::string &s, char delim) {
   \def XTRT_FATAL
   Print MESSAGE to std::cerr and exit with EXIT_FAILURE
 */
-#define XTRT_FATAL(MESSAGE)                                      \
-  std::cerr << "xTRTFrame FAILURE\t" << MESSAGE << std::endl;    \
-  std::exit(EXIT_FAILURE);
+#define XTRT_FATAL(MESSAGE)                                       \
+  { std::cerr << "xTRTFrame FAILURE\t" << MESSAGE << std::endl;   \
+    std::exit(EXIT_FAILURE); }
 
 #endif

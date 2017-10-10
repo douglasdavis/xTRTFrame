@@ -45,6 +45,8 @@ namespace xTRT {
     std::vector<std::string> m_dimuTrigs;
     std::vector<std::string> m_miscTrigs;
 
+    int m_eventPrintCounter;
+
     float cut_track_p;
     float cut_track_pT;
     float cut_track_eta;
@@ -98,6 +100,9 @@ namespace xTRT {
     const std::vector<std::string>& dimuonTriggers()     const;
     /// get list of misc. triggers defined in the config file
     const std::vector<std::string>& miscTriggers()       const;
+
+    /// get the event print "on factors of" value.
+    int eventPrintCounter() const;
 
     /// get the track momentum cut (minimum cut)
     float track_p()        const;
@@ -177,6 +182,8 @@ inline const std::vector<std::string>& xTRT::Config::dielectronTriggers() const 
 inline const std::vector<std::string>& xTRT::Config::muonTriggers()       const { return m_muTrigs;   }
 inline const std::vector<std::string>& xTRT::Config::dimuonTriggers()     const { return m_dimuTrigs; }
 inline const std::vector<std::string>& xTRT::Config::miscTriggers()       const { return m_miscTrigs; }
+
+inline int xTRT::Config::eventPrintCounter() const { return m_eventPrintCounter; }
 
 inline float xTRT::Config::track_p()        const { return cut_track_p;        }
 inline float xTRT::Config::track_pT()       const { return cut_track_pT;       }

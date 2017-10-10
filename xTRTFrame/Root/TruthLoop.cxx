@@ -35,8 +35,6 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
   m_anaElecs  = config()->getOpt<bool>("AnalyzeElectrons",false);
   m_anaMuons  = config()->getOpt<bool>("AnalyzeMuons",false);
 
-  auto xx = config()->getStrOpt("TestOpt","lol");
-
   create(TH1F("h_averageMu","",70,-0.5,69.5));
 
   TFile *outFile = wk()->getOutputFile(m_outputName);
