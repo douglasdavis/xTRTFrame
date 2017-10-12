@@ -125,25 +125,6 @@ namespace xTRT {
     /// Sets the treeOutput name for the EL::NTupleSvc
     void setTreeOutputName(const std::string name);
 
-    /// EventLoop API function
-    virtual EL::StatusCode setupJob(EL::Job& job);
-    /// EventLoop API function
-    virtual EL::StatusCode fileExecute();
-    /// EventLoop API function
-    virtual EL::StatusCode histInitialize();
-    /// EventLoop API function
-    virtual EL::StatusCode changeInput(bool firstFile);
-    /// EventLoop API function
-    virtual EL::StatusCode initialize();
-    /// EventLoop API function
-    virtual EL::StatusCode execute();
-    /// EventLoop API function
-    virtual EL::StatusCode postExecute();
-    /// EventLoop API function
-    virtual EL::StatusCode finalize();
-    /// EventLoop API function
-    virtual EL::StatusCode histFinalize();
-
     /// creates and sets up the InDetTrackSelectionTool
     EL::StatusCode setupTrackSelectionTools();
     /// creates and sets up the GoodRunsListSelectionTool
@@ -193,6 +174,8 @@ namespace xTRT {
     static const xAOD::TruthParticle* getTruth(const xAOD::TrackParticle* track);
     /// retrieve the "original" xAOD::TrackParticle pointer from the electron
     static const xAOD::TrackParticle* getTrack(const xAOD::Electron* electron);
+    /// retrieve the GSF xAOD::TrackParticle pointer from the electron
+    static const xAOD::TrackParticle* getGSFTrack(const xAOD::Electron* electron);
     /// retrieve the xAOD::TrackParticle pointer from the muon
     static const xAOD::TrackParticle* getTrack(const xAOD::Muon* muon);
 
@@ -275,6 +258,25 @@ namespace xTRT {
     const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelElecToolHandle() const;
     /// get reference to the InDetTrackSelectionTool handle for muons
     const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelMuonToolHandle() const;
+
+    /// EventLoop API function
+    virtual EL::StatusCode setupJob(EL::Job& job);
+    /// EventLoop API function
+    virtual EL::StatusCode fileExecute();
+    /// EventLoop API function
+    virtual EL::StatusCode histInitialize();
+    /// EventLoop API function
+    virtual EL::StatusCode changeInput(bool firstFile);
+    /// EventLoop API function
+    virtual EL::StatusCode initialize();
+    /// EventLoop API function
+    virtual EL::StatusCode execute();
+    /// EventLoop API function
+    virtual EL::StatusCode postExecute();
+    /// EventLoop API function
+    virtual EL::StatusCode finalize();
+    /// EventLoop API function
+    virtual EL::StatusCode histFinalize();
 
     ClassDef(xTRT::Algorithm, 1);
 

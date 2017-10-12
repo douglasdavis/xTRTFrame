@@ -59,9 +59,18 @@ const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* 
 }
 
 const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Electron* electron) {
-  const xAOD::TrackParticle *track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
+  const xAOD::TrackParticle* track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
   if ( not track ) {
     XTRT_FATAL("No original track particle from electron");
+    return nullptr;
+  }
+  return track;
+}
+
+const xAOD::TrackParticle* xTRT::Algorithm::getGSFTrack(const xAOD::Electron* electron) {
+  const xAOD::TrackParticle* track = electron->trackParticle();
+  if ( not track ) {
+    XTRT_FATAL("No original GSF track particle from electron");
     return nullptr;
   }
   return track;
