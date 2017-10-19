@@ -1,0 +1,59 @@
+// TNPAlgorithm inline definions
+
+inline void xTRT::TNPAlgorithm::clear() {
+  m_selectionCalled = false;
+  m_containersMade  = false;
+  m_probeIndices.clear();
+  m_tagIndices.clear();
+  m_invMasses.clear();
+}
+
+inline bool xTRT::TNPAlgorithm::passAuthor(const xAOD::Electron* el) {
+  bool ele = el->author(xAOD::EgammaParameters::AuthorElectron);
+  bool amb = el->author(xAOD::EgammaParameters::AuthorAmbiguous);
+  return (ele || amb);
+}
+
+inline bool xTRT::TNPAlgorithm::passTightLH(const xAOD::Electron* el) {
+  return el->passSelection(xAOD::EgammaParameters::LHTight);
+}
+
+inline bool xTRT::TNPAlgorithm::passLoose(const xAOD::Electron* el) {
+  return el->passSelection(xAOD::EgammaParameters::Loose);
+}
+
+inline const xAOD::ElectronContainer* xTRT::TNPAlgorithm::probeElectrons() {
+  if ( not m_containersMade ) {
+    ANA_MSG_ERROR("TNP Containers not made! Forgot to call xTRT::TNPAlgorithm::execute()?");
+  }
+  const xAOD::ElectronContainer* probes = nullptr;
+  if ( evtStore()->retrieve(probes,"TNPProbeElectrons").isFailure() ) {
+    ANA_MSG_ERROR("Couldn't retrieve TNP Probe Electron container");
+    return nullptr;
+  }
+  return probes;
+}
+
+inline const xAOD::ElectronContainer* xTRT::TNPAlgorithm::tagElectrons() {
+  if ( not m_containersMade ) {
+    ANA_MSG_ERROR("TNP containers not made! Forgot to call xTRT::TNPAlgorithm::execute()?");
+  }
+  const xAOD::ElectronContainer* tags = nullptr;
+  if ( evtStore()->retrieve(tags,"TNPTagElectrons").isFailure() ) {
+    ANA_MSG_ERROR("Couldn't retrieve TNP Tag Electron container");
+    return nullptr;
+  }
+  return tags;
+}
+
+inline const std::vector<float>& xTRT::TNPAlgorithm::invMasses() const {
+  return m_invMasses;
+}
+
+inline const std::vector<std::size_t>& xTRT::TNPAlgorithm::probeIndices() const {
+  return m_probeIndices;
+}
+
+inline const std::vector<std::size_t>& xTRT::TNPAlgorithm::tagIndices() const {
+  return m_tagIndices;
+}

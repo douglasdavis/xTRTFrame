@@ -95,6 +95,54 @@ inline const C* xTRT::Algorithm::selectedContainer(const C* raw,
   return retObjs;
 }
 
+inline int xTRT::Algorithm::nTRT(const xAOD::TrackParticle* track) {
+  uint8_t nTRThits = -1;
+  uint8_t nTRTouts = -1;
+  if ( !track->summaryValue(nTRThits,xAOD::numberOfTRTHits)     ) XTRT_FATAL("No TRT hits");
+  if ( !track->summaryValue(nTRTouts,xAOD::numberOfTRTOutliers) ) XTRT_FATAL("No TRT outliers");
+  return ((int)nTRThits + (int)nTRTouts);
+}
+
+inline int xTRT::Algorithm::nTRT_PrecTube(const xAOD::TrackParticle* track) {
+  uint8_t nTRThits = -1;
+  if ( !track->summaryValue(nTRThits,xAOD::numberOfTRTHits) ) XTRT_FATAL("No TRT hits");
+  return ((int)nTRThits);
+}
+
+inline int xTRT::Algorithm::nTRT_Outlier(const xAOD::TrackParticle* track) {
+  uint8_t nTRTouts = -1;
+  if ( !track->summaryValue(nTRTouts,xAOD::numberOfTRTOutliers) ) XTRT_FATAL("No TRT outliers");
+  return ((int)nTRTouts);
+}
+
+inline int xTRT::Algorithm::nPixel(const xAOD::TrackParticle* track) {
+  uint8_t nPix = -1;
+  if ( !track->summaryValue(nPix,xAOD::numberOfPixelHits) ) XTRT_FATAL("No Pix hits?");
+  return ((int)nPix);
+}
+
+inline int xTRT::Algorithm::nSilicon(const xAOD::TrackParticle* track) {
+  uint8_t nSCT = -1;
+  if ( !track->summaryValue(nSCT,xAOD::numberOfSCTHits) ) XTRT_FATAL("No SCT hits?");
+  return (nPixel(track) + (int)nSCT);
+}
+
+inline int xTRT::Algorithm::nSiliconHoles(const xAOD::TrackParticle* track) {
+  uint8_t nPixHole = -1;
+  uint8_t nSCTHole = -1;
+  if ( !track->summaryValue(nPixHole,xAOD::numberOfPixelHoles) ) XTRT_FATAL("No Pix holes?");
+  if ( !track->summaryValue(nSCTHole,xAOD::numberOfSCTHoles)   ) XTRT_FATAL("No SCT holes?");
+  return ((int)nPixHole + (int)nSCTHole);
+}
+
+inline int xTRT::Algorithm::nSiliconShared(const xAOD::TrackParticle* track) {
+  uint8_t nSCTSh = -1;
+  uint8_t nPixSh = -1;
+  if ( !track->summaryValue(nPixSh,xAOD::numberOfPixelSharedHits) ) XTRT_FATAL("No Pix shared?");
+  if ( !track->summaryValue(nSCTSh,xAOD::numberOfSCTSharedHits)   ) XTRT_FATAL("No SCT shared?");
+  return ((int)nSCTSh + (int)nPixSh);
+}
+
 inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& xTRT::Algorithm::trackSelToolHandle() const {
   return m_trackSelToolHandle;
 }

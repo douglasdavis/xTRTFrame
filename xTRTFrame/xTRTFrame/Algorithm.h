@@ -171,13 +171,13 @@ namespace xTRT {
     const xAOD::MuonContainer*          selectedMuons();
 
     /// retrieves the TruthParticle associated with the input track particle
-    static const xAOD::TruthParticle* getTruth(const xAOD::TrackParticle* track);
+    const xAOD::TruthParticle* getTruth(const xAOD::TrackParticle* track) const;
     /// retrieve the "original" xAOD::TrackParticle pointer from the electron
-    static const xAOD::TrackParticle* getTrack(const xAOD::Electron* electron);
+    const xAOD::TrackParticle* getTrack(const xAOD::Electron* electron) const;
     /// retrieve the GSF xAOD::TrackParticle pointer from the electron
-    static const xAOD::TrackParticle* getGSFTrack(const xAOD::Electron* electron);
+    const xAOD::TrackParticle* getGSFTrack(const xAOD::Electron* electron) const;
     /// retrieve the xAOD::TrackParticle pointer from the muon
-    static const xAOD::TrackParticle* getTrack(const xAOD::Muon* muon);
+    const xAOD::TrackParticle* getTrack(const xAOD::Muon* muon) const;
 
     /// return the total event weight
     float eventWeight() const;
@@ -211,12 +211,15 @@ namespace xTRT {
     static int nTRT_PrecTube(const xAOD::TrackParticle* track);
     /// return the number of TRT outliers
     static int nTRT_Outlier(const xAOD::TrackParticle* track);
+    /// return the number of Pixel hits
+    static int nPixel(const xAOD::TrackParticle* track);
     /// return the number of silicon hits (Pixel + SCT)
     static int nSilicon(const xAOD::TrackParticle* track);
     /// return the number of silicon holes (Pixel + SCT)
     static int nSiliconHoles(const xAOD::TrackParticle* track);
     /// return the number of silicon shared hits (Pixel + SCT)
     static int nSiliconShared(const xAOD::TrackParticle* track);
+
     /// return the (delta z0)*sin(theta) of the track
     static float deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx);
 

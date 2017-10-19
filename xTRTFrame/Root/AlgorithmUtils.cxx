@@ -47,44 +47,50 @@ const xAOD::MuonContainer* xTRT::Algorithm::selectedMuons() {
     (muonContainer(),passMuonSelection,"GoodMuons");
 }
 
-const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* track) {
+const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* track) const {
   const xAOD::TruthParticle* truthParticle = nullptr;
   if ( xTRT::Acc::truthParticleLink.isAvailable(*track) ) {
     const auto truthLink = xTRT::Acc::truthParticleLink(*track);
     if ( truthLink.isValid() ) {
       truthParticle = *truthLink;
     }
+    else {
+      ANA_MSG_WARNING("trunkLink is invalid!");
+    }
+  }
+  else {
+    ANA_MSG_WARNING("truthLink is not available!");
   }
   return truthParticle;
 }
 
-const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Electron* electron) {
+const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Electron* electron) const {
   const xAOD::TrackParticle* track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
   if ( not track ) {
-    XTRT_FATAL("No original track particle from electron");
+    ANA_MSG_DEBUG("No original track particle from electron");
     return nullptr;
   }
   return track;
 }
 
-const xAOD::TrackParticle* xTRT::Algorithm::getGSFTrack(const xAOD::Electron* electron) {
+const xAOD::TrackParticle* xTRT::Algorithm::getGSFTrack(const xAOD::Electron* electron) const {
   const xAOD::TrackParticle* track = electron->trackParticle();
   if ( not track ) {
-    XTRT_FATAL("No original GSF track particle from electron");
+    ANA_MSG_DEBUG("No original GSF track particle from electron");
     return nullptr;
   }
   return track;
 }
 
-const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Muon* muon) {
+const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Muon* muon) const {
   auto idtl = muon->inDetTrackParticleLink();
   if ( not idtl.isValid() ) {
-    XTRT_FATAL("No valid muon->inDetTrackParticleLink()");
+    ANA_MSG_DEBUG("invalid xAOD::Muon::inDetTrackParticleLink");
     return nullptr;
   }
   auto trk = *idtl;
   if ( not trk ) {
-    XTRT_FATAL("Track is null after muon track link dereference");
+    ANA_MSG_DEBUG("nullptr from inDetTrackParticleLink on muon");
     return nullptr;
   }
   return trk;
@@ -97,7 +103,7 @@ bool xTRT::Algorithm::triggerPassed(const std::string trigName) const {
 }
 
 bool xTRT::Algorithm::triggersPassed(const std::vector<std::string>& trigNames) const {
-  for ( auto const& name : trigNames ) {
+  for ( const auto& name : trigNames ) {
     auto chainGroup = m_trigDecToolHandle->getChainGroup(name);
     if ( chainGroup->isPassed() ) return true;
   }
@@ -136,50 +142,6 @@ bool xTRT::Algorithm::passGRL() const {
     return true;
   }
   return m_GRLToolHandle->passRunLB(*m_eventInfo);
-}
-
-int xTRT::Algorithm::nTRT(const xAOD::TrackParticle* track) {
-  uint8_t nTRThits = -1;
-  uint8_t nTRTouts = -1;
-  if ( !track->summaryValue(nTRThits,xAOD::numberOfTRTHits)     ) XTRT_FATAL("No TRT hits");
-  if ( !track->summaryValue(nTRTouts,xAOD::numberOfTRTOutliers) ) XTRT_FATAL("No TRT outliers");
-  return ((int)nTRThits + (int)nTRTouts);
-}
-
-int xTRT::Algorithm::nTRT_PrecTube(const xAOD::TrackParticle* track) {
-  uint8_t nTRThits = -1;
-  if ( !track->summaryValue(nTRThits,xAOD::numberOfTRTHits) ) XTRT_FATAL("No TRT hits");
-  return ((int)nTRThits);
-}
-
-int xTRT::Algorithm::nTRT_Outlier(const xAOD::TrackParticle* track) {
-  uint8_t nTRTouts = -1;
-  if ( !track->summaryValue(nTRTouts,xAOD::numberOfTRTOutliers) ) XTRT_FATAL("No TRT outliers");
-  return ((int)nTRTouts);
-}
-
-int xTRT::Algorithm::nSilicon(const xAOD::TrackParticle* track) {
-  uint8_t nPix = -1;
-  uint8_t nSCT = -1;
-  if ( !track->summaryValue(nPix,xAOD::numberOfPixelHits) ) XTRT_FATAL("No Pix hits?");
-  if ( !track->summaryValue(nSCT,xAOD::numberOfSCTHits)   ) XTRT_FATAL("No SCT hits?");
-  return ((int)nPix + (int)nSCT);
-}
-
-int xTRT::Algorithm::nSiliconHoles(const xAOD::TrackParticle* track) {
-  uint8_t nPixHole = -1;
-  uint8_t nSCTHole = -1;
-  if ( !track->summaryValue(nPixHole,xAOD::numberOfPixelHoles) ) XTRT_FATAL("No Pix holes?");
-  if ( !track->summaryValue(nSCTHole,xAOD::numberOfSCTHoles)   ) XTRT_FATAL("No SCT holes?");
-  return ((int)nPixHole + (int)nSCTHole);
-}
-
-int xTRT::Algorithm::nSiliconShared(const xAOD::TrackParticle* track) {
-  uint8_t nSCTSh = -1;
-  uint8_t nPixSh = -1;
-  if ( !track->summaryValue(nPixSh,xAOD::numberOfPixelSharedHits) ) XTRT_FATAL("No Pix shared?");
-  if ( !track->summaryValue(nSCTSh,xAOD::numberOfSCTSharedHits)   ) XTRT_FATAL("No SCT shared?");
-  return ((int)nSCTSh + (int)nPixSh);
 }
 
 float xTRT::Algorithm::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) {

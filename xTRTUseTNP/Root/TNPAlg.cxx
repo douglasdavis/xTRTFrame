@@ -11,57 +11,47 @@
 #include <TH1F.h>
 
 // xTRTFrame
-#include <xTRTFrame/TruthLoop.h>
+#include <xTRTUseTNP/TNPAlg.h>
 
 // C++
 #include <sstream>
 
-ClassImp(xTRT::TruthLoop)
+ClassImp(xTRT::TNPAlg)
 
-xTRT::TruthLoop::TruthLoop() : xTRT::Algorithm() {}
+xTRT::TNPAlg::TNPAlg() : xTRT::TNPAlgorithm() {}
 
-xTRT::TruthLoop::~TruthLoop() {}
+xTRT::TNPAlg::~TNPAlg() {}
 
-EL::StatusCode xTRT::TruthLoop::histInitialize() {
+EL::StatusCode xTRT::TNPAlg::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(xTRT::Algorithm::histInitialize());
+  ANA_CHECK(xTRT::TNPAlgorithm::histInitialize());
 
-  m_fillLeptonsOnly = config()->getOpt<bool>("LeptonsOnly",false);
   m_saveHits        = config()->getOpt<bool>("StoreHits",false);
   m_type0only       = config()->getOpt<bool>("Type0HitOnly",false);
-  m_divZweightBy1k  = config()->getOpt<bool>("DivZweightBy1k",false);
-
-  m_anaTracks = config()->getOpt<bool>("AnalyzeTracks",false);
-  m_anaElecs  = config()->getOpt<bool>("AnalyzeElectrons",false);
-  m_anaMuons  = config()->getOpt<bool>("AnalyzeMuons",false);
 
   create(TH1F("h_averageMu","",70,-0.5,69.5));
+  create(TH1F("h_invMass","",30,75,105));
 
   TFile *outFile = wk()->getOutputFile(m_outputName);
-  m_true_Zee_tree      = new TTree("true_Zee",     "true_Zee");
-  m_true_Zmumu_tree    = new TTree("true_Zmumu",   "true_Zmumu");
-  m_true_Jpsiee_tree   = new TTree("true_Jpsiee",  "true_Jpsiee");
-  m_true_Jpsimumu_tree = new TTree("true_Jpsimumu","true_Jpsimumu");
+  m_tree_el_probes   = new TTree("electrons_probes","electrons_probes");
+  m_tree_el_tags     = new TTree("electrons_tags",  "electrons_tags");
+  m_tree_mu          = new TTree("muons",           "muons");
 
-  for ( TTree* itree : { m_true_Zee_tree, m_true_Zmumu_tree, m_true_Jpsiee_tree, m_true_Jpsimumu_tree } ) {
+  for ( TTree* itree : { m_tree_el_tags, m_tree_el_probes, m_tree_mu } ) {
     itree->SetDirectory(outFile);
     itree->Branch("avgmu",      &m_avgMu);
     itree->Branch("weight",     &m_weight);
-    //itree->Branch("pdgId",      &m_pdgId);
-    //itree->Branch("truthMass",  &m_truthMass);
     itree->Branch("trkOcc",     &m_trkOcc);
     itree->Branch("p",          &m_p);
     itree->Branch("pT",         &m_pT);
     itree->Branch("eta",        &m_eta);
     itree->Branch("phi",        &m_phi);
-    //itree->Branch("theta",      &m_theta);
     itree->Branch("eProbHT",    &m_eProbHT);
     itree->Branch("nTRThits",   &m_nTRThits);
     itree->Branch("nTRTouts",   &m_nTRTouts);
     itree->Branch("nArhits",    &m_nArhits);
     itree->Branch("nXehits",    &m_nXehits);
     itree->Branch("nHThitsMan", &m_nHThitsMan);
-    //itree->Branch("dEdxNoHT",   &m_dEdxNoHT);
     itree->Branch("NhitsdEdx",  &m_nHitsdEdx);
     itree->Branch("sumToT",     &m_sumToT);
     itree->Branch("sumL",       &m_sumL);
@@ -90,79 +80,41 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::TruthLoop::initialize() {
+EL::StatusCode xTRT::TNPAlg::initialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(xTRT::Algorithm::initialize());
+  ANA_CHECK(xTRT::TNPAlgorithm::initialize());
 
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::TruthLoop::execute() {
+EL::StatusCode xTRT::TNPAlg::execute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
-  ANA_CHECK(xTRT::Algorithm::execute());
+  ANA_CHECK(xTRT::TNPAlgorithm::execute());
 
   if ( !passGRL() ) return EL::StatusCode::SUCCESS;
 
-  m_weight = eventWeight();
-  if ( m_divZweightBy1k ) m_weight = m_weight/1000.0;
+  float w = eventWeight();
+
   m_avgMu  = averageMu();
-  grab<TH1F>("h_averageMu")->Fill(m_avgMu,m_weight);
+  grab<TH1F>("h_averageMu")->Fill(m_avgMu,w);
 
-  if ( m_anaTracks ) {
-    auto tracks = selectedTracks();
-    for ( const auto& track : *tracks ) {
-      analyzeTrack(track);
-    }
-  }
+  auto probes = probeElectrons();
+  auto tags   = tagElectrons();
 
-  if ( m_anaElecs ) {
-    auto electrons = selectedElectrons();
-    for ( const auto& electron : *electrons ) {
-      analyzeTrack(getTrack(electron));
-    }
-  }
+  ANA_MSG_INFO("N probes: " << probes->size());
+  ANA_MSG_INFO("N tags:   " << tags->size());
 
-  if ( m_anaMuons ) {
-    auto muons = selectedMuons();
-    for ( const auto& muon : *muons ) {
-      analyzeTrack(getTrack(muon));
-    }
+  for ( const float m : invMasses() ) {
+    grab<TH1F>("h_invMass")->Fill(m*toGeV,w);
   }
 
   return EL::StatusCode::SUCCESS;
 }
 
-void xTRT::TruthLoop::analyzeTrack(const xAOD::TrackParticle* track) {
-  // check for truth particle and el or mu
-  auto truth = getTruth(track);
-  if ( truth == nullptr ) {
-    ANA_MSG_DEBUG("truth is nullptr!");
-    return;
-  }
-  m_pdgId = std::abs(truth->pdgId());
-  bool is_el = m_pdgId == 11;
-  bool is_mu = m_pdgId == 13;
-  if ( !(is_el || is_mu) ) return;
-
-  // check for Z or jpsi
-  auto parent = truth->parent();
-  if ( parent == nullptr ) return;
-  bool is_from_z = parent->isZ();
-  bool is_from_j = parent->pdgId() == 443;
-  if ( !(is_from_z || is_from_j) ) return;
-
+void xTRT::TNPAlg::analyzeTrack(const xAOD::TrackParticle* track, const bool is_el, const bool is_tag) {
   // check for vertex
   auto vtx = track->vertex();
   if ( vtx == nullptr ) return;
-
-  // more track selection
-  bool failTrkSel = false;
-  if ( config()->useIDTS() ) {
-    if      ( is_el ) failTrkSel = !(trackSelElecToolHandle()->accept(*track,vtx));
-    else if ( is_mu ) failTrkSel = !(trackSelMuonToolHandle()->accept(*track,vtx));
-    else return;
-  }
-  if ( failTrkSel ) return;
 
   uint8_t ntrthits = -1;
   uint8_t nxehits  = -1;
@@ -179,7 +131,6 @@ void xTRT::TruthLoop::analyzeTrack(const xAOD::TrackParticle* track) {
   m_sumL        = 0.0;
   m_sumToT      = 0.0;
 
-  m_truthMass = truth->m();
   m_pT        = track->pt();
   m_p         = track->p4().P();
   m_eta       = track->eta();
@@ -187,11 +138,7 @@ void xTRT::TruthLoop::analyzeTrack(const xAOD::TrackParticle* track) {
   m_theta     = track->theta();
 
   m_trkOcc    = get(xTRT::Acc::TRTTrackOccupancy,track,"TRTTrackOccupancy");
-  //m_eProbToT  = get(xTRT::Acc::eProbabilityToT,track,"eProbabilityToT");
   m_eProbHT   = get(xTRT::Acc::eProbabilityHT,track,"eProbabilityHT");
-
-  //m_dEdxNoHT  = get(xTRT::Acc::ToT_dEdx_noHT_divByL,track,"ToT_dEdx_noHT_divByL");
-  //m_nHitsdEdx = get(xTRT::Acc::ToT_usedHits_noHT_divByL,track,"ToT_usedHits_noHT_divByL");
 
   const xAOD::TrackStateValidation* msos = nullptr;
   const xAOD::TrackMeasurementValidation* driftCircle = nullptr;
@@ -213,21 +160,20 @@ void xTRT::TruthLoop::analyzeTrack(const xAOD::TrackParticle* track) {
   m_fHTMB = (float)m_nHThitsMan / (m_nTRThits+m_nTRTouts);
   m_fAr   = (float)m_nArhits / (m_nTRThits+m_nTRTouts);
 
-  if      ( is_el && is_from_z ) m_true_Zee_tree->Fill();
-  else if ( is_mu && is_from_z ) m_true_Zmumu_tree->Fill();
-  else if ( is_el && is_from_j ) m_true_Jpsiee_tree->Fill();
-  else if ( is_mu && is_from_j ) m_true_Jpsimumu_tree->Fill();
+  if      ( is_el and  is_tag ) m_tree_el_tags->Fill();
+  else if ( is_el and !is_tag ) m_tree_el_probes->Fill();
+  else if ( not is_el         ) m_tree_mu->Fill();
   else {
-    XTRT_FATAL("Not el/mu or from Z/Jpsi???");
+    XTRT_FATAL("Not tag/probe el or just a mu?");
   }
 
   clearVectors();
 }
 
-bool xTRT::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
-                                            const xAOD::TrackStateValidation* msos,
-                                            const xAOD::TrackMeasurementValidation* driftCircle,
-                                            const bool type0only) {
+bool xTRT::TNPAlg::fillHitBasedVariables(const xAOD::TrackParticle* track,
+                                          const xAOD::TrackStateValidation* msos,
+                                          const xAOD::TrackMeasurementValidation* driftCircle,
+                                          const bool type0only) {
   auto hit = getHitSummary(track,msos,driftCircle);
   if ( type0only && (hit.type != 0) ) return false;
   m_type.push_back(hit.type);
@@ -256,7 +202,7 @@ bool xTRT::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
   return true;
 }
 
-void xTRT::TruthLoop::clearVectors() {
+void xTRT::TNPAlg::clearVectors() {
   m_HTMB       .clear();
   m_gasType    .clear();
   m_bec        .clear();

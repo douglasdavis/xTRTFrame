@@ -1,9 +1,6 @@
 // ATLAS
 #include <EventLoop/Job.h>
-#include <EventLoop/StatusCode.h>
-#include <AsgTools/MessageCheck.h>
 #include <xAODRootAccess/Init.h>
-#include <xAODRootAccess/TEvent.h>
 
 // ROOT
 #include <TSystem.h>
@@ -13,14 +10,9 @@
 // xTRTFrame
 #include <xTRTFrame/Algorithm.h>
 
-// this is needed to distribute the algorithm to the workers
 ClassImp(xTRT::Algorithm)
 
-xTRT::Algorithm::Algorithm()
-  : m_config()
-{
-  SetName("xTRT::Algorithm");
-}
+xTRT::Algorithm::Algorithm() : EL::Algorithm(), m_config() {}
 
 xTRT::Algorithm::~Algorithm() {}
 
@@ -29,7 +21,6 @@ EL::StatusCode xTRT::Algorithm::setupJob(EL::Job& job) {
   job.options()->setDouble(EL::Job::optXAODSummaryReport, 0);
   job.useXAOD();
   ANA_CHECK(xAOD::Init("xTRTFrame"));
-
   return EL::StatusCode::SUCCESS;
 }
 

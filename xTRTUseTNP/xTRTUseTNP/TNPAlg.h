@@ -1,43 +1,33 @@
-#ifndef xTRTFrame_TruthLoop_h
-#define xTRTFrame_TruthLoop_h
+#ifndef xTRTUseTNP_TNPAlg_h
+#define xTRTUseTNP_TNPAlg_h
 
 // xTRTFrame
-#include <xTRTFrame/Algorithm.h>
+#include <xTRTFrame/TNPAlgorithm.h>
 
 namespace xTRT {
 
-  class TruthLoop : public xTRT::Algorithm {
+  class TNPAlg : public xTRT::TNPAlgorithm {
 
   private:
 
-    bool m_fillLeptonsOnly; //!
     bool m_saveHits;        //!
     bool m_type0only;       //!
-    bool m_divZweightBy1k;  //!
-    bool m_anaTracks;       //!
-    bool m_anaElecs;        //!
-    bool m_anaMuons;        //!
 
-    TTree* m_true_Zee_tree;      //!
-    TTree* m_true_Zmumu_tree;    //!
-    TTree* m_true_Jpsiee_tree;   //!
-    TTree* m_true_Jpsimumu_tree; //!
+    TTree* m_tree_el_tags;   //!
+    TTree* m_tree_el_probes; //!
+    TTree* m_tree_mu;        //!
 
     float       m_avgMu;        //!
     float       m_weight;       //!
-    int         m_pdgId;        //!
     float       m_trkOcc;       //!
     float       m_pT;           //!
     float       m_p;            //!
-    float       m_truthMass;    //!
     float       m_eta;          //!
     float       m_phi;          //!
     float       m_theta;        //!
     float       m_eProbHT;      //!
     float       m_eProbToT;     //!
-    float       m_eProbToT2;    //!
     float       m_eProbComb;    //!
-    float       m_eProbComb2;   //!
     int         m_nTRThits;     //!
     int         m_nTRThitsMan;  //!
     int         m_nTRTouts;     //!
@@ -74,21 +64,21 @@ namespace xTRT {
 
   public:
 
-    TruthLoop();
-    virtual ~TruthLoop();
+    TNPAlg();
+    virtual ~TNPAlg();
 
     virtual EL::StatusCode histInitialize();
     virtual EL::StatusCode initialize();
     virtual EL::StatusCode execute();
 
-    void analyzeTrack(const xAOD::TrackParticle* track);
+    void analyzeTrack(const xAOD::TrackParticle* track, const bool is_el, const bool is_tag);
     void clearVectors();
     bool fillHitBasedVariables(const xAOD::TrackParticle* track,
                                const xAOD::TrackStateValidation* msos,
                                const xAOD::TrackMeasurementValidation* driftCircle,
                                const bool type0only);
 
-    ClassDef(xTRT::TruthLoop, 1);
+    ClassDef(xTRT::TNPAlg, 1);
 
   };
 
