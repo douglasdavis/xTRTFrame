@@ -110,18 +110,33 @@ bool xTRT::Algorithm::triggersPassed(const std::vector<std::string>& trigNames) 
   return false;
 }
 
-float xTRT::Algorithm::eventWeight() const {
-  if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) ) {
-    auto weights = m_eventInfo->mcEventWeights();
-    if ( !(weights.empty()) ) return weights.at(0);
+bool xTRT::Algorithm::singleElectronTrigMatched(const xAOD::Electron* electron) {
+  if ( not config()->useTrig() ) {
+    ANA_MSG_WARNING("Asking for trigger matching without trigger enabled? Ret true");
+    return true;
+  }
+  for ( const std::string trigstr : config()->electronTriggers() ) {
+    if ( m_trigMatchingToolHandle->match(*electron,trigstr) ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+float xTRT::Algorithm::eventWeight() {
+  const xAOD::EventInfo* evtinfo = eventInfo();
+  if ( evtinfo->eventType(xAOD::EventInfo::IS_SIMULATION) ) {
+    auto weights = evtinfo->mcEventWeights();
+    if ( not weights.empty() ) return weights.at(0);
     return 1.0;
   }
   return 1.0;
 }
 
 float xTRT::Algorithm::averageMu() {
+  const xAOD::EventInfo* evtinfo = eventInfo();
   if ( !(m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION)) && config()->usePRW() ) {
-    return m_PRWToolHandle->getCorrectedAverageInteractionsPerCrossing(*m_eventInfo,true);
+    return m_PRWToolHandle->getCorrectedAverageInteractionsPerCrossing(*evtinfo,true);
   }
   else {
     return m_eventInfo->averageInteractionsPerCrossing();
@@ -150,11 +165,11 @@ float xTRT::Algorithm::deltaz0sinTheta(const xAOD::TrackParticle *track, const x
   return dz0sinth;
 }
 
-double xTRT::Algorithm::d0signif(const xAOD::TrackParticle *track) const {
+double xTRT::Algorithm::d0signif(const xAOD::TrackParticle *track, const xAOD::EventInfo* evtinfo) {
   double d0sig = xAOD::TrackingHelpers::d0significance(track,
-                                                       m_eventInfo->beamPosSigmaX(),
-                                                       m_eventInfo->beamPosSigmaY(),
-                                                       m_eventInfo->beamPosSigmaXY());
+                                                       evtinfo->beamPosSigmaX(),
+                                                       evtinfo->beamPosSigmaY(),
+                                                       evtinfo->beamPosSigmaXY());
   return d0sig;
 }
 

@@ -59,11 +59,4 @@ atlas_add_library(xTRTFrame Root/*.cxx xTRTFrame/*.h xTRTFrame/*.icc xTRTFrame/*
   INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}
   )
 
-atlas_add_executable(runTruthAlg
-  util/runTruthAlg.cxx
-  LINK_LIBRARIES ${ROOT_LIBRARIES} xTRTFrame
-  )
-
-atlas_install_scripts(scripts/*.py)
-
 atlas_install_data(data/*)

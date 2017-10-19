@@ -94,6 +94,15 @@ namespace xTRT {
     Algorithm();
     virtual ~Algorithm();
 
+    /// delete copy constructor
+    Algorithm(const Algorithm&) = delete;
+    /// delete assignment operator
+    Algorithm& operator=(const Algorithm&) = delete;
+    /// delete move
+    Algorithm(Algorithm&&) = delete;
+    /// delete move assignment
+    Algorithm& operator=(Algorithm&&) = delete;
+
     void feedConfig(const std::string fileName, bool print_conf = false);
 
     /// Creates a ROOT object to be stored.
@@ -180,7 +189,7 @@ namespace xTRT {
     const xAOD::TrackParticle* getTrack(const xAOD::Muon* muon) const;
 
     /// return the total event weight
-    float eventWeight() const;
+    float eventWeight();
     /// return the average number of collisions per bunch crossing
     float averageMu();
     /// return the number of primary vertices
@@ -204,6 +213,8 @@ namespace xTRT {
     bool triggerPassed(const std::string trigName) const;
     /// check whether a list of triggers fired
     bool triggersPassed(const std::vector<std::string>& trigNames) const;
+    /// check if an electron matches to any of the single electron triggers in config file
+    bool singleElectronTrigMatched(const xAOD::Electron* electron);
 
     /// return the number of TRT hits on the track (all)
     static int nTRT(const xAOD::TrackParticle* track);
@@ -220,14 +231,21 @@ namespace xTRT {
     /// return the number of silicon shared hits (Pixel + SCT)
     static int nSiliconShared(const xAOD::TrackParticle* track);
 
+    /// get the calo iso value from an electron (xAOD::Iso::topoetcone20)
+    static float caloIso(const xAOD::Electron* electron);
+    /// get the calo iso value from a muon
+    static float caloIso(const xAOD::Muon* muon);
+    /// get the track iso value from an electron (xAOD::Iso::ptvarcone20)
+    static float trackIso(const xAOD::Electron* electron);
+    /// get the track iso value from a muon
+    static float trackIso(const xAOD::Muon* muon);
+    /// get the track pTcone20 iso value from an electron (xAOD::Iso::ptcone20)
+    static float trackIso_pTcone20(const xAOD::Electron* electron);
+
     /// return the (delta z0)*sin(theta) of the track
     static float deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx);
-
     /// return the d0 significance of the track
-    /**
-     *  This function requires the EventInfo so it cannt be static
-     */
-    double d0signif(const xAOD::TrackParticle *track) const;
+    static double d0signif(const xAOD::TrackParticle *track, const xAOD::EventInfo* evtinfo);
 
     /// grab aux data by using ConstAccessor and some object
     /**

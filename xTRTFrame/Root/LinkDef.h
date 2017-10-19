@@ -2,7 +2,6 @@
 
 #include <xTRTFrame/Algorithm.h>
 #include <xTRTFrame/TNPAlgorithm.h>
-#include <xTRTFrame/TruthLoop.h>
 #include <xTRTFrame/Config.h>
 
 #ifdef __CINT__
@@ -18,5 +17,4 @@
 #pragma link C++ class xTRT::Config+;
 #pragma link C++ class xTRT::Algorithm+;
 #pragma link C++ class xTRT::TNPAlgorithm+;
-#pragma link C++ class xTRT::TruthLoop+;
 #endif

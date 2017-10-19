@@ -16,8 +16,6 @@ EL::StatusCode xTRT::TNPAlgorithm::performSelection() {
   if ( electrons->size() < 2 ) return EL::StatusCode::SUCCESS;
   const xAOD::Electron*      Tag       = nullptr;
   const xAOD::Electron*      Probe     = nullptr;
-  const xAOD::TrackParticle* Tag_trk   = nullptr;
-  const xAOD::TrackParticle* Probe_trk = nullptr;
 
   idx_t finder; // for searching vectors
 
@@ -28,49 +26,20 @@ EL::StatusCode xTRT::TNPAlgorithm::performSelection() {
       // never the same particle
       if ( itag == iprobe ) continue;
 
-      // get objects
-      Tag       = electrons->at(itag);
-      Probe     = electrons->at(iprobe);
-      Tag_trk   = getTrack(Tag);
-      Probe_trk = getTrack(Probe);
-      if ( Tag_trk   == nullptr ) continue;
-      if ( Probe_trk == nullptr ) continue;
-
       // don't get repeated probes or try to use a already tagged tag as a probe
       finder = std::find(m_probeIndices.begin(),m_probeIndices.end(),iprobe);
       if ( finder != m_probeIndices.end() ) continue;
       finder = std::find(m_tagIndices.begin(),m_tagIndices.end(),iprobe);
       if ( finder != m_tagIndices.end() ) continue;
 
-      // tag must be tight LH, probe must be loose non LH
-      // both must pass author
-      if ( not (passTightLH(Tag) and passLoose(Probe)) ) continue;
-      if ( not (passAuthor(Tag) and passAuthor(Probe)) ) continue;
+      // get objects
+      Tag   = electrons->at(itag);
+      Probe = electrons->at(iprobe);
 
-      // check pT and eta cuts
-      if ( (Tag->pt()*toGeV) < m_tag_pT ) continue;
-      if ( (Probe->pt()*toGeV) < m_probe_pT ) continue;
-      if ( Probe_trk->pt() < (m_probe_relpT*(Probe->pt())) ) continue;
-      if ( std::abs(Tag->eta())   > 2.0 ) continue;
-      if ( std::abs(Probe->eta()) > 2.0 ) continue;
-
-      // check some track number of hits cuts
-      if ( nTRT(Tag_trk) < m_tag_nTRT ) continue;
-      if ( nTRT(Probe_trk) < m_probe_nTRT ) continue;
-      if ( nPixel(Tag_trk) < m_tag_nPix ) continue;
-      if ( nPixel(Probe_trk) < m_probe_nPix ) continue;
-      if ( nSilicon(Tag_trk) < m_tag_nSi ) continue;
-      if ( nSilicon(Probe_trk) < m_probe_nSi ) continue;
-
-      // check OS
-      if ( (Tag->charge() * Probe->charge()) > 0 ) continue;
-
-      // check inv mass cuts
-      float invMass   = (Tag->p4()+Probe->p4()).M();
-      bool  inZwindow = (invMass > 80*GeV) and (invMass < 100*GeV);
-      if ( not inZwindow ) continue;
+      if ( not passAllSelections(Tag,Probe) ) continue;
 
       // all passes - save em
+      float invMass = (Tag->p4()+Probe->p4()).M();
       m_probeIndices.push_back(iprobe);
       m_tagIndices.push_back(itag);
       m_invMasses.push_back(invMass);
@@ -131,4 +100,50 @@ EL::StatusCode xTRT::TNPAlgorithm::makeContainers() {
   }
   m_containersMade = true;
   return EL::StatusCode::SUCCESS;
+}
+
+bool xTRT::TNPAlgorithm::passAllSelections(const xAOD::Electron* Tag, const xAOD::Electron* Probe) {
+  // check if tag matches to single electron trigger
+  if ( not singleElectronTrigMatched(Tag) ) return false;
+  auto Tag_trk   = getTrack(Tag);
+  auto Probe_trk = getTrack(Probe);
+  if ( Tag_trk   == nullptr ) return false;
+  if ( Probe_trk == nullptr ) return false;
+
+  float tag_pT   = Tag->pt();
+  float probe_pT = Probe->pt();
+
+  // tag must be tight LH, probe must be loose non LH
+  // both must pass author
+  if ( not (passTightLH(Tag) and passLoose(Probe)) ) return false;
+  if ( not (passAuthor(Tag) and passAuthor(Probe)) ) return false;
+
+  // check pT and eta cuts
+  if ( (tag_pT*toGeV) < m_tag_pT ) return false;
+  if ( (probe_pT*toGeV) < m_probe_pT ) return false;
+  if ( Probe_trk->pt() < (m_probe_relpT*probe_pT) ) return false;
+  if ( std::abs(Tag->eta())   > 2.0 ) return false;
+  if ( std::abs(Probe->eta()) > 2.0 ) return false;
+
+  // check some track number of hits cuts
+  if ( nTRT(Tag_trk) < m_tag_nTRT ) return false;
+  if ( nTRT(Probe_trk) < m_probe_nTRT ) return false;
+  if ( nPixel(Tag_trk) < m_tag_nPix ) return false;
+  if ( nPixel(Probe_trk) < m_probe_nPix ) return false;
+  if ( nSilicon(Tag_trk) < m_tag_nSi ) return false;
+  if ( nSilicon(Probe_trk) < m_probe_nSi ) return false;
+
+  // check iso cuts
+  if ( caloIso(Tag) > (m_tag_iso_topoetcone20*tag_pT) ) return false;
+  if ( trackIso(Tag) > (m_tag_iso_ptcone20*tag_pT) ) return false;
+
+  // check OS
+  if ( (Tag->charge() * Probe->charge()) > 0 ) return false;
+
+  // check inv mass cuts
+  float invMass   = (Tag->p4()+Probe->p4()).M();
+  bool  inZwindow = (invMass > 80*GeV) and (invMass < 100*GeV);
+  if ( not inZwindow ) return false;
+
+  return true;
 }

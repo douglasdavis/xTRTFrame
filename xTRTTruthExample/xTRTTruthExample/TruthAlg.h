@@ -1,12 +1,12 @@
-#ifndef xTRTFrame_TruthLoop_h
-#define xTRTFrame_TruthLoop_h
+#ifndef xTRTTruthExample_TruthAlg_h
+#define xTRTTruthExample_TruthAlg_h
 
 // xTRTFrame
 #include <xTRTFrame/Algorithm.h>
 
 namespace xTRT {
 
-  class TruthLoop : public xTRT::Algorithm {
+  class TruthAlg : public xTRT::Algorithm {
 
   private:
 
@@ -74,12 +74,12 @@ namespace xTRT {
 
   public:
 
-    TruthLoop();
-    virtual ~TruthLoop();
+    TruthAlg();
+    virtual ~TruthAlg();
 
-    virtual EL::StatusCode histInitialize() override;
-    virtual EL::StatusCode initialize()     override;
-    virtual EL::StatusCode execute()        override;
+    virtual EL::StatusCode histInitialize() final;
+    virtual EL::StatusCode initialize()     final;
+    virtual EL::StatusCode execute()        final;
 
     void analyzeTrack(const xAOD::TrackParticle* track);
     void clearVectors();
@@ -88,7 +88,7 @@ namespace xTRT {
                                const xAOD::TrackMeasurementValidation* driftCircle,
                                const bool type0only);
 
-    ClassDefOverride(xTRT::TruthLoop, 1);
+    ClassDefOverride(xTRT::TruthAlg, 1);
 
   };
 

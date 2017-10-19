@@ -20,15 +20,21 @@ namespace xTRT {
 
   private:
 
+    ///////// cuts ////////////////////////
     float m_tag_pT;      //!
+    int   m_tag_nTRT;    //!
+    int   m_tag_nPix;    //!
+    int   m_tag_nSi;     //!
+
     float m_probe_pT;    //!
     float m_probe_relpT; //!
     int   m_probe_nTRT;  //!
-    int   m_tag_nTRT;    //!
     int   m_probe_nPix;  //!
-    int   m_tag_nPix;    //!
     int   m_probe_nSi;   //!
-    int   m_tag_nSi;     //!
+
+    float m_tag_iso_ptcone20;     //!
+    float m_tag_iso_topoetcone20; //!
+    ///////////////////////////////////////
 
     bool m_selectionCalled; //!
     bool m_containersMade;  //!
@@ -41,6 +47,8 @@ namespace xTRT {
     EL::StatusCode performSelection();
     EL::StatusCode makeContainers();
     void           clear();
+
+    bool passAllSelections(const xAOD::Electron* Tag, const xAOD::Electron* Probe);
 
     static bool passAuthor(const xAOD::Electron* el);
     static bool passTightLH(const xAOD::Electron* el);

@@ -1,7 +1,7 @@
-#include <xTRTFrame/TruthLoop.h>
+#include <xTRTTruthExample/TruthAlg.h>
 #include <xTRTFrame/Runner.h>
 
 int main(int argc, char **argv) {
-  xTRT::TruthLoop *alg = new xTRT::TruthLoop();
+  xTRT::TruthAlg *alg = new xTRT::TruthAlg();
   return xTRT::Runner(argc,argv,alg);
 }

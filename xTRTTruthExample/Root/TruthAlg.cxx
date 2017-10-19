@@ -11,18 +11,18 @@
 #include <TH1F.h>
 
 // xTRTFrame
-#include <xTRTFrame/TruthLoop.h>
+#include <xTRTTruthExample/TruthAlg.h>
 
 // C++
 #include <sstream>
 
-ClassImp(xTRT::TruthLoop)
+ClassImp(xTRT::TruthAlg)
 
-xTRT::TruthLoop::TruthLoop() : xTRT::Algorithm() {}
+xTRT::TruthAlg::TruthAlg() : xTRT::Algorithm() {}
 
-xTRT::TruthLoop::~TruthLoop() {}
+xTRT::TruthAlg::~TruthAlg() {}
 
-EL::StatusCode xTRT::TruthLoop::histInitialize() {
+EL::StatusCode xTRT::TruthAlg::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_CHECK(xTRT::Algorithm::histInitialize());
 
@@ -90,14 +90,14 @@ EL::StatusCode xTRT::TruthLoop::histInitialize() {
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::TruthLoop::initialize() {
+EL::StatusCode xTRT::TruthAlg::initialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_CHECK(xTRT::Algorithm::initialize());
 
   return EL::StatusCode::SUCCESS;
 }
 
-EL::StatusCode xTRT::TruthLoop::execute() {
+EL::StatusCode xTRT::TruthAlg::execute() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_CHECK(xTRT::Algorithm::execute());
 
@@ -132,7 +132,7 @@ EL::StatusCode xTRT::TruthLoop::execute() {
   return EL::StatusCode::SUCCESS;
 }
 
-void xTRT::TruthLoop::analyzeTrack(const xAOD::TrackParticle* track) {
+void xTRT::TruthAlg::analyzeTrack(const xAOD::TrackParticle* track) {
   // check for truth particle and el or mu
   auto truth = getTruth(track);
   if ( truth == nullptr ) {
@@ -224,7 +224,7 @@ void xTRT::TruthLoop::analyzeTrack(const xAOD::TrackParticle* track) {
   clearVectors();
 }
 
-bool xTRT::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
+bool xTRT::TruthAlg::fillHitBasedVariables(const xAOD::TrackParticle* track,
                                             const xAOD::TrackStateValidation* msos,
                                             const xAOD::TrackMeasurementValidation* driftCircle,
                                             const bool type0only) {
@@ -256,7 +256,7 @@ bool xTRT::TruthLoop::fillHitBasedVariables(const xAOD::TrackParticle* track,
   return true;
 }
 
-void xTRT::TruthLoop::clearVectors() {
+void xTRT::TruthAlg::clearVectors() {
   m_HTMB       .clear();
   m_gasType    .clear();
   m_bec        .clear();

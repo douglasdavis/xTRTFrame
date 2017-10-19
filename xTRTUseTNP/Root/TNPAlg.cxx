@@ -101,11 +101,15 @@ EL::StatusCode xTRT::TNPAlg::execute() {
   auto probes = probeElectrons();
   auto tags   = tagElectrons();
 
-  ANA_MSG_INFO("N probes: " << probes->size());
-  ANA_MSG_INFO("N tags:   " << tags->size());
-
   for ( const float m : invMasses() ) {
     grab<TH1F>("h_invMass")->Fill(m*toGeV,w);
+  }
+
+  for ( const auto& tag : *tags ) {
+    analyzeTrack(getTrack(tag),true,true);
+  }
+  for ( const auto& probe : *probes ) {
+    analyzeTrack(getTrack(probe),true,false);
   }
 
   return EL::StatusCode::SUCCESS;
