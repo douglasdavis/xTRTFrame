@@ -67,9 +67,9 @@ namespace xTRT {
     TNPAlg();
     virtual ~TNPAlg();
 
-    virtual EL::StatusCode histInitialize();
-    virtual EL::StatusCode initialize();
-    virtual EL::StatusCode execute();
+    virtual EL::StatusCode histInitialize() override;
+    virtual EL::StatusCode initialize()     override;
+    virtual EL::StatusCode execute()        override;
 
     void analyzeTrack(const xAOD::TrackParticle* track, const bool is_el, const bool is_tag);
     void clearVectors();
@@ -78,7 +78,7 @@ namespace xTRT {
                                const xAOD::TrackMeasurementValidation* driftCircle,
                                const bool type0only);
 
-    ClassDef(xTRT::TNPAlg, 1);
+    ClassDefOverride(xTRT::TNPAlg, 1);
 
   };
 

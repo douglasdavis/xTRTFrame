@@ -263,25 +263,25 @@ namespace xTRT {
     const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelMuonToolHandle() const;
 
     /// EventLoop API function
-    virtual EL::StatusCode setupJob(EL::Job& job);
+    virtual EL::StatusCode setupJob(EL::Job& job) override;
     /// EventLoop API function
-    virtual EL::StatusCode fileExecute();
+    virtual EL::StatusCode fileExecute() override;
     /// EventLoop API function
-    virtual EL::StatusCode histInitialize();
+    virtual EL::StatusCode histInitialize() override;
     /// EventLoop API function
-    virtual EL::StatusCode changeInput(bool firstFile);
+    virtual EL::StatusCode changeInput(bool firstFile) override;
     /// EventLoop API function
-    virtual EL::StatusCode initialize();
+    virtual EL::StatusCode initialize() override;
     /// EventLoop API function
-    virtual EL::StatusCode execute();
+    virtual EL::StatusCode execute() override;
     /// EventLoop API function
-    virtual EL::StatusCode postExecute();
+    virtual EL::StatusCode postExecute() override;
     /// EventLoop API function
-    virtual EL::StatusCode finalize();
+    virtual EL::StatusCode finalize() override;
     /// EventLoop API function
-    virtual EL::StatusCode histFinalize();
+    virtual EL::StatusCode histFinalize() override;
 
-    ClassDef(xTRT::Algorithm, 1);
+    ClassDefOverride(xTRT::Algorithm, 1);
 
   };
 

@@ -77,9 +77,9 @@ namespace xTRT {
     TruthLoop();
     virtual ~TruthLoop();
 
-    virtual EL::StatusCode histInitialize();
-    virtual EL::StatusCode initialize();
-    virtual EL::StatusCode execute();
+    virtual EL::StatusCode histInitialize() override;
+    virtual EL::StatusCode initialize()     override;
+    virtual EL::StatusCode execute()        override;
 
     void analyzeTrack(const xAOD::TrackParticle* track);
     void clearVectors();
@@ -88,7 +88,7 @@ namespace xTRT {
                                const xAOD::TrackMeasurementValidation* driftCircle,
                                const bool type0only);
 
-    ClassDef(xTRT::TruthLoop, 1);
+    ClassDefOverride(xTRT::TruthLoop, 1);
 
   };
 

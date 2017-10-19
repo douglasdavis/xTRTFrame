@@ -57,23 +57,23 @@ namespace xTRT {
     const xAOD::ElectronContainer* tagElectrons();
 
     /// EventLoop API function
-    virtual EL::StatusCode setupJob(EL::Job& job);
+    virtual EL::StatusCode setupJob(EL::Job& job) override;
     /// EventLoop API function
-    virtual EL::StatusCode fileExecute();
+    virtual EL::StatusCode fileExecute() override;
     /// EventLoop API function
-    virtual EL::StatusCode histInitialize();
+    virtual EL::StatusCode histInitialize() override;
     /// EventLoop API function
-    virtual EL::StatusCode changeInput(bool firstFile);
+    virtual EL::StatusCode changeInput(bool firstFile) override;
     /// EventLoop API function
-    virtual EL::StatusCode initialize();
+    virtual EL::StatusCode initialize() override;
     /// EventLoop API function
-    virtual EL::StatusCode execute();
+    virtual EL::StatusCode execute() override;
     /// EventLoop API function
-    virtual EL::StatusCode postExecute();
+    virtual EL::StatusCode postExecute() override;
     /// EventLoop API function
-    virtual EL::StatusCode finalize();
+    virtual EL::StatusCode finalize() override;
     /// EventLoop API function
-    virtual EL::StatusCode histFinalize();
+    virtual EL::StatusCode histFinalize() override;
 
     /// get the list of probe indices
     const std::vector<std::size_t>& probeIndices() const;
@@ -82,7 +82,7 @@ namespace xTRT {
     /// get the invariant masses of all good TNP pairs
     const std::vector<float>&       invMasses()    const;
 
-    ClassDef(xTRT::TNPAlgorithm, 1);
+    ClassDefOverride(xTRT::TNPAlgorithm, 1);
 
   };
 
