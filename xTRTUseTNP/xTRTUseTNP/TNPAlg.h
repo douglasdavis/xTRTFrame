@@ -21,6 +21,7 @@ namespace xTRT {
     float       m_weight;       //!
     float       m_trkOcc;       //!
     float       m_pT;           //!
+    float       m_lep_pT;       //!
     float       m_p;            //!
     float       m_eta;          //!
     float       m_phi;          //!

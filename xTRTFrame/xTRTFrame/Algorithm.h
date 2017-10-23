@@ -195,7 +195,7 @@ namespace xTRT {
     /// return the number of primary vertices
     std::size_t NPV() const;
     /// return whether the lumi block is good
-    bool  passGRL() const;
+    bool passGRL() const;
 
     /// get pointer to current xAOD::TEvent
     xAOD::TEvent* event();
@@ -215,6 +215,8 @@ namespace xTRT {
     bool triggersPassed(const std::vector<std::string>& trigNames) const;
     /// check if an electron matches to any of the single electron triggers in config file
     bool singleElectronTrigMatched(const xAOD::Electron* electron);
+    /// check if a muon matches to any of the single muon triggers in config file
+    bool singleMuonTrigMatched(const xAOD::Muon* muon);
 
     /// return the number of TRT hits on the track (all)
     static int nTRT(const xAOD::TrackParticle* track);
@@ -279,6 +281,8 @@ namespace xTRT {
     const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelElecToolHandle() const;
     /// get reference to the InDetTrackSelectionTool handle for muons
     const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelMuonToolHandle() const;
+    /// get reference to the Trigger Matching Tool
+    const asg::AnaToolHandle<Trig::IMatchingTool>& trigMatchingToolHandle() const;
 
     /// EventLoop API function
     virtual EL::StatusCode setupJob(EL::Job& job) override;

@@ -5,26 +5,40 @@ inline void xTRT::TNPAlgorithm::clear() {
   m_containersMade  = false;
   m_probeIndices.clear();
   m_tagIndices.clear();
-  m_invMasses.clear();
+  m_muonIndices.clear();
+  m_invMassesEl.clear();
+  m_invMassesMu.clear();
 }
 
-inline bool xTRT::TNPAlgorithm::passAuthor(const xAOD::Electron* el) {
-  bool ele = el->author(xAOD::EgammaParameters::AuthorElectron);
-  bool amb = el->author(xAOD::EgammaParameters::AuthorAmbiguous);
+inline bool xTRT::TNPAlgorithm::passAuthor(const xAOD::Electron* electron) {
+  bool ele = electron->author(xAOD::EgammaParameters::AuthorElectron);
+  bool amb = electron->author(xAOD::EgammaParameters::AuthorAmbiguous);
   return (ele || amb);
 }
 
-inline bool xTRT::TNPAlgorithm::passTightLH(const xAOD::Electron* el) {
-  return el->passSelection(xAOD::EgammaParameters::LHTight);
+inline bool xTRT::TNPAlgorithm::passTightLH(const xAOD::Electron* electron) {
+  return electron->passSelection(xAOD::EgammaParameters::LHTight);
 }
 
-inline bool xTRT::TNPAlgorithm::passLoose(const xAOD::Electron* el) {
-  return el->passSelection(xAOD::EgammaParameters::Loose);
+inline bool xTRT::TNPAlgorithm::passLoose(const xAOD::Electron* electron) {
+  return electron->passSelection(xAOD::EgammaParameters::Loose);
+}
+
+inline bool xTRT::TNPAlgorithm::passQuality(const xAOD::Muon* muon, const int npl_cut) {
+  uint8_t npl = -1;
+  if ( muon->muonType() != xAOD::Muon::Combined ) return false;
+  if ( not muon->summaryValue(npl,xAOD::SummaryType::numberOfPrecisionLayers) ) {
+    XTRT_WARNING("No numberOfPrecisionLayers for muons! failing selection");
+    return false;
+  }
+  if ( static_cast<int>(npl) < npl_cut ) return false;
+  return true;
 }
 
 inline const xAOD::ElectronContainer* xTRT::TNPAlgorithm::probeElectrons() {
   if ( not m_containersMade ) {
     ANA_MSG_ERROR("TNP Containers not made! Forgot to call xTRT::TNPAlgorithm::execute()?");
+    return nullptr;
   }
   const xAOD::ElectronContainer* probes = nullptr;
   if ( evtStore()->retrieve(probes,"TNPProbeElectrons").isFailure() ) {
@@ -37,6 +51,7 @@ inline const xAOD::ElectronContainer* xTRT::TNPAlgorithm::probeElectrons() {
 inline const xAOD::ElectronContainer* xTRT::TNPAlgorithm::tagElectrons() {
   if ( not m_containersMade ) {
     ANA_MSG_ERROR("TNP containers not made! Forgot to call xTRT::TNPAlgorithm::execute()?");
+    return nullptr;
   }
   const xAOD::ElectronContainer* tags = nullptr;
   if ( evtStore()->retrieve(tags,"TNPTagElectrons").isFailure() ) {
@@ -46,8 +61,25 @@ inline const xAOD::ElectronContainer* xTRT::TNPAlgorithm::tagElectrons() {
   return tags;
 }
 
-inline const std::vector<float>& xTRT::TNPAlgorithm::invMasses() const {
-  return m_invMasses;
+inline const xAOD::MuonContainer* xTRT::TNPAlgorithm::goodMuons() {
+  if ( not m_containersMade ) {
+    ANA_MSG_ERROR("TNP containers not made! Forgot to call xTRT::TNPAlgorithm::execute()?");
+    return nullptr;
+  }
+  const xAOD::MuonContainer* goodmus = nullptr;
+  if ( evtStore()->retrieve(goodmus,"TNPMuons").isFailure() ) {
+    ANA_MSG_ERROR("Couldn't retrieve TNP muons container");
+    return nullptr;
+  }
+  return goodmus;
+}
+
+inline const std::vector<float>& xTRT::TNPAlgorithm::invMassesEl() const {
+  return m_invMassesEl;
+}
+
+inline const std::vector<float>& xTRT::TNPAlgorithm::invMassesMu() const {
+  return m_invMassesMu;
 }
 
 inline const std::vector<std::size_t>& xTRT::TNPAlgorithm::probeIndices() const {
@@ -56,4 +88,8 @@ inline const std::vector<std::size_t>& xTRT::TNPAlgorithm::probeIndices() const 
 
 inline const std::vector<std::size_t>& xTRT::TNPAlgorithm::tagIndices() const {
   return m_tagIndices;
+}
+
+inline const std::vector<std::size_t>& xTRT::TNPAlgorithm::muonIndices() const {
+  return m_muonIndices;
 }

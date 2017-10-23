@@ -26,11 +26,12 @@ EL::StatusCode xTRT::TNPAlg::histInitialize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_CHECK(xTRT::TNPAlgorithm::histInitialize());
 
-  m_saveHits        = config()->getOpt<bool>("StoreHits",false);
-  m_type0only       = config()->getOpt<bool>("Type0HitOnly",false);
+  m_saveHits  = config()->getOpt<bool>("StoreHits",false);
+  m_type0only = config()->getOpt<bool>("Type0HitOnly",false);
 
   create(TH1F("h_averageMu","",70,-0.5,69.5));
-  create(TH1F("h_invMass","",30,75,105));
+  create(TH1F("h_invMassEl","",30,75,105));
+  create(TH1F("h_invMassMu","",30,75,105));
 
   TFile *outFile = wk()->getOutputFile(m_outputName);
   m_tree_el_probes   = new TTree("electrons_probes","electrons_probes");
@@ -44,6 +45,7 @@ EL::StatusCode xTRT::TNPAlg::histInitialize() {
     itree->Branch("trkOcc",     &m_trkOcc);
     itree->Branch("p",          &m_p);
     itree->Branch("pT",         &m_pT);
+    itree->Branch("lep_pT",     &m_lep_pT);
     itree->Branch("eta",        &m_eta);
     itree->Branch("phi",        &m_phi);
     itree->Branch("eProbHT",    &m_eProbHT);
@@ -100,16 +102,26 @@ EL::StatusCode xTRT::TNPAlg::execute() {
 
   auto probes = probeElectrons();
   auto tags   = tagElectrons();
+  auto muons  = goodMuons();
 
-  for ( const float m : invMasses() ) {
-    grab<TH1F>("h_invMass")->Fill(m*toGeV,w);
+  for ( const float m : invMassesEl() ) {
+    grab<TH1F>("h_invMassEl")->Fill(m*toGeV,w);
+  }
+  for ( const float m : invMassesMu() ) {
+    grab<TH1F>("h_invMassMu")->Fill(m*toGeV,w);
   }
 
   for ( const auto& tag : *tags ) {
+    m_lep_pT = tag->pt();
     analyzeTrack(getTrack(tag),true,true);
   }
   for ( const auto& probe : *probes ) {
+    m_lep_pT = probe->pt();
     analyzeTrack(getTrack(probe),true,false);
+  }
+  for ( const auto& muon : *muons ) {
+    m_lep_pT = muon->pt();
+    analyzeTrack(getTrack(muon),false,false);
   }
 
   return EL::StatusCode::SUCCESS;
@@ -164,11 +176,16 @@ void xTRT::TNPAlg::analyzeTrack(const xAOD::TrackParticle* track, const bool is_
   m_fHTMB = (float)m_nHThitsMan / (m_nTRThits+m_nTRTouts);
   m_fAr   = (float)m_nArhits / (m_nTRThits+m_nTRTouts);
 
-  if      ( is_el and  is_tag ) m_tree_el_tags->Fill();
-  else if ( is_el and !is_tag ) m_tree_el_probes->Fill();
-  else if ( not is_el         ) m_tree_mu->Fill();
+  if ( is_el ) {
+    if ( is_tag ) {
+      m_tree_el_tags->Fill();
+    }
+    else {
+      m_tree_el_probes->Fill();
+    }
+  }
   else {
-    XTRT_FATAL("Not tag/probe el or just a mu?");
+    m_tree_mu->Fill();
   }
 
   clearVectors();

@@ -44,4 +44,10 @@ inline auto xTRT::stringSplit(const std::string &s, char delim) {
   { std::cerr << "xTRTFrame FAILURE\t" << MESSAGE << std::endl;   \
     std::exit(EXIT_FAILURE); }
 
+/*! XTRT_WARNING
+  Print MESSAGE to std::cout
+*/
+#define XTRT_WARNING(MESSAGE)                                           \
+  { std::cout << "xTRTFrame WARNING\t" << MESSAGE << std::endl; }
+
 #endif

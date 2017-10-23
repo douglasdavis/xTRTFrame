@@ -112,11 +112,24 @@ bool xTRT::Algorithm::triggersPassed(const std::vector<std::string>& trigNames) 
 
 bool xTRT::Algorithm::singleElectronTrigMatched(const xAOD::Electron* electron) {
   if ( not config()->useTrig() ) {
-    ANA_MSG_WARNING("Asking for trigger matching without trigger enabled? Ret true");
-    return true;
+    ANA_MSG_WARNING("Asking for trigger matching without trigger enabled? Ret false");
+    return false;
   }
   for ( const std::string trigstr : config()->electronTriggers() ) {
     if ( m_trigMatchingToolHandle->match(*electron,trigstr) ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool xTRT::Algorithm::singleMuonTrigMatched(const xAOD::Muon* muon) {
+  if ( not config()->useTrig() ) {
+    ANA_MSG_WARNING("Asking for trigger matching without trigger enabled? Ret false");
+    return false;
+  }
+  for ( const std::string trigstr : config()->muonTriggers() ) {
+    if ( m_trigMatchingToolHandle->match(*muon,trigstr) ) {
       return true;
     }
   }
@@ -185,17 +198,27 @@ bool xTRT::Algorithm::passTrackSelection(const xAOD::TrackParticle* track, const
 
 bool xTRT::Algorithm::passElectronSelection(const xAOD::Electron* electron, const xTRT::Config* conf) {
   auto trk = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
+
   if ( conf->elec_UTC() ) {
-    if ( not trk ) return false;
-    if ( not passTrackSelection(trk,conf) ) return false;
-  }
-  if ( conf->elec_relpT() > 0 ) {
-    if ( not trk ) {
-      XTRT_FATAL("No track particle from electron");
+    if ( trk == nullptr ) {
+      XTRT_WARNING("No track from electron! failing selection");
       return false;
     }
-    if ( trk->pt() < conf->elec_relpT()*electron->pt() ) return false;
+    else {
+      if ( not passTrackSelection(trk,conf) ) return false;
+    }
   }
+
+  if ( conf->elec_relpT() > 0 ) {
+    if ( trk == nullptr ) {
+      XTRT_WARNING("No track particle from electron! relative pT cut failing");
+      return false;
+    }
+    else {
+      if ( trk->pt() < (conf->elec_relpT() * electron->pt()) ) return false;
+    }
+  }
+
   if ( electron->pt() < conf->elec_pT() ) return false;
   if ( electron->p4().P() < conf->elec_p() ) return false;
   if ( std::abs(electron->eta()) > conf->elec_eta() ) return false;
@@ -206,16 +229,27 @@ bool xTRT::Algorithm::passMuonSelection(const xAOD::Muon* muon, const xTRT::Conf
   auto idtl = muon->inDetTrackParticleLink();
   if ( not idtl.isValid() ) return false;
   auto trk = *idtl;
-  if ( not trk ) {
-    XTRT_FATAL("No valid muon->inDetTrackParticleLink()");
-    return false;
+
+  if ( conf->muon_UTC() ) {
+    if ( trk == nullptr ) {
+      XTRT_WARNING("No valid muon->inDetTrackParticleLink()! auto failing track selection");
+      return false;
+    }
+    else {
+      if ( not passTrackSelection(trk,conf) ) return false;
+    }
   }
-  if ( conf->muon_UTC() && (not passTrackSelection(trk,conf)) ) {
-    return false;
+
+  if ( conf->muon_relpT() > 0 ) {
+    if ( trk == nullptr ) {
+      XTRT_WARNING("No valid muon->inDetTrackParticleLink()! auto failing rel pT selection");
+      return false;
+    }
+    else {
+      if ( trk->pt() < (conf->muon_relpT() * muon->pt()) ) return false;
+    }
   }
-  if ( conf->muon_relpT() > 0 && (trk->pt() < conf->muon_relpT()*muon->pt()) ) {
-    return false;
-  }
+
   if ( muon->pt() < conf->muon_pT() ) return false;
   if ( muon->p4().P() < conf->muon_p() ) return false;
   if ( std::abs(muon->eta()) > conf->muon_eta() ) return false;

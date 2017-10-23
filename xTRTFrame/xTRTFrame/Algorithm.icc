@@ -218,3 +218,8 @@ inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>&
 xTRT::Algorithm::trackSelMuonToolHandle() const {
   return m_trackSelMuonToolHandle;
 }
+
+inline const asg::AnaToolHandle<Trig::IMatchingTool>&
+xTRT::Algorithm::trigMatchingToolHandle() const {
+  return m_trigMatchingToolHandle;
+}
