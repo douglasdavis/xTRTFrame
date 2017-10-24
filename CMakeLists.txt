@@ -1,24 +1,62 @@
-cmake_minimum_required( VERSION 3.4 FATAL_ERROR )
+# Declare the name of this package:
+atlas_subdir(xTRTFrame None)
 
-# Find the AnalysisBase project. This is what, amongst other things, pulls
-# in the definition of all of the "atlas_" prefixed functions/macros.
-find_package( AnalysisBase 21.2 REQUIRED )
+# This package depends on other packages:
+atlas_depends_on_subdirs(PUBLIC
+  Control/AthToolSupport/AsgTools
+  PhysicsAnalysis/D3PDTools/EventLoop
+  PhysicsAnalysis/D3PDTools/EventLoopAlgs
+  PhysicsAnalysis/D3PDTools/EventLoopGrid
+  PhysicsAnalysis/D3P3Tools/SampleHandler
+  Event/xAOD/xAODRootAccess
+  Event/xAOD/xAODEventInfo
+  Event/xAOD/xAODTracking
+  Event/xAOD/xAODEgamma
+  Event/xAOD/xAODMuon
+  InnerDetector/InDetRecTools/InDetTrackSelectionTool
+  PhysicsAnalysis/AnalysisCommon/PileupReweighting
+  DataQuality/GoodRunsLists
+  Trigger/TrigAnalysis/TrigDecisionTool
+  Trigger/TrigAnalysis/TriggerMatchingTool
+  Trigger/TrigConfiguration/TrigConfxAOD
+  Tools/PathResolver
+  )
 
-# Set up CTest. This makes sure that per-package build log files can be
-# created if the user so chooses.
-atlas_ctest_setup()
+# This package uses ROOT:
+find_package(ROOT REQUIRED COMPONENTS Core Gpad Tree Hist RIO MathCore Graf)
 
-atlas_project( WorkDir 1.0.0
-   USE AnalysisBase ${AnalysisBase_VERSION} )
+# Custom definitions needed for this package:
+add_definitions(-g -O3 -std=c++14)
 
-# Set up the runtime environment setup script. This makes sure that the
-# project's "setup.sh" script can set up a fully functional runtime environment,
-# including all the externals that the project uses.
-lcg_generate_env( SH_FILE ${CMAKE_BINARY_DIR}/${ATLAS_PLATFORM}/env_setup.sh )
-install( FILES ${CMAKE_BINARY_DIR}/${ATLAS_PLATFORM}/env_setup.sh
-   DESTINATION . )
+# Generate a CINT dictionary source file:
+atlas_add_root_dictionary(xTRTFrame _cintDictSource
+  ROOT_HEADERS Root/LinkDef.h
+  EXTERNAL_PACKAGES ROOT
+  )
 
-# Set up CPack. This call makes sure that an RPM or TGZ file can be created
-# from the built project. Used by Panda to send the project to the grid worker
-# nodes.
-atlas_cpack_setup()
+# Build a library that other components can link against:
+atlas_add_library(xTRTFrame Root/*.cxx xTRTFrame/*.h xTRTFrame/*.icc xTRTFrame/*.hpp ${_cintDictSource}
+  PUBLIC_HEADERS xTRTFrame
+  LINK_LIBRARIES
+  AsgTools
+  GoodRunsListsLib
+  PileupReweightingLib
+  EventLoop
+  EventLoopAlgs
+  EventLoopGrid
+  SampleHandler
+  xAODRootAccess
+  xAODEventInfo
+  xAODTracking
+  xAODEgamma
+  xAODMuon
+  InDetTrackSelectionToolLib
+  TrigConfxAODLib
+  TrigDecisionToolLib
+  TriggerMatchingToolLib
+  PathResolver
+  ${ROOT_LIBRARIES}
+  INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}
+  )
+
+atlas_install_data(data/*)

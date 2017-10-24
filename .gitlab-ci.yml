@@ -1,12 +1,18 @@
-trtframe:
+before_script:
+  - mkdir -p ../ci/build ../ci/run ../ci/source/xTRTFrame
+  - cp -r `pwd`/* ../ci/source/xTRTFrame/.
+  - cd ../ci/source
+xTRTFrame:
   variables:
     ATLAS_LOCAL_ROOT_BASE: /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
   script:
     - ls
+    - pwd
     - set +e
     - source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh
-    - mkdir ../build
+    - asetup 21.2,AnalysisBase,latest,here
     - cd ../build
-    - asetup 21.2,AnalysisBase,latest
-    - cmake ../xTRTFrame
+    - cmake ../source
     - make
+    - cd ..
+    - source build/*/setup.sh

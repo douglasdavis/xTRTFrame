@@ -75,19 +75,26 @@ namespace xTRT {
     xAOD::TEvent* m_event;              //!
     xAOD::TStore* m_store;              //!
 
-    asg::AnaToolHandle<IGoodRunsListSelectionTool> m_GRLToolHandle{"GoodRunsListSelectionTool/GRLTool",this}; //!
-    asg::AnaToolHandle<CP::IPileupReweightingTool> m_PRWToolHandle{"CP::PileupReweightingTool/PRWTool",this}; //!
-    asg::AnaToolHandle<TrigConf::ITrigConfigTool>  m_trigConfToolHandle{"TrigConf::xAODConfigTool/xAODConfigTool",this}; //!
-    asg::AnaToolHandle<Trig::TrigDecisionTool>     m_trigDecToolHandle{"Trig::TrigDecisionTool/TrigDecisionTool",this}; //!
-    asg::AnaToolHandle<Trig::IMatchingTool>        m_trigMatchingToolHandle{"Trig::MatchingTool/TrigMatchingTool",this}; //!
-
-    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackSelToolHandle{"InDet::InDetTrackSelectionTool/IDTSTracks",this}; //!
-    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackSelElecToolHandle{"InDet::InDetTrackSelectionTool/IDTSElecs",this}; //!
-    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool> m_trackSelMuonToolHandle{"InDet::InDetTrackSelectionTool/IDTSMuons",this}; //!
+  private:
+    asg::AnaToolHandle<IGoodRunsListSelectionTool>
+    m_GRLToolHandle{"GoodRunsListSelectionTool/GRLTool",this}; //!
+    asg::AnaToolHandle<CP::IPileupReweightingTool>
+    m_PRWToolHandle{"CP::PileupReweightingTool/PRWTool",this}; //!
+    asg::AnaToolHandle<TrigConf::ITrigConfigTool>
+    m_trigConfToolHandle{"TrigConf::xAODConfigTool/xAODConfigTool",this}; //!
+    asg::AnaToolHandle<Trig::TrigDecisionTool>
+    m_trigDecToolHandle{"Trig::TrigDecisionTool/TrigDecisionTool",this}; //!
+    asg::AnaToolHandle<Trig::IMatchingTool>
+    m_trigMatchingToolHandle{"Trig::MatchingTool/TrigMatchingTool",this}; //!
+    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>
+    m_trackSelToolHandle{"InDet::InDetTrackSelectionTool/IDTSTracks",this}; //!
+    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>
+    m_trackSelElecToolHandle{"InDet::InDetTrackSelectionTool/IDTSElecs",this}; //!
+    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>
+    m_trackSelMuonToolHandle{"InDet::InDetTrackSelectionTool/IDTSMuons",this}; //!
 
   protected:
-
-    std::string m_outputName;
+    std::string m_outputName{"xTRTFrameOutput"};
 
   public:
 

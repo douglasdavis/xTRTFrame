@@ -38,13 +38,13 @@ namespace xTRT {
     EL::Job job;
     job.options()->setDouble(EL::Job::optCacheSize, 10*1024*1024);
 
-    EL::OutputStream output("treeOutput");
+    EL::OutputStream output("xTRTFrameTreeOutput");
     job.outputAdd(output);
-    EL::NTupleSvc *ntuple = new EL::NTupleSvc("treeOutput");
+    EL::NTupleSvc *ntuple = new EL::NTupleSvc("xTRTFrameTreeOutput");
     job.algsAdd(ntuple);
 
     alg->feedConfig(configFile.c_str(),printConf);
-    alg->setTreeOutputName("treeOutput");
+    alg->setTreeOutputName("xTRTFrameTreeOutput");
     job.algsAdd(alg);
 
     SH::SampleHandler sh;

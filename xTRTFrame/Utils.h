@@ -50,4 +50,11 @@ inline auto xTRT::stringSplit(const std::string &s, char delim) {
 #define XTRT_WARNING(MESSAGE)                                           \
   { std::cout << "xTRTFrame WARNING\t" << MESSAGE << std::endl; }
 
+/*! SETUP_TREE
+  initializes a TTree to be saved to xTRTFrame algorithm output
+*/
+#define SETUP_OUTPUT_TREE(TREE,NAME)                            \
+  { TREE = new TTree(NAME,NAME);                                \
+    TREE->SetDirectory(wk()->getOutputFile(m_outputName)); }
+
 #endif
