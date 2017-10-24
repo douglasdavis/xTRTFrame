@@ -1,4 +1,4 @@
-/** @file  Runer.h
+/** @file  Runner.h
  *  @brief xTRT::Runner function for running an algorithm.
  *
  *  @author Douglas Davis < ddavis@cern.ch >

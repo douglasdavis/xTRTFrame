@@ -66,7 +66,7 @@ namespace xTRT {
   /**
    * @param sl the straw layer ("strawlayer" decoration on the drift
    * circle).
-   * @param the layer ("layer" decoration on the drift circle).
+   * @param layer the layer ("layer" decoration on the drift circle).
    */
   int absoluteBarrelSL(const int sl, const int layer);
 
