@@ -14,46 +14,72 @@ namespace xTRT {
 
   /*!
     \enum StrawRegion
-
     Enum for different straw regions of the TRT
-    BRL: barrel only
-    BRLECA: barrel & endcap type A
-    ECA: just endcap type A
-    ECAECB: endcap type A & endcap type B
-    ECB: just endcap type B
   */
   enum StrawRegion {
-    BRL    = 0,
-    BRLECA = 1,
-    ECA    = 2,
-    ECAECB = 3,
-    ECB    = 4,
-    NOTTRT = 5
+    BRL    = 0, ///< Barrel
+    BRLECA = 1, ///< Barrel/End Cap type A combination
+    ECA    = 2, ///< End Cap Type A
+    ECAECB = 3, ///< End Cap Type A/End Cap Type B combination
+    ECB    = 4, ///< End Cap Type B
+    NOTTRT = 5  ///< outside of the TRT
   };
 
   /*!
     \enum SideRegion
-
     Enum for different sides of the TRT
-    Self explanatory values.
   */
   enum SideRegion {
-    BARREL = 0,
-    SIDE_A = 1,
-    SIDE_C = 2,
-    NONTRT = 3
+    BARREL = 0, ///< Barrel ("bec" = +/- 1)
+    SIDE_A = 1, ///< Side A ("bec" = 2)
+    SIDE_C = 2, ///< Side C ("bec" = -2)
+    NONTRT = 3  ///< not in TRT
   };
 
-  /// get the straw region based on the eta value
+
+  /** @defgroup Helpers Helper Functions
+   *  Set of helper functions
+   *  @{
+   */
+
+  /// get the straw region based on the eta value.
+  /**
+   * @param eta the pseudorapidity of the track.
+   */
   StrawRegion getStrawRegion(const float eta);
-  /// get the side region based on the bec variable
+
+  /// get the side region based on the bec variable.
+  /**
+   * @param bec the barrel/endcap value ("bec" is a decoration on the
+   * drift circle object).
+   */
   SideRegion  getSideRegion(const int bec);
-  /// get the side region from the drift circle
-  SideRegion getSideRegion(const xAOD::TrackMeasurementValidation* dc);
-  /// get the absolute straw layer in the barrel
+
+  /// get the side region from the drift circle.
+  /**
+   * @param driftCircle the drift circle object retrieved from the
+   * surface measurement (msos).
+   */
+  SideRegion getSideRegion(const xAOD::TrackMeasurementValidation* driftCircle);
+
+  /// get the absolute straw layer in the barrel.
+  /**
+   * @param sl the straw layer ("strawlayer" decoration on the drift
+   * circle).
+   * @param the layer ("layer" decoration on the drift circle).
+   */
   int absoluteBarrelSL(const int sl, const int layer);
-  /// get the absolute straw layer in the end cap
+
+  /// get the absolute straw layer in the end cap.
+  /**
+   * @param sl the straw layer ("strawlayer" decoration on the drift
+   * circle).
+   * @param wheel the wheel layer ("layer" decoration on the drift
+   * circle).
+   */
   int absoluteEndCapSL(const int sl, const int wheel);
+
+  /** @} */ // end of Helpers
 
 }
 
