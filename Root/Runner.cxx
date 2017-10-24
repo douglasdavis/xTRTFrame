@@ -30,8 +30,13 @@ namespace xTRT {
     auto o_outds  = app.add_option("--outDS", outDS, "Output sample name to for grid job");
     bool printConf;
     app.add_flag("--print-config",printConf,"Print configuration options");
+    bool debugMode;
+    app.add_flag("--debug",debugMode,"Print xTRTFrame logger debug info");
 
     CLI11_PARSE(app, argc, argv);
+
+    spdlog::stdout_color_mt("xTRTFrame");
+    if ( debugMode ) spdlog::set_level(spdlog::level::debug);
 
     xAOD::Init().ignore();
 

@@ -19,6 +19,7 @@
 #define toGeV 0.0010
 
 namespace xTRT {
+  void checkLogger();
   auto stringSplit(const std::string &s, char delim, std::vector<std::string> &elems);
   auto stringSplit(const std::string &s, char delim);
 }

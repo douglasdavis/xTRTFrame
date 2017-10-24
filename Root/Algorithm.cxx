@@ -12,7 +12,9 @@
 
 ClassImp(xTRT::Algorithm)
 
-xTRT::Algorithm::Algorithm() : EL::Algorithm(), m_config() {}
+xTRT::Algorithm::Algorithm() : EL::Algorithm(), m_config() {
+  SetName("xTRTFrame");
+}
 
 xTRT::Algorithm::~Algorithm() {}
 
@@ -20,7 +22,7 @@ EL::StatusCode xTRT::Algorithm::setupJob(EL::Job& job) {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   job.options()->setDouble(EL::Job::optXAODSummaryReport, 0);
   job.useXAOD();
-  ANA_CHECK(xAOD::Init("xTRTFrame"));
+  xAOD::Init("xTRTFrame").ignore();
   return EL::StatusCode::SUCCESS;
 }
 

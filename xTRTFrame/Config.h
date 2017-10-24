@@ -208,14 +208,14 @@ inline float xTRT::Config::muon_relpT() const { return cut_muon_relpT; }
 template <typename T>
 inline const T xTRT::Config::getOpt(const char* name, const T def) const {
   if ( not m_rootEnv->Defined(name) ) {
-    std::cout << "WARNING: " << name << " not defined! using default: " << def << std::endl;
+    spdlog::get("xTRTFrame")->warn("{} not defined in confg! using default: {}",name,def);
   }
   return m_rootEnv->GetValue(name,def);
 }
 
 inline const std::string xTRT::Config::getStrOpt(const char* name, const std::string def) const {
   if ( not m_rootEnv->Defined(name) ) {
-    std::cout << "WARNING: " << name << " not defined! using default: " << def << std::endl;
+    spdlog::get("xTRTFrame")->warn("{} not defined in confg! using default: {}",name,def);
   }
   std::string ret = m_rootEnv->GetValue(name,def.c_str());
   return ret;
