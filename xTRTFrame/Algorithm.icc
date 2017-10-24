@@ -44,32 +44,10 @@ inline const xAOD::EventInfo* xTRT::Algorithm::eventInfo() {
   return evtinfo;
 }
 
-template <class T1, class T2>
-inline T1
-xTRT::Algorithm::get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* xobj, std::string adn) const {
-  if ( acc.isAvailable(*xobj) ) {
-    return acc(*xobj);
-  }
-  ANA_MSG_WARNING("AuxElement: " << adn << " is not available! Returning 0!");
-  return 0;
-}
-
-template <class T1, class T2>
-inline T1 xTRT::Algorithm::retrieve(const T2* xobj, const char* adn) const {
-  static const SG::AuxElement::ConstAccessor<T1> acc{adn};
-  if ( acc.isAvailable(*xobj) ) {
-    return acc(*xobj);
-  }
-  else {
-    ANA_MSG_WARNING("Cannot find " << adn);
-    return 0;
-  }
-}
-
-template <class C, class T>
-inline const C* xTRT::Algorithm::selectedContainer(const C* raw,
-                                                   std::function<bool(const T*,const xTRT::Config*)> selector,
-                                                   const std::string& contName) {
+template <class C, class T> inline const C*
+xTRT::Algorithm::selectedContainer(const C* raw,
+                                   std::function<bool(const T*,const xTRT::Config*)> selector,
+                                   const std::string& contName) {
   auto goodObjects    = std::make_unique<C>();
   auto goodObjectsAux = std::make_unique<xAOD::AuxContainerBase>();
   goodObjects->setStore(goodObjectsAux.get());
@@ -202,6 +180,42 @@ inline float xTRT::Algorithm::trackIso_pTcone20(const xAOD::Electron* electron) 
     XTRT_FATAL("No ptcone20 in electron");
   }
   return ptcone20;
+}
+
+inline float xTRT::Algorithm::trackOccupancy(const xAOD::TrackParticle* track) {
+  static SG::AuxElement::ConstAccessor<float> trkOccAcc("TRTTrackOccupancy");
+  if ( trkOccAcc.isAvailable(*track) ) {
+    return trkOccAcc(*track);
+  }
+  else {
+    XTRT_WARNING("TRTTrackOccupancy not available! returning -1");
+  }
+  return -1.0;
+}
+
+template <class T1, class T2> inline T1
+xTRT::Algorithm::get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* xobj, const std::string adn) {
+  if ( acc.isAvailable(*xobj) ) {
+    return acc(*xobj);
+  }
+  else {
+    std::string msg = "AuxElement: " + adn + " not available, ret 0";
+    XTRT_WARNING(msg);
+  }
+  return 0;
+}
+
+template <class T1, class T2> inline T1
+xTRT::Algorithm::retrieve(const T2* xobj, const std::string adn) {
+  static const SG::AuxElement::ConstAccessor<T1> acc{adn};
+  if ( acc.isAvailable(*xobj) ) {
+    return acc(*xobj);
+  }
+  else {
+    std::string msg = "AuxElement: " + adn + "not available, ret 0";
+    XTRT_WARNING(msg);
+    return 0;
+  }
 }
 
 inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>&

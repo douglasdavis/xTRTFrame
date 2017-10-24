@@ -55,7 +55,6 @@
 #include <xTRTFrame/Utils.h>
 #include <xTRTFrame/Accessors.h>
 #include <xTRTFrame/HitSummary.h>
-#include <xTRTFrame/ParticleId.h>
 #include <xTRTFrame/Config.h>
 
 // ROOT
@@ -187,13 +186,13 @@ namespace xTRT {
     const xAOD::MuonContainer*          selectedMuons();
 
     /// retrieves the TruthParticle associated with the input track particle
-    const xAOD::TruthParticle* getTruth(const xAOD::TrackParticle* track) const;
+    static const xAOD::TruthParticle* getTruth(const xAOD::TrackParticle* track);
     /// retrieve the "original" xAOD::TrackParticle pointer from the electron
-    const xAOD::TrackParticle* getTrack(const xAOD::Electron* electron) const;
+    static const xAOD::TrackParticle* getTrack(const xAOD::Electron* electron);
     /// retrieve the GSF xAOD::TrackParticle pointer from the electron
-    const xAOD::TrackParticle* getGSFTrack(const xAOD::Electron* electron) const;
+    static const xAOD::TrackParticle* getGSFTrack(const xAOD::Electron* electron);
     /// retrieve the xAOD::TrackParticle pointer from the muon
-    const xAOD::TrackParticle* getTrack(const xAOD::Muon* muon) const;
+    static const xAOD::TrackParticle* getTrack(const xAOD::Muon* muon);
 
     /// return the total event weight
     float eventWeight();
@@ -251,10 +250,21 @@ namespace xTRT {
     /// get the track pTcone20 iso value from an electron (xAOD::Iso::ptcone20)
     static float trackIso_pTcone20(const xAOD::Electron* electron);
 
+    /// return the TRT track occupancy
+    static float trackOccupancy(const xAOD::TrackParticle* track);
     /// return the (delta z0)*sin(theta) of the track
-    static float deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx);
+    static float deltaz0sinTheta(const xAOD::TrackParticle* track, const xAOD::Vertex* vtx);
     /// return the d0 significance of the track
-    static double d0signif(const xAOD::TrackParticle *track, const xAOD::EventInfo* evtinfo);
+    static double d0signif(const xAOD::TrackParticle* track, const xAOD::EventInfo* evtinfo);
+
+    /// get reference to the InDetTrackSelectionTool handle for tracks
+    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelToolHandle()     const;
+    /// get reference to the InDetTrackSelectionTool handle for electrons
+    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelElecToolHandle() const;
+    /// get reference to the InDetTrackSelectionTool handle for muons
+    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelMuonToolHandle() const;
+    /// get reference to the Trigger Matching Tool
+    const asg::AnaToolHandle<Trig::IMatchingTool>& trigMatchingToolHandle() const;
 
     /// grab aux data by using ConstAccessor and some object
     /**
@@ -266,7 +276,7 @@ namespace xTRT {
      *  @param adn the auxdata variable name
      */
     template <class T1, class T2>
-    T1 get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* xobj, std::string adn = "") const;
+    static T1 get(const SG::AuxElement::ConstAccessor<T1>& acc, const T2* xobj, const std::string adn = "");
 
     /// grab aux data from an xAOD object based on name
     /**
@@ -280,16 +290,7 @@ namespace xTRT {
      *  @param adn the aux data variable name
      */
     template <typename T1, typename T2 = SG::AuxElement>
-    T1 retrieve(const T2* xobj, const char* adn) const;
-
-    /// get reference to the InDetTrackSelectionTool handle for tracks
-    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelToolHandle()     const;
-    /// get reference to the InDetTrackSelectionTool handle for electrons
-    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelElecToolHandle() const;
-    /// get reference to the InDetTrackSelectionTool handle for muons
-    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelMuonToolHandle() const;
-    /// get reference to the Trigger Matching Tool
-    const asg::AnaToolHandle<Trig::IMatchingTool>& trigMatchingToolHandle() const;
+    static T1 retrieve(const T2* xobj, const std::string adn);
 
     /// EventLoop API function
     virtual EL::StatusCode setupJob(EL::Job& job) override;

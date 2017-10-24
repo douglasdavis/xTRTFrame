@@ -47,7 +47,7 @@ const xAOD::MuonContainer* xTRT::Algorithm::selectedMuons() {
     (muonContainer(),passMuonSelection,"GoodMuons");
 }
 
-const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* track) const {
+const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* track) {
   const xAOD::TruthParticle* truthParticle = nullptr;
   if ( xTRT::Acc::truthParticleLink.isAvailable(*track) ) {
     const auto truthLink = xTRT::Acc::truthParticleLink(*track);
@@ -55,42 +55,42 @@ const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* 
       truthParticle = *truthLink;
     }
     else {
-      ANA_MSG_WARNING("trunkLink is invalid!");
+      XTRT_WARNING("trunkLink is invalid!");
     }
   }
   else {
-    ANA_MSG_WARNING("truthLink is not available!");
+    XTRT_WARNING("truthLink is not available!");
   }
   return truthParticle;
 }
 
-const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Electron* electron) const {
+const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Electron* electron) {
   const xAOD::TrackParticle* track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
   if ( not track ) {
-    ANA_MSG_DEBUG("No original track particle from electron");
+    XTRT_WARNING("No original track particle from electron");
     return nullptr;
   }
   return track;
 }
 
-const xAOD::TrackParticle* xTRT::Algorithm::getGSFTrack(const xAOD::Electron* electron) const {
+const xAOD::TrackParticle* xTRT::Algorithm::getGSFTrack(const xAOD::Electron* electron) {
   const xAOD::TrackParticle* track = electron->trackParticle();
   if ( not track ) {
-    ANA_MSG_DEBUG("No original GSF track particle from electron");
+    XTRT_WARNING("No original GSF track particle from electron");
     return nullptr;
   }
   return track;
 }
 
-const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Muon* muon) const {
+const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Muon* muon) {
   auto idtl = muon->inDetTrackParticleLink();
   if ( not idtl.isValid() ) {
-    ANA_MSG_DEBUG("invalid xAOD::Muon::inDetTrackParticleLink");
+    XTRT_WARNING("invalid xAOD::Muon::inDetTrackParticleLink");
     return nullptr;
   }
   auto trk = *idtl;
   if ( not trk ) {
-    ANA_MSG_DEBUG("nullptr from inDetTrackParticleLink on muon");
+    XTRT_WARNING("nullptr from inDetTrackParticleLink on muon");
     return nullptr;
   }
   return trk;

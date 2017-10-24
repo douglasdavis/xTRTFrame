@@ -13,6 +13,8 @@
 #include <sstream>
 #include <vector>
 
+#include <xTRTFrame/spdlog/spdlog.h>
+
 #define GeV   1000.0
 #define toGeV 0.0010
 
@@ -36,25 +38,32 @@ inline auto xTRT::stringSplit(const std::string &s, char delim) {
   return elems;
 }
 
-/*!
-  \def XTRT_FATAL
-  Print MESSAGE to std::cerr and exit with EXIT_FAILURE
-*/
-#define XTRT_FATAL(MESSAGE)                                       \
-  { std::cerr << "xTRTFrame FAILURE\t" << MESSAGE << std::endl;   \
-    std::exit(EXIT_FAILURE); }
-
-/*! XTRT_WARNING
-  Print MESSAGE to std::cout
-*/
-#define XTRT_WARNING(MESSAGE)                                           \
-  { std::cout << "xTRTFrame WARNING\t" << MESSAGE << std::endl; }
-
 /*! SETUP_TREE
   initializes a TTree to be saved to xTRTFrame algorithm output
 */
 #define SETUP_OUTPUT_TREE(TREE,NAME)                            \
   { TREE = new TTree(NAME,NAME);                                \
     TREE->SetDirectory(wk()->getOutputFile(m_outputName)); }
+
+/*! XTRT_WARNING
+  Print warning message ussing spdlog
+*/
+#define XTRT_WARNING(MSG)                               \
+  { if ( spdlog::get("xTRTFrame") == nullptr ) {        \
+      spdlog::stdout_color_mt("xTRTFrame");             \
+    }                                                   \
+    spdlog::get("xTRTFrame")->warn(MSG); }
+
+/*!
+  \def XTRT_FATAL
+  Exit and print message
+*/
+#define XTRT_FATAL(MSG)                                                 \
+  { if ( spdlog::get("xTRTFrame") == nullptr ) {                        \
+      spdlog::stdout_color_mt("xTRTFrame");                             \
+    }                                                                   \
+    spdlog::get("xTRTFrame")->critical("Died in {}, more: {}",          \
+                                       __PRETTY_FUNCTION__, MSG);       \
+    std::exit(EXIT_FAILURE); }
 
 #endif

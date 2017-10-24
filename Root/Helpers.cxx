@@ -22,7 +22,8 @@ xTRT::SideRegion xTRT::getSideRegion(const int bec) {
   case  2:
     return xTRT::SideRegion::SIDE_A;
   default:
-    XTRT_FATAL("bad value for bec: " << bec);
+    std::string msg = "bad value for bec: " + std::to_string(bec);
+    XTRT_FATAL(msg);
     break;
   }
   return xTRT::SideRegion::NONTRT;
