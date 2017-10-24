@@ -1,8 +1,11 @@
 # xTRTFrame
 
-This project is a playground and I plan to make it the next main TRT
-analysis API in the near future, but for now...
+A framework for TRT analysis projects using the ATLAS Run 2 Data
+Model.
 
-See the [`TRTFramework` GitLab
-wiki](https://gitlab.cern.ch/atlas-trt-software/TRTFramework/wikis/home)
-for the current maintained TRT Analysis Framework.
+To use this repository (which is the framework), add it as a submodule
+to your existing git repository.
+
+
+
+More to come.
