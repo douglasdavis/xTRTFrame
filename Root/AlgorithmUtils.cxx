@@ -55,44 +55,32 @@ const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* 
       truthParticle = *truthLink;
     }
     else {
-      XTRT_WARNING("trunkLink is invalid!");
+      return nullptr;
     }
   }
   else {
-    XTRT_WARNING("truthLink is not available!");
+    return nullptr;
   }
   return truthParticle;
 }
 
 const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Electron* electron) {
   const xAOD::TrackParticle* track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
-  if ( not track ) {
-    spdlog::get("xTRTFrame")->debug("No original track particle from electron");
-    return nullptr;
-  }
+  if ( not track )  return nullptr;
   return track;
 }
 
 const xAOD::TrackParticle* xTRT::Algorithm::getGSFTrack(const xAOD::Electron* electron) {
   const xAOD::TrackParticle* track = electron->trackParticle();
-  if ( not track ) {
-    spdlog::get("xTRTFrame")->debug("No original GSF track particle from electron");
-    return nullptr;
-  }
+  if ( not track ) return nullptr;
   return track;
 }
 
 const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Muon* muon) {
   auto idtl = muon->inDetTrackParticleLink();
-  if ( not idtl.isValid() ) {
-    spdlog::get("xTRTFrame")->debug("invalid xAOD::Muon::inDetTrackParticleLink");
-    return nullptr;
-  }
+  if ( not idtl.isValid() ) return nullptr;
   auto trk = *idtl;
-  if ( not trk ) {
-    spdlog::get("xTRTFrame")->debug("nullptr from inDetTrackParticleLink on muon");
-    return nullptr;
-  }
+  if ( not trk )  return nullptr;
   return trk;
 }
 
