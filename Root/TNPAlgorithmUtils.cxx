@@ -96,8 +96,8 @@ bool xTRT::TNPAlgorithm::passZeeTNP(const xAOD::Electron* Tag, const xAOD::Elect
   if ( not singleElectronTrigMatched(Tag) ) return false;
   auto Tag_trk   = getTrack(Tag);
   auto Probe_trk = getTrack(Probe);
-  if ( Tag_trk   == nullptr ) return false;
-  if ( Probe_trk == nullptr ) return false;
+  if ( not debugnullptr(Tag_trk,  "Tag_trk")   ) return false;
+  if ( not debugnullptr(Probe_trk,"Probe_trk") ) return false;
 
   float tag_pT   = Tag->pt();
   float probe_pT = Probe->pt();
@@ -107,12 +107,14 @@ bool xTRT::TNPAlgorithm::passZeeTNP(const xAOD::Electron* Tag, const xAOD::Elect
   if ( not (passTightLH(Tag) and passLoose(Probe)) ) return false;
   if ( not (passAuthor(Tag) and passAuthor(Probe)) ) return false;
 
-  // check pT and eta cuts
+  // check kinematic (p, pT, eta,...) cuts
   if ( (tag_pT*toGeV) < m_tag_pT ) return false;
   if ( (probe_pT*toGeV) < m_probe_pT ) return false;
   if ( Probe_trk->pt() < (m_probe_relpT*probe_pT) ) return false;
   if ( std::abs(Tag->eta())   > 2.0 ) return false;
   if ( std::abs(Probe->eta()) > 2.0 ) return false;
+  if ( (Tag->p4().P())*toGeV > m_tag_maxP ) return false;
+  if ( (Probe->p4().P())*toGeV > m_probe_maxP ) return false;
 
   // check some track number of hits cuts
   if ( nTRT(Tag_trk) < m_tag_nTRT ) return false;
@@ -143,7 +145,8 @@ bool xTRT::TNPAlgorithm::passZmumuTNP(const xAOD::Muon* mu1, const xAOD::Muon* m
 
   auto mu1_trk = getTrack(mu1);
   auto mu2_trk = getTrack(mu2);
-  if ( mu1_trk == nullptr || mu2_trk == nullptr ) return false;
+  if ( not debugnullptr(mu1_trk,"mu1_trk") ) return false;
+  if ( not debugnullptr(mu2_trk,"mu2_trk") ) return false;
 
   float mu1_pT = mu1->pt();
   float mu2_pT = mu2->pt();

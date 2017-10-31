@@ -36,12 +36,21 @@ inline xAOD::TStore* xTRT::Algorithm::store() {
   return m_store;
 }
 
-inline const xAOD::EventInfo* xTRT::Algorithm::eventInfo() {
+inline const xAOD::EventInfo* xTRT::Algorithm::eventInfo() const {
   const xAOD::EventInfo* evtinfo = nullptr;
   if ( evtStore()->retrieve(evtinfo,"EventInfo").isFailure() ) {
     ANA_MSG_ERROR("Cannot retrieve EventInfo for some reason");
   }
   return evtinfo;
+}
+
+template <class T>
+inline bool xTRT::Algorithm::debugnullptr(const T* ptr, const std::string& message) const {
+  if ( ptr == nullptr ) {
+    ANA_MSG_DEBUG("Null pointer: " << message);
+    return false;
+  }
+  return true;
 }
 
 template <class C, class T> inline const C*
@@ -188,7 +197,7 @@ inline float xTRT::Algorithm::trackOccupancy(const xAOD::TrackParticle* track) {
     return trkOccAcc(*track);
   }
   else {
-    XTRT_WARNING("TRTTrackOccupancy not available! returning -1");
+    XTRT_FATAL("TRTTrackOccupancy not available!");
   }
   return -1.0;
 }
@@ -235,5 +244,10 @@ xTRT::Algorithm::trackSelMuonToolHandle() const {
 
 inline const asg::AnaToolHandle<Trig::IMatchingTool>&
 xTRT::Algorithm::trigMatchingToolHandle() const {
+  return m_trigMatchingToolHandle;
+}
+
+inline const asg::AnaToolHandle<Trig::IMatchingTool>&
+xTRT::Algorithm::trigMatchingToolHandle() {
   return m_trigMatchingToolHandle;
 }

@@ -9,4 +9,4 @@ to your existing git repository.
 
 More extensive documenation and how-to's to come.
 
-API documentation can be found [here](http://cern.ch/ddavis/xTRTFrameDoc)
+API documentation can be found [here](http://webhome.phy.duke.edu/~ddavis/xTRTFrame/index.html)

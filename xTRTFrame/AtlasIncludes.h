@@ -1,3 +1,9 @@
+/** @file  AtlasIncludes.h
+ *  @brief xTRTFrame ATLAS includes in a single file
+ *
+ *  @author Douglas Davis < ddavis@cern.ch >
+ */
+
 #ifndef xTRTFrame_AtlasIncludes_h
 #define xTRTFrame_AtlasIncludes_h
 

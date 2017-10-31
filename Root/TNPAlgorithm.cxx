@@ -40,6 +40,7 @@ EL::StatusCode xTRT::TNPAlgorithm::initialize() {
   ANA_CHECK(xTRT::Algorithm::initialize());
   clear();
 
+  m_tag_maxP             = config()->getOpt<float>("TNP.Tag.maxP",        200.0);
   m_tag_pT               = config()->getOpt<float>("TNP.Tag.pT",          25.0);
   m_tag_nTRT             = config()->getOpt<int>  ("TNP.Tag.nTRT",        15);
   m_tag_nPix             = config()->getOpt<int>  ("TNP.Tag.nPix",        1);
@@ -47,6 +48,7 @@ EL::StatusCode xTRT::TNPAlgorithm::initialize() {
   m_tag_iso_ptcone20     = config()->getOpt<float>("TNP.Tag.ptcone20",    0.06);
   m_tag_iso_topoetcone20 = config()->getOpt<float>("TNP.Tag.topoetcone20",0.06);
 
+  m_probe_maxP  = config()->getOpt<float>("TNP.Probe.maxP", 200.0);
   m_probe_pT    = config()->getOpt<float>("TNP.Probe.pT",   15.0);
   m_probe_relpT = config()->getOpt<float>("TNP.Probe.relpT",0.25);
   m_probe_nTRT  = config()->getOpt<int>  ("TNP.Probe.nTRT", 15);

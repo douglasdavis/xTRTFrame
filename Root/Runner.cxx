@@ -2,6 +2,7 @@
 #include <xTRTFrame/Algorithm.h>
 #include <xTRTFrame/Externals/CLI11.hpp>
 
+#include <AsgTools/MsgLevel.h>
 #include <EventLoopGrid/PrunDriver.h>
 #include <EventLoopGrid/GridDriver.h>
 #include <EventLoop/Job.h>
@@ -30,6 +31,8 @@ namespace xTRT {
     auto o_outds  = app.add_option("--outDS", outDS, "Output sample name to for grid job");
     bool printConf;
     app.add_flag("--print-config",printConf,"Print configuration options");
+    bool debugMode;
+    app.add_flag("--debug",debugMode,"Flag to run in debug mode");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -45,6 +48,9 @@ namespace xTRT {
 
     alg->feedConfig(configFile.c_str(),printConf);
     alg->setTreeOutputName("xTRTFrameTreeOutput");
+    if ( debugMode ) {
+      alg->setMsgLevel(MSG::DEBUG);
+    }
     job.algsAdd(alg);
 
     SH::SampleHandler sh;

@@ -20,11 +20,13 @@ namespace xTRT {
 
   private:
     ///////// cuts ////////////////////////
+    float m_tag_maxP;    //!
     float m_tag_pT;      //!
     int   m_tag_nTRT;    //!
     int   m_tag_nPix;    //!
     int   m_tag_nSi;     //!
 
+    float m_probe_maxP;  //!
     float m_probe_pT;    //!
     float m_probe_relpT; //!
     int   m_probe_nTRT;  //!

@@ -136,11 +136,11 @@ float xTRT::Algorithm::eventWeight() {
 
 float xTRT::Algorithm::averageMu() {
   const xAOD::EventInfo* evtinfo = eventInfo();
-  if ( !(m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION)) && config()->usePRW() ) {
+  if ( !(eventInfo()->eventType(xAOD::EventInfo::IS_SIMULATION)) && config()->usePRW() ) {
     return m_PRWToolHandle->getCorrectedAverageInteractionsPerCrossing(*evtinfo,true);
   }
   else {
-    return m_eventInfo->averageInteractionsPerCrossing();
+    return eventInfo()->averageInteractionsPerCrossing();
   }
 }
 
@@ -154,10 +154,10 @@ std::size_t xTRT::Algorithm::NPV() const {
 }
 
 bool xTRT::Algorithm::passGRL() const {
-  if ( m_eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) || !config()->useGRL() ) {
+  if ( eventInfo()->eventType(xAOD::EventInfo::IS_SIMULATION) || !config()->useGRL() ) {
     return true;
   }
-  return m_GRLToolHandle->passRunLB(*m_eventInfo);
+  return m_GRLToolHandle->passRunLB(*eventInfo());
 }
 
 float xTRT::Algorithm::deltaz0sinTheta(const xAOD::TrackParticle *track, const xAOD::Vertex* vtx) {

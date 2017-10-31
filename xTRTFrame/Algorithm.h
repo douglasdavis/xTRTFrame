@@ -86,6 +86,7 @@ namespace xTRT {
 
     void feedConfig(const std::string fileName, bool print_conf = false);
 
+  protected:
     /// Creates a ROOT object to be stored.
     /**
      *  This allows easy creation by just calling the constructor of a
@@ -109,12 +110,14 @@ namespace xTRT {
     template <typename T>
     T* grab(const std::string& name);
 
+  public:
     /// const pointer access to the configuration class
     const xTRT::Config* config() const;
 
     /// Sets the treeOutput name for the EL::NTupleSvc
     void setTreeOutputName(const std::string name);
 
+  protected:
     /// creates and sets up the InDetTrackSelectionTool
     EL::StatusCode setupTrackSelectionTools();
     /// creates and sets up the GoodRunsListSelectionTool
@@ -124,19 +127,21 @@ namespace xTRT {
     /// creates and sets up the ConfigTool, DecisionTool, and MatchingTool
     EL::StatusCode enableTriggerTools();
 
-    /// returns the raw track container (no selection applied)
-    const xAOD::TrackParticleContainer* trackContainer();
-    /// returns the raw electron container (no selection applied)
-    const xAOD::ElectronContainer*      electronContainer();
-    /// returns the raw electron container (no selection applied)
-    const xAOD::MuonContainer*          muonContainer();
-
+  public:
     /// checks if a track passes cuts defined in the config
     static bool passTrackSelection(const xAOD::TrackParticle* track, const xTRT::Config* conf);
     /// checks if an electron passes cuts defined in the config
     static bool passElectronSelection(const xAOD::Electron* electron, const xTRT::Config* conf);
     /// checks if a muon passes cuts defined in the config
     static bool passMuonSelection(const xAOD::Muon* muon, const xTRT::Config* conf);
+
+  protected:
+    /// returns the raw track container (no selection applied)
+    const xAOD::TrackParticleContainer* trackContainer();
+    /// returns the raw electron container (no selection applied)
+    const xAOD::ElectronContainer*      electronContainer();
+    /// returns the raw electron container (no selection applied)
+    const xAOD::MuonContainer*          muonContainer();
 
     /// use raw container to form deep copy containing only selected objects
     /**
@@ -160,6 +165,7 @@ namespace xTRT {
     /// applies selectedContainer on muons
     const xAOD::MuonContainer*          selectedMuons();
 
+  public:
     /// retrieves the TruthParticle associated with the input track particle
     static const xAOD::TruthParticle* getTruth(const xAOD::TrackParticle* track);
     /// retrieve the "original" xAOD::TrackParticle pointer from the electron
@@ -169,6 +175,7 @@ namespace xTRT {
     /// retrieve the xAOD::TrackParticle pointer from the muon
     static const xAOD::TrackParticle* getTrack(const xAOD::Muon* muon);
 
+  protected:
     /// return the total event weight
     float eventWeight();
     /// return the average number of collisions per bunch crossing
@@ -183,13 +190,27 @@ namespace xTRT {
     /// get pointer to current xAOD::TStore
     xAOD::TStore* store();
     /// get const pointer to the current event's xAOD::EventInfo
-    const xAOD::EventInfo* eventInfo();
+    const xAOD::EventInfo* eventInfo() const;
 
     /// get a hit summary object based on the track, surface measurement, and drift circle
     xTRT::HitSummary getHitSummary(const xAOD::TrackParticle* track,
                                    const xAOD::TrackStateValidation* msos,
                                    const xAOD::TrackMeasurementValidation* driftCircle);
 
+    /// check for a nullptr and print a debug message
+    /**
+     * A lot of xAOD pointers have the potential to be null, this is
+     * just a utliity function to test for a nullptr and use the ASG
+     * message service to print a debug message
+     *
+     * @param ptr the pointer to check
+     * @param message the message to print with ANA_MSG_DEBUG
+     * @return true if good, false if nullptr.
+     */
+    template <class T>
+    bool debugnullptr(const T* ptr, const std::string& message = "") const;
+
+  protected:
     /// check whether a trigger fired
     bool triggerPassed(const std::string trigName) const;
     /// check whether a list of triggers fired
@@ -199,6 +220,7 @@ namespace xTRT {
     /// check if a muon matches to any of the single muon triggers in config file
     bool singleMuonTrigMatched(const xAOD::Muon* muon);
 
+  public:
     /// return the number of TRT hits on the track (all)
     static int nTRT(const xAOD::TrackParticle* track);
     /// return the number of TRT prec+tube (non outlier)
@@ -240,7 +262,10 @@ namespace xTRT {
     const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelMuonToolHandle() const;
     /// get reference to the Trigger Matching Tool
     const asg::AnaToolHandle<Trig::IMatchingTool>& trigMatchingToolHandle() const;
+    /// get reference not class const Trigger Matching Tool
+    const asg::AnaToolHandle<Trig::IMatchingTool>& trigMatchingToolHandle();
 
+  protected:
     /// grab aux data by using ConstAccessor and some object
     /**
      *  Using a ConstAccessor, look to see if the object has the
@@ -267,6 +292,7 @@ namespace xTRT {
     template <typename T1, typename T2 = SG::AuxElement>
     static T1 retrieve(const T2* xobj, const std::string adn);
 
+  public:
     /// EventLoop API function
     virtual EL::StatusCode setupJob(EL::Job& job) override;
     /// EventLoop API function
