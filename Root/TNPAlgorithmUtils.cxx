@@ -113,6 +113,8 @@ bool xTRT::TNPAlgorithm::passZeeTNP(const xAOD::Electron* Tag, const xAOD::Elect
   if ( Probe_trk->pt() < (m_probe_relpT*probe_pT) ) return false;
   if ( std::abs(Tag->eta())   > 2.0 ) return false;
   if ( std::abs(Probe->eta()) > 2.0 ) return false;
+  if ( (Tag_trk->p4().P())*toGeV > m_tag_maxP ) return false;
+  if ( (Probe_trk->p4().P())*toGeV > m_probe_maxP ) return false;
   if ( (Tag->p4().P())*toGeV > m_tag_maxP ) return false;
   if ( (Probe->p4().P())*toGeV > m_probe_maxP ) return false;
 
@@ -152,6 +154,8 @@ bool xTRT::TNPAlgorithm::passZmumuTNP(const xAOD::Muon* mu1, const xAOD::Muon* m
   float mu2_pT = mu2->pt();
 
   // kinematics
+  if ( mu1_trk->p4().P()*toGeV > m_muon_maxP ) return false;
+  if ( mu2_trk->p4().P()*toGeV > m_muon_maxP ) return false;
   if ( mu1->p4().P()*toGeV > m_muon_maxP ) return false;
   if ( mu2->p4().P()*toGeV > m_muon_maxP ) return false;
   if ( mu1_pT*toGeV < m_muon_pT ) return false;
