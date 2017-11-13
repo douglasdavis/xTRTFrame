@@ -96,8 +96,8 @@ bool xTRT::TNPAlgorithm::passZeeTNP(const xAOD::Electron* Tag, const xAOD::Elect
   if ( not singleElectronTrigMatched(Tag) ) return false;
   auto Tag_trk   = getTrack(Tag);
   auto Probe_trk = getTrack(Probe);
-  if ( not debugnullptr(Tag_trk,  "Tag_trk")   ) return false;
-  if ( not debugnullptr(Probe_trk,"Probe_trk") ) return false;
+  if ( not debug_nullptr(Tag_trk,  "Tag_trk")   ) return false;
+  if ( not debug_nullptr(Probe_trk,"Probe_trk") ) return false;
 
   float tag_pT   = Tag->pt();
   float probe_pT = Probe->pt();
@@ -147,8 +147,8 @@ bool xTRT::TNPAlgorithm::passZmumuTNP(const xAOD::Muon* mu1, const xAOD::Muon* m
 
   auto mu1_trk = getTrack(mu1);
   auto mu2_trk = getTrack(mu2);
-  if ( not debugnullptr(mu1_trk,"mu1_trk") ) return false;
-  if ( not debugnullptr(mu2_trk,"mu2_trk") ) return false;
+  if ( not debug_nullptr(mu1_trk,"mu1_trk") ) return false;
+  if ( not debug_nullptr(mu2_trk,"mu2_trk") ) return false;
 
   float mu1_pT = mu1->pt();
   float mu2_pT = mu2->pt();

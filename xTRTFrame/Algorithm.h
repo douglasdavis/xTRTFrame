@@ -208,7 +208,19 @@ namespace xTRT {
      * @return true if good, false if nullptr.
      */
     template <class T>
-    bool debugnullptr(const T* ptr, const std::string& message = "") const;
+    bool debug_nullptr(const T* ptr, const std::string& message = "") const;
+
+    /// check for a nullptr and print a warning message
+    /**
+     * see xTRT::Algorithm::debugnullptr, but this prints a warning
+     * message instead of a debug message.
+     *
+     * @param ptr the pointer to check
+     * @param message the message to print with ANA_MSG_WARNING
+     * @return true if good, false if nullptr
+     */
+    template <class T>
+    bool warn_nullptr(const T* ptr, const std::string& message = "") const;
 
   protected:
     /// check whether a trigger fired
@@ -254,6 +266,7 @@ namespace xTRT {
     /// return the d0 significance of the track
     static double d0signif(const xAOD::TrackParticle* track, const xAOD::EventInfo* evtinfo);
 
+  protected:
     /// get reference to the InDetTrackSelectionTool handle for tracks
     const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelToolHandle()     const;
     /// get reference to the InDetTrackSelectionTool handle for electrons

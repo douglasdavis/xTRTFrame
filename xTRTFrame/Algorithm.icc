@@ -45,9 +45,18 @@ inline const xAOD::EventInfo* xTRT::Algorithm::eventInfo() const {
 }
 
 template <class T>
-inline bool xTRT::Algorithm::debugnullptr(const T* ptr, const std::string& message) const {
+inline bool xTRT::Algorithm::debug_nullptr(const T* ptr, const std::string& message) const {
   if ( ptr == nullptr ) {
     ANA_MSG_DEBUG("Null pointer: " << message);
+    return false;
+  }
+  return true;
+}
+
+template <class T>
+inline bool xTRT::Algorithm::warn_nullptr(const T* ptr, const std::string& message) const {
+  if ( ptr == nullptr ) {
+    ANA_MSG_WARNING("Null pointer: " << message);
     return false;
   }
   return true;
