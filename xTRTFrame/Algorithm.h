@@ -192,11 +192,13 @@ namespace xTRT {
     /// get const pointer to the current event's xAOD::EventInfo
     const xAOD::EventInfo* eventInfo() const;
 
+  public:
     /// get a hit summary object based on the track, surface measurement, and drift circle
-    xTRT::HitSummary getHitSummary(const xAOD::TrackParticle* track,
-                                   const xAOD::TrackStateValidation* msos,
-                                   const xAOD::TrackMeasurementValidation* driftCircle);
+    static xTRT::HitSummary getHitSummary(const xAOD::TrackParticle* track,
+                                          const xAOD::TrackStateValidation* msos,
+                                          const xAOD::TrackMeasurementValidation* driftCircle);
 
+  protected:
     /// check for a nullptr and print a debug message
     /**
      * A lot of xAOD pointers have the potential to be null, this is
