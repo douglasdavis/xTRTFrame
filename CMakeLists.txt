@@ -31,7 +31,7 @@ add_definitions(-g -O3 -std=c++14)
 
 # Generate a CINT dictionary source file:
 atlas_add_root_dictionary(xTRTFrame _cintDictSource
-  ROOT_HEADERS xTRTFrame/Config.h xTRTFrame/TNPAlgorithm.h xTRTFrame/Algorithm.h xTRTFrame/LinkDef.h
+  ROOT_HEADERS xTRTFrame/Config.h xTRTFrame/TNPAlgorithm.h xTRTFrame/Algorithm.h xTRTFrame/xTRTFrameDict.h
   EXTERNAL_PACKAGES ROOT
   )
 
