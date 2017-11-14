@@ -28,6 +28,14 @@ inline const xTRT::Config* xTRT::Algorithm::config() const {
   return &m_config;
 }
 
+inline bool xTRT::Algorithm::isMC() const {
+  return eventInfo()->eventType(xAOD::EventInfo::IS_SIMULATION);
+}
+
+inline bool xTRT::Algorithm::isData() const {
+  return (not eventInfo()->eventType(xAOD::EventInfo::IS_SIMULATION));
+}
+
 inline xAOD::TEvent* xTRT::Algorithm::event() {
   return m_event;
 }

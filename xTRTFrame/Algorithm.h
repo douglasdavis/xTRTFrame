@@ -176,6 +176,10 @@ namespace xTRT {
     static const xAOD::TrackParticle* getTrack(const xAOD::Muon* muon);
 
   protected:
+    /// check if the sample is MC
+    bool isMC() const;
+    /// check if the sample is Data (convenience function, opposite of isMC())
+    bool isData() const;
     /// return the total event weight
     float eventWeight();
     /// return the average number of collisions per bunch crossing

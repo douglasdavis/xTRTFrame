@@ -3,8 +3,10 @@
 EL::StatusCode xTRT::TNPAlgorithm::performSelections() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   clear();
-  ANA_CHECK(performZeeSelection());
-  ANA_CHECK(performZmumuSelection());
+  if ( isData()) {
+    ANA_CHECK(performZeeSelection());
+    ANA_CHECK(performZmumuSelection());
+  }
   m_selectionCalled = true;
   return EL::StatusCode::SUCCESS;
 }

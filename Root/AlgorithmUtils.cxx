@@ -34,17 +34,17 @@ const xAOD::MuonContainer* xTRT::Algorithm::muonContainer() {
 
 const xAOD::TrackParticleContainer* xTRT::Algorithm::selectedTracks() {
   return selectedContainer<xAOD::TrackParticleContainer,xAOD::TrackParticle>
-    (trackContainer(),passTrackSelection,"GoodTracks");
+    (trackContainer(),passTrackSelection,"xTRT_GoodTracks");
 }
 
 const xAOD::ElectronContainer* xTRT::Algorithm::selectedElectrons() {
   return selectedContainer<xAOD::ElectronContainer,xAOD::Electron>
-    (electronContainer(),passElectronSelection,"GoodElectrons");
+    (electronContainer(),passElectronSelection,"xTRT_GoodElectrons");
 }
 
 const xAOD::MuonContainer* xTRT::Algorithm::selectedMuons() {
   return selectedContainer<xAOD::MuonContainer,xAOD::Muon>
-    (muonContainer(),passMuonSelection,"GoodMuons");
+    (muonContainer(),passMuonSelection,"xTRT_GoodMuons");
 }
 
 const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* track) {
@@ -136,7 +136,7 @@ float xTRT::Algorithm::eventWeight() {
 
 float xTRT::Algorithm::averageMu() {
   const xAOD::EventInfo* evtinfo = eventInfo();
-  if ( !(eventInfo()->eventType(xAOD::EventInfo::IS_SIMULATION)) && config()->usePRW() ) {
+  if ( !(evtinfo->eventType(xAOD::EventInfo::IS_SIMULATION)) && config()->usePRW() ) {
     return m_PRWToolHandle->getCorrectedAverageInteractionsPerCrossing(*evtinfo,true);
   }
   else {
@@ -154,7 +154,7 @@ std::size_t xTRT::Algorithm::NPV() const {
 }
 
 bool xTRT::Algorithm::passGRL() const {
-  if ( eventInfo()->eventType(xAOD::EventInfo::IS_SIMULATION) || !config()->useGRL() ) {
+  if ( isMC() || !config()->useGRL() ) {
     return true;
   }
   return m_GRLToolHandle->passRunLB(*eventInfo());
