@@ -33,5 +33,6 @@
 #include <TriggerMatchingTool/MatchingTool.h>
 #include <PathResolver/PathResolver.h>
 #include <InDetTrackSelectionTool/InDetTrackSelectionTool.h>
+#include <MCTruthClassifier/MCTruthClassifierDefs.h>
 
 #endif

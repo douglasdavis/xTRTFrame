@@ -64,12 +64,14 @@ bool xTRT::Config::parse(const std::string fileName, bool print_conf) {
   cut_elec_eta   = m_rootEnv->GetValue("Electrons.eta",2.0);
   cut_elec_UTC   = m_rootEnv->GetValue("Electrons.UseTrackCuts",false);
   cut_elec_relpT = m_rootEnv->GetValue("Electrons.RelpT",0.0);
+  cut_elec_TM    = m_rootEnv->GetValue("Electrons.TruthMatched",false);
 
   cut_muon_p     = m_rootEnv->GetValue("Muons.p",0.0);
   cut_muon_pT    = m_rootEnv->GetValue("Muons.pT",0.0);
   cut_muon_eta   = m_rootEnv->GetValue("Muons.eta",2.0);
   cut_muon_UTC   = m_rootEnv->GetValue("Muons.UseTrackCuts",false);
   cut_muon_relpT = m_rootEnv->GetValue("Muons.RelpT",0.0);
+  cut_muon_TM    = m_rootEnv->GetValue("Muons.TruthMatched",false);
 
   if ( print_conf ) {
     printConf();
@@ -121,10 +123,12 @@ void xTRT::Config::printConf() const {
   std::cout << "Electron eta cut: " << cut_elec_eta << std::endl;
   std::cout << "Electron use track cuts: " << cut_elec_UTC << std::endl;
   std::cout << "Electron relative pT cut: " << cut_elec_relpT << std::endl;
+  std::cout << "Electron require truth matched: " << cut_elec_TM << std::endl;
 
   std::cout << "Muon p cut: " << cut_muon_p << std::endl;
   std::cout << "Muon pT cut: " << cut_muon_pT << std::endl;
   std::cout << "Muon eta cut: " << cut_muon_eta << std::endl;
   std::cout << "Muon use track cuts: " << cut_muon_UTC << std::endl;
   std::cout << "Muon relative pT cut: " << cut_muon_relpT << std::endl;
+  std::cout << "Muon require truth matched: " << cut_muon_TM << std::endl;
 }

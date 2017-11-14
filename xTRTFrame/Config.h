@@ -60,12 +60,14 @@ namespace xTRT {
     float cut_elec_eta;
     float cut_elec_relpT;
     bool  cut_elec_UTC;
+    bool  cut_elec_TM;
 
     float cut_muon_p;
     float cut_muon_pT;
     float cut_muon_eta;
     float cut_muon_relpT;
     bool  cut_muon_UTC;
+    bool  cut_muon_TM;
 
     void printConf() const;
 
@@ -120,26 +122,30 @@ namespace xTRT {
     int   track_nTRTprec() const;
 
     /// get the muon momentum cut (minimum cut)
-    float muon_p()     const;
+    float muon_p()            const;
     /// get the muon transverse momentum cut (minimum cut)
-    float muon_pT()    const;
+    float muon_pT()           const;
     /// get the muon abs(eta) cut (maximum cut)
-    float muon_eta()   const;
+    float muon_eta()          const;
     /// get the muon relative transverse momentum cut
-    float muon_relpT() const;
+    float muon_relpT()        const;
     /// true if config says muons should also use track cuts
-    bool  muon_UTC()   const;
+    bool  muon_UTC()          const;
+    /// true of config says muons should be truth matched
+    bool  muon_truthMatched() const;
 
     /// get the electron momentum cut (minimum cut)
-    float elec_p()     const;
+    float elec_p()            const;
     /// get the electron transverse momentum cut (minimum cut)
-    float elec_pT()    const;
+    float elec_pT()           const;
     /// get the abs(eta) cut (maximum cut)
-    float elec_eta()   const;
+    float elec_eta()          const;
     /// get the electron relative transverse momentum cut
-    float elec_relpT() const;
+    float elec_relpT()        const;
     /// true if config says electrons should also use track cuts
-    bool  elec_UTC()   const;
+    bool  elec_UTC()          const;
+    /// true of config says electrons should be truth matched
+    bool  elec_truthMatched() const;
 
     /** Get a value defined from in config file
      *
@@ -193,17 +199,19 @@ inline int   xTRT::Config::track_nPix()     const { return cut_track_nPix;     }
 inline int   xTRT::Config::track_nTRT()     const { return cut_track_nTRT;     }
 inline int   xTRT::Config::track_nTRTprec() const { return cut_track_nTRTprec; }
 
-inline float xTRT::Config::elec_p()     const { return cut_elec_p;     }
-inline float xTRT::Config::elec_pT()    const { return cut_elec_pT;    }
-inline float xTRT::Config::elec_eta()   const { return cut_elec_eta;   }
-inline bool  xTRT::Config::elec_UTC()   const { return cut_elec_UTC;   }
-inline float xTRT::Config::elec_relpT() const { return cut_elec_relpT; }
+inline float xTRT::Config::elec_p()            const { return cut_elec_p;     }
+inline float xTRT::Config::elec_pT()           const { return cut_elec_pT;    }
+inline float xTRT::Config::elec_eta()          const { return cut_elec_eta;   }
+inline bool  xTRT::Config::elec_UTC()          const { return cut_elec_UTC;   }
+inline float xTRT::Config::elec_relpT()        const { return cut_elec_relpT; }
+inline bool  xTRT::Config::elec_truthMatched() const { return cut_elec_TM;    }
 
-inline float xTRT::Config::muon_p()     const { return cut_muon_p;     }
-inline float xTRT::Config::muon_pT()    const { return cut_muon_pT;    }
-inline float xTRT::Config::muon_eta()   const { return cut_muon_eta;   }
-inline bool  xTRT::Config::muon_UTC()   const { return cut_muon_UTC;   }
-inline float xTRT::Config::muon_relpT() const { return cut_muon_relpT; }
+inline float xTRT::Config::muon_p()            const { return cut_muon_p;     }
+inline float xTRT::Config::muon_pT()           const { return cut_muon_pT;    }
+inline float xTRT::Config::muon_eta()          const { return cut_muon_eta;   }
+inline bool  xTRT::Config::muon_UTC()          const { return cut_muon_UTC;   }
+inline float xTRT::Config::muon_relpT()        const { return cut_muon_relpT; }
+inline bool  xTRT::Config::muon_truthMatched() const { return cut_muon_TM;    }
 
 template <typename T>
 inline const T xTRT::Config::getOpt(const char* name, const T def) const {

@@ -200,6 +200,36 @@ inline float xTRT::Algorithm::trackIso_pTcone20(const xAOD::Electron* electron) 
   return ptcone20;
 }
 
+inline bool xTRT::Algorithm::truthMatched(const xAOD::Electron* electron) {
+  static const SG::AuxElement::ConstAccessor<int> truthType      {"truthType"};
+  static const SG::AuxElement::ConstAccessor<int> truthOrigin    {"truthOrigin"};
+  static const SG::AuxElement::ConstAccessor<int> bkgTruthOrigin {"bkgTruthOrigin"};
+
+  int true_type = 0, true_origin = 0, true_originbkg = 0;
+  if ( truthType.isAvailable(*electron)      ) true_type      = truthType(*electron);
+  if ( truthOrigin.isAvailable(*electron)    ) true_origin    = truthOrigin(*electron);
+  if ( bkgTruthOrigin.isAvailable(*electron) ) true_originbkg = bkgTruthOrigin(*electron);
+
+  bool istruthmatched = ( true_type == MCTruthPartClassifier::ParticleType::IsoElectron ||
+                          ( true_type == MCTruthPartClassifier::ParticleType::BkgElectron &&
+                            true_origin == MCTruthPartClassifier::ParticleOrigin::PhotonConv &&
+                            ( true_originbkg == MCTruthPartClassifier::ParticleOrigin::TauLep ||
+                              true_originbkg == MCTruthPartClassifier::ParticleOrigin::ZBoson ||
+                              true_originbkg == MCTruthPartClassifier::ParticleOrigin::WBoson ) ) );
+  return istruthmatched;
+}
+
+inline bool xTRT::Algorithm::truthMatched(const xAOD::Muon* muon) {
+  static const SG::AuxElement::ConstAccessor<int> truthType {"truthType"};
+  if ( not truthType.isAvailable(*muon) ) {
+    return false;
+  }
+  else {
+    int true_type = truthType(*muon);
+    return (true_type == MCTruthPartClassifier::ParticleType::IsoMuon);
+  }
+}
+
 inline float xTRT::Algorithm::trackOccupancy(const xAOD::TrackParticle* track) {
   static SG::AuxElement::ConstAccessor<float> trkOccAcc("TRTTrackOccupancy");
   if ( trkOccAcc.isAvailable(*track) ) {

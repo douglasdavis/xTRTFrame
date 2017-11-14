@@ -15,6 +15,7 @@ atlas_depends_on_subdirs(PUBLIC
   Event/xAOD/xAODMuon
   InnerDetector/InDetRecTools/InDetTrackSelectionTool
   PhysicsAnalysis/AnalysisCommon/PileupReweighting
+  PhysicsAnalysis/MCTruthClassifier
   DataQuality/GoodRunsLists
   Trigger/TrigAnalysis/TrigDecisionTool
   Trigger/TrigAnalysis/TriggerMatchingTool
@@ -41,6 +42,7 @@ atlas_add_library(xTRTFrame Root/*.cxx xTRTFrame/*.h xTRTFrame/*.icc xTRTFrame/*
   AsgTools
   GoodRunsListsLib
   PileupReweightingLib
+  MCTruthClassifierLib
   EventLoop
   EventLoopAlgs
   EventLoopGrid

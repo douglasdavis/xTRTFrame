@@ -210,6 +210,11 @@ bool xTRT::Algorithm::passElectronSelection(const xAOD::Electron* electron, cons
   if ( electron->pt() < conf->elec_pT() ) return false;
   if ( electron->p4().P() < conf->elec_p() ) return false;
   if ( std::abs(electron->eta()) > conf->elec_eta() ) return false;
+
+  if ( conf->elec_truthMatched() ) {
+    if ( not truthMatched(electron) ) return false;
+  }
+
   return true;
 }
 
@@ -241,6 +246,11 @@ bool xTRT::Algorithm::passMuonSelection(const xAOD::Muon* muon, const xTRT::Conf
   if ( muon->pt() < conf->muon_pT() ) return false;
   if ( muon->p4().P() < conf->muon_p() ) return false;
   if ( std::abs(muon->eta()) > conf->muon_eta() ) return false;
+
+  if ( conf->muon_truthMatched() ) {
+    if ( not truthMatched(muon) ) return false;
+  }
+
   return true;
 }
 

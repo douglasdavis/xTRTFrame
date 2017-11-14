@@ -260,6 +260,10 @@ namespace xTRT {
     static float trackIso(const xAOD::Muon* muon);
     /// get the track pTcone20 iso value from an electron (xAOD::Iso::ptcone20)
     static float trackIso_pTcone20(const xAOD::Electron* electron);
+    /// get if electron is truth matched
+    static bool  truthMatched(const xAOD::Electron* electron);
+    /// get if muon is truth matched
+    static bool  truthMatched(const xAOD::Muon* muon);
 
     /// return the TRT track occupancy
     static float trackOccupancy(const xAOD::TrackParticle* track);
