@@ -80,6 +80,12 @@ EL::StatusCode xTRT::Algorithm::enableTriggerTools() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_MSG_INFO("Setting up trigger tools");
 
+  if ( config()->mcMode() ) {
+    ANA_MSG_WARNING("mcMode on so not actually setting up Trigger tools!");
+    ANA_MSG_WARNING("Contact developers if you need this changed.");
+    return EL::StatusCode::SUCCESS;
+  }
+
   ANA_CHECK(m_trigConfToolHandle.setProperty("OutputLevel", msg().level()));
   ANA_CHECK(m_trigConfToolHandle.retrieve());
   ANA_MSG_DEBUG("Retrieved tool: " << m_trigConfToolHandle);

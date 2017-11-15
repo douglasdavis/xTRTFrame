@@ -7,9 +7,10 @@ xTRT::Config::Config() {}
 
 xTRT::Config::~Config() {}
 
-bool xTRT::Config::parse(const std::string fileName, bool print_conf) {
+bool xTRT::Config::parse(const std::string fileName, bool print_conf, bool mcMode) {
   m_rootEnv = std::make_unique<TEnv>(fileName.c_str());
 
+  m_mcMode  = mcMode;
   m_useGRL  = m_rootEnv->GetValue("GRL",false);
   m_usePRW  = m_rootEnv->GetValue("PRW",false);
   m_useTrig = m_rootEnv->GetValue("Trig",false);

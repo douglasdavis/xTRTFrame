@@ -84,7 +84,7 @@ namespace xTRT {
     /// delete move assignment
     Algorithm& operator=(Algorithm&&) = delete;
 
-    void feedConfig(const std::string fileName, bool print_conf = false);
+    void feedConfig(const std::string fileName, bool print_conf = false, bool mcMode = false);
 
   protected:
     /// Creates a ROOT object to be stored.

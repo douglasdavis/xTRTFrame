@@ -31,6 +31,7 @@ namespace xTRT {
 
     std::unique_ptr<TEnv>    m_rootEnv;
 
+    bool                     m_mcMode;
     bool                     m_useGRL;
     bool                     m_usePRW;
     bool                     m_useTrig;
@@ -75,8 +76,11 @@ namespace xTRT {
     Config();
     virtual ~Config();
 
-    bool parse(const std::string fileName, bool print_conf);
+    /// sets all the config members
+    bool parse(const std::string fileName, bool print_conf, bool mcMode = false);
 
+    /// true if MC mode has been declared
+    bool mcMode()  const;
     /// true if config says use GRL
     bool useGRL()  const;
     /// true if config says use pileup reweighting
@@ -174,6 +178,7 @@ namespace xTRT {
   };
 }
 
+inline bool xTRT::Config::mcMode()  const { return m_mcMode;  }
 inline bool xTRT::Config::useGRL()  const { return m_useGRL;  }
 inline bool xTRT::Config::usePRW()  const { return m_usePRW;  }
 inline bool xTRT::Config::useTrig() const { return m_useTrig; }

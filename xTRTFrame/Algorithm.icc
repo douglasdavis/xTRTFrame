@@ -12,6 +12,7 @@ inline T* xTRT::Algorithm::grab(const std::string& name) {
   auto iter = m_objStore.find(name);
   if ( iter == m_objStore.end() ) {
     ANA_MSG_FATAL("Cannot find object with name:" << name);
+    std::exit(EXIT_FAILURE);
   }
   return dynamic_cast<T*>(iter->second);
 }
@@ -20,8 +21,8 @@ inline void xTRT::Algorithm::setTreeOutputName(const std::string name) {
   m_outputName = name;
 }
 
-inline void xTRT::Algorithm::feedConfig(const std::string fileName, bool print_conf) {
-  m_config.parse(fileName, print_conf);
+inline void xTRT::Algorithm::feedConfig(const std::string fileName, bool print_conf, bool mcMode) {
+  m_config.parse(fileName, print_conf, mcMode);
 }
 
 inline const xTRT::Config* xTRT::Algorithm::config() const {

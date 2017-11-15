@@ -33,6 +33,8 @@ namespace xTRT {
     app.add_flag("--print-config",printConf,"Print configuration options");
     bool debugMode;
     app.add_flag("--debug",debugMode,"Flag to run in debug mode");
+    bool mcMode;
+    app.add_flag("--mc",mcMode,"Flag to tell config you're running over MC (convenience flag)");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -46,7 +48,7 @@ namespace xTRT {
     EL::NTupleSvc *ntuple = new EL::NTupleSvc("xTRTFrameTreeOutput");
     job.algsAdd(ntuple);
 
-    alg->feedConfig(configFile.c_str(),printConf);
+    alg->feedConfig(configFile.c_str(),printConf,mcMode);
     alg->setTreeOutputName("xTRTFrameTreeOutput");
     if ( debugMode ) {
       alg->setMsgLevel(MSG::DEBUG);

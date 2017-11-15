@@ -177,10 +177,10 @@ double xTRT::Algorithm::d0signif(const xAOD::TrackParticle *track, const xAOD::E
 bool xTRT::Algorithm::passTrackSelection(const xAOD::TrackParticle* track, const xTRT::Config* conf) {
   if ( xTRT::Algorithm::nTRT(track) < conf->track_nTRT() ) return false;
   if ( xTRT::Algorithm::nTRT_PrecTube(track) < conf->track_nTRTprec() ) return false;
-  if ( track->pt() < conf->track_pT() ) return false;
-  if ( std::abs(track->eta()) > conf->track_eta() ) return false;
-  if ( track->p4().P() < conf->track_p() ) return false;
   if ( xTRT::Algorithm::nSilicon(track) < conf->track_nSi() ) return false;
+  if ( track->pt()*toGeV < conf->track_pT() ) return false;
+  if ( std::abs(track->eta()) > conf->track_eta() ) return false;
+  if ( track->p4().P()*toGeV < conf->track_p() ) return false;
   return true;
 }
 
@@ -207,8 +207,8 @@ bool xTRT::Algorithm::passElectronSelection(const xAOD::Electron* electron, cons
     }
   }
 
-  if ( electron->pt() < conf->elec_pT() ) return false;
-  if ( electron->p4().P() < conf->elec_p() ) return false;
+  if ( electron->pt()*toGeV < conf->elec_pT() ) return false;
+  if ( electron->p4().P()*toGeV < conf->elec_p() ) return false;
   if ( std::abs(electron->eta()) > conf->elec_eta() ) return false;
 
   if ( conf->elec_truthMatched() ) {
@@ -243,8 +243,8 @@ bool xTRT::Algorithm::passMuonSelection(const xAOD::Muon* muon, const xTRT::Conf
     }
   }
 
-  if ( muon->pt() < conf->muon_pT() ) return false;
-  if ( muon->p4().P() < conf->muon_p() ) return false;
+  if ( muon->pt()*toGeV < conf->muon_pT() ) return false;
+  if ( muon->p4().P()*toGeV < conf->muon_p() ) return false;
   if ( std::abs(muon->eta()) > conf->muon_eta() ) return false;
 
   if ( conf->muon_truthMatched() ) {
