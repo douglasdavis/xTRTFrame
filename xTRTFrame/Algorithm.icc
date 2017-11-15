@@ -239,6 +239,24 @@ inline bool xTRT::Algorithm::truthMatched(const xAOD::Muon* muon) {
   }
 }
 
+inline bool xTRT::Algorithm::isFrom(const xAOD::IParticle* particle,
+                                    const MCTruthPartClassifier::ParticleOrigin origin) {
+  static const SG::AuxElement::ConstAccessor<int> truthOrigin{"truthOrigin"};
+  int truthOrig = 0;
+  if ( truthOrigin.isAvailable(*particle) ) {
+    truthOrig = truthOrigin(*particle);
+  }
+  return (truthOrig == origin);
+}
+
+inline bool xTRT::Algorithm::isFromZ(const xAOD::IParticle* particle) {
+  return xTRT::Algorithm::isFrom(particle,MCTruthPartClassifier::ParticleOrigin::ZBoson);
+}
+
+inline bool xTRT::Algorithm::isFromJPsi(const xAOD::IParticle* particle) {
+  return xTRT::Algorithm::isFrom(particle,MCTruthPartClassifier::ParticleOrigin::JPsi);
+}
+
 inline float xTRT::Algorithm::trackOccupancy(const xAOD::TrackParticle* track) {
   static SG::AuxElement::ConstAccessor<float> trkOccAcc("TRTTrackOccupancy");
   if ( trkOccAcc.isAvailable(*track) ) {

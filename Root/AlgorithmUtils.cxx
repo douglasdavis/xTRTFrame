@@ -213,6 +213,12 @@ bool xTRT::Algorithm::passElectronSelection(const xAOD::Electron* electron, cons
 
   if ( conf->elec_truthMatched() ) {
     if ( not truthMatched(electron) ) return false;
+    bool fromZ   = isFromZ(electron);
+    if ( conf->elec_fromZ() && (not fromZ) ) return false;
+    bool fromJ   = isFromJPsi(electron);
+    if ( conf->elec_fromJPsi() && (not fromJ) ) return false;
+    bool fromZoJ = (fromZ || fromJ);
+    if ( conf->elec_fromZorJPsi() && (not fromZoJ) ) return false;
   }
 
   return true;
@@ -249,6 +255,12 @@ bool xTRT::Algorithm::passMuonSelection(const xAOD::Muon* muon, const xTRT::Conf
 
   if ( conf->muon_truthMatched() ) {
     if ( not truthMatched(muon) ) return false;
+    bool fromZ   = isFromZ(muon);
+    if ( conf->muon_fromZ() && (not fromZ) ) return false;
+    bool fromJ   = isFromJPsi(muon);
+    if ( conf->muon_fromJPsi() && (not fromJ) ) return false;
+    bool fromZoJ = (fromZ || fromJ);
+    if ( conf->muon_fromZorJPsi() && (not fromZoJ) ) return false;
   }
 
   return true;

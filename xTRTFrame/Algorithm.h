@@ -268,6 +268,12 @@ namespace xTRT {
     static bool  truthMatched(const xAOD::Electron* electron);
     /// get if muon is truth matched
     static bool  truthMatched(const xAOD::Muon* muon);
+    /// get if particle is from specific particle origin
+    static bool  isFrom(const xAOD::IParticle* particle, const MCTruthPartClassifier::ParticleOrigin origin);
+    /// get if particle is from Z (uses isFrom with ZBoson enum value)
+    static bool  isFromZ(const xAOD::IParticle* particle);
+    /// get if particle is from JPsi (uses isFrom with JPsi enum value)
+    static bool  isFromJPsi(const xAOD::IParticle* particle);
 
     /// return the TRT track occupancy
     static float trackOccupancy(const xAOD::TrackParticle* track);

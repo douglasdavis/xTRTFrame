@@ -60,19 +60,25 @@ bool xTRT::Config::parse(const std::string fileName, bool print_conf, bool mcMod
   cut_track_nTRT     = m_rootEnv->GetValue("Tracks.nTRT",15);
   cut_track_nTRTprec = m_rootEnv->GetValue("Tracks.nTRTprec",5);
 
-  cut_elec_p     = m_rootEnv->GetValue("Electrons.p",0.0);
-  cut_elec_pT    = m_rootEnv->GetValue("Electrons.pT",0.0);
-  cut_elec_eta   = m_rootEnv->GetValue("Electrons.eta",2.0);
-  cut_elec_UTC   = m_rootEnv->GetValue("Electrons.UseTrackCuts",false);
-  cut_elec_relpT = m_rootEnv->GetValue("Electrons.RelpT",0.0);
-  cut_elec_TM    = m_rootEnv->GetValue("Electrons.TruthMatched",false);
+  cut_elec_p           = m_rootEnv->GetValue("Electrons.p",0.0);
+  cut_elec_pT          = m_rootEnv->GetValue("Electrons.pT",0.0);
+  cut_elec_eta         = m_rootEnv->GetValue("Electrons.eta",2.0);
+  cut_elec_UTC         = m_rootEnv->GetValue("Electrons.UseTrackCuts",false);
+  cut_elec_relpT       = m_rootEnv->GetValue("Electrons.RelpT",0.0);
+  cut_elec_TM          = m_rootEnv->GetValue("Electrons.TruthMatched",false);
+  cut_elec_fromZ       = m_rootEnv->GetValue("Electrons.FromZ",false);
+  cut_elec_fromJPsi    = m_rootEnv->GetValue("Electrons.FromJPsi",false);
+  cut_elec_fromZorJPsi = m_rootEnv->GetValue("Electrons.FromZorJPsi",false);
 
-  cut_muon_p     = m_rootEnv->GetValue("Muons.p",0.0);
-  cut_muon_pT    = m_rootEnv->GetValue("Muons.pT",0.0);
-  cut_muon_eta   = m_rootEnv->GetValue("Muons.eta",2.0);
-  cut_muon_UTC   = m_rootEnv->GetValue("Muons.UseTrackCuts",false);
-  cut_muon_relpT = m_rootEnv->GetValue("Muons.RelpT",0.0);
-  cut_muon_TM    = m_rootEnv->GetValue("Muons.TruthMatched",false);
+  cut_muon_p           = m_rootEnv->GetValue("Muons.p",0.0);
+  cut_muon_pT          = m_rootEnv->GetValue("Muons.pT",0.0);
+  cut_muon_eta         = m_rootEnv->GetValue("Muons.eta",2.0);
+  cut_muon_UTC         = m_rootEnv->GetValue("Muons.UseTrackCuts",false);
+  cut_muon_relpT       = m_rootEnv->GetValue("Muons.RelpT",0.0);
+  cut_muon_TM          = m_rootEnv->GetValue("Muons.TruthMatched",false);
+  cut_muon_fromZ       = m_rootEnv->GetValue("Muons.FromZ",false);
+  cut_muon_fromJPsi    = m_rootEnv->GetValue("Muons.FromJPsi",false);
+  cut_muon_fromZorJPsi = m_rootEnv->GetValue("Muons.FromZorJPsi",false);
 
   if ( print_conf ) {
     printConf();
@@ -125,6 +131,9 @@ void xTRT::Config::printConf() const {
   std::cout << "Electron use track cuts: " << cut_elec_UTC << std::endl;
   std::cout << "Electron relative pT cut: " << cut_elec_relpT << std::endl;
   std::cout << "Electron require truth matched: " << cut_elec_TM << std::endl;
+  std::cout << "Electron require from Z: " << cut_elec_fromZ << std::endl;
+  std::cout << "Electron require from JPsi: " << cut_elec_fromJPsi << std::endl;
+  std::cout << "Electron require from Z or JPsi: " << cut_elec_fromZorJPsi << std::endl;
 
   std::cout << "Muon p cut: " << cut_muon_p << std::endl;
   std::cout << "Muon pT cut: " << cut_muon_pT << std::endl;
@@ -132,4 +141,7 @@ void xTRT::Config::printConf() const {
   std::cout << "Muon use track cuts: " << cut_muon_UTC << std::endl;
   std::cout << "Muon relative pT cut: " << cut_muon_relpT << std::endl;
   std::cout << "Muon require truth matched: " << cut_muon_TM << std::endl;
+  std::cout << "Muon require from Z: " << cut_muon_fromZ << std::endl;
+  std::cout << "Muon require from JPsi: " << cut_muon_fromJPsi << std::endl;
+  std::cout << "Muon require from Z or JPsi: " << cut_muon_fromZorJPsi << std::endl;
 }

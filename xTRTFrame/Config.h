@@ -62,6 +62,9 @@ namespace xTRT {
     float cut_elec_relpT;
     bool  cut_elec_UTC;
     bool  cut_elec_TM;
+    bool  cut_elec_fromZ;
+    bool  cut_elec_fromJPsi;
+    bool  cut_elec_fromZorJPsi;
 
     float cut_muon_p;
     float cut_muon_pT;
@@ -69,6 +72,9 @@ namespace xTRT {
     float cut_muon_relpT;
     bool  cut_muon_UTC;
     bool  cut_muon_TM;
+    bool  cut_muon_fromZ;
+    bool  cut_muon_fromJPsi;
+    bool  cut_muon_fromZorJPsi;
 
     void printConf() const;
 
@@ -135,8 +141,14 @@ namespace xTRT {
     float muon_relpT()        const;
     /// true if config says muons should also use track cuts
     bool  muon_UTC()          const;
-    /// true of config says muons should be truth matched
+    /// true if config says muons should be truth matched
     bool  muon_truthMatched() const;
+    /// true if config says muons shoud be from Z
+    bool  muon_fromZ()        const;
+    /// true if config says muons should be from JPsi
+    bool  muon_fromJPsi()     const;
+    /// true if config says muons should be from either Z or JPsi
+    bool  muon_fromZorJPsi()  const;
 
     /// get the electron momentum cut (minimum cut)
     float elec_p()            const;
@@ -150,6 +162,12 @@ namespace xTRT {
     bool  elec_UTC()          const;
     /// true of config says electrons should be truth matched
     bool  elec_truthMatched() const;
+    /// true if config says electrons shoud be from Z
+    bool  elec_fromZ()        const;
+    /// true if config says electrons should be from JPsi
+    bool  elec_fromJPsi()     const;
+    /// true if config says electrons should be from either Z or JPsi
+    bool  elec_fromZorJPsi()  const;
 
     /** Get a value defined from in config file
      *
@@ -204,19 +222,25 @@ inline int   xTRT::Config::track_nPix()     const { return cut_track_nPix;     }
 inline int   xTRT::Config::track_nTRT()     const { return cut_track_nTRT;     }
 inline int   xTRT::Config::track_nTRTprec() const { return cut_track_nTRTprec; }
 
-inline float xTRT::Config::elec_p()            const { return cut_elec_p;     }
-inline float xTRT::Config::elec_pT()           const { return cut_elec_pT;    }
-inline float xTRT::Config::elec_eta()          const { return cut_elec_eta;   }
-inline bool  xTRT::Config::elec_UTC()          const { return cut_elec_UTC;   }
-inline float xTRT::Config::elec_relpT()        const { return cut_elec_relpT; }
-inline bool  xTRT::Config::elec_truthMatched() const { return cut_elec_TM;    }
+inline float xTRT::Config::elec_p()            const { return cut_elec_p;           }
+inline float xTRT::Config::elec_pT()           const { return cut_elec_pT;          }
+inline float xTRT::Config::elec_eta()          const { return cut_elec_eta;         }
+inline bool  xTRT::Config::elec_UTC()          const { return cut_elec_UTC;         }
+inline float xTRT::Config::elec_relpT()        const { return cut_elec_relpT;       }
+inline bool  xTRT::Config::elec_truthMatched() const { return cut_elec_TM;          }
+inline bool  xTRT::Config::elec_fromZ()        const { return cut_elec_fromZ;       }
+inline bool  xTRT::Config::elec_fromJPsi()     const { return cut_elec_fromJPsi;    }
+inline bool  xTRT::Config::elec_fromZorJPsi()  const { return cut_elec_fromZorJPsi; }
 
-inline float xTRT::Config::muon_p()            const { return cut_muon_p;     }
-inline float xTRT::Config::muon_pT()           const { return cut_muon_pT;    }
-inline float xTRT::Config::muon_eta()          const { return cut_muon_eta;   }
-inline bool  xTRT::Config::muon_UTC()          const { return cut_muon_UTC;   }
-inline float xTRT::Config::muon_relpT()        const { return cut_muon_relpT; }
-inline bool  xTRT::Config::muon_truthMatched() const { return cut_muon_TM;    }
+inline float xTRT::Config::muon_p()            const { return cut_muon_p;           }
+inline float xTRT::Config::muon_pT()           const { return cut_muon_pT;          }
+inline float xTRT::Config::muon_eta()          const { return cut_muon_eta;         }
+inline bool  xTRT::Config::muon_UTC()          const { return cut_muon_UTC;         }
+inline float xTRT::Config::muon_relpT()        const { return cut_muon_relpT;       }
+inline bool  xTRT::Config::muon_truthMatched() const { return cut_muon_TM;          }
+inline bool  xTRT::Config::muon_fromZ()        const { return cut_muon_fromZ;       }
+inline bool  xTRT::Config::muon_fromJPsi()     const { return cut_muon_fromJPsi;    }
+inline bool  xTRT::Config::muon_fromZorJPsi()  const { return cut_muon_fromZorJPsi; }
 
 template <typename T>
 inline const T xTRT::Config::getOpt(const char* name, const T def) const {
