@@ -71,7 +71,6 @@ namespace xTRT {
     std::string m_outputName{"xTRTFrameOutput"};
 
   public:
-
     Algorithm();
     virtual ~Algorithm();
 
@@ -84,7 +83,11 @@ namespace xTRT {
     /// delete move assignment
     Algorithm& operator=(Algorithm&&) = delete;
 
+    /// sets up the xTRT::Config class given a config file
     void feedConfig(const std::string fileName, bool print_conf = false, bool mcMode = false);
+
+    /// Sets the treeOutput name for the EL::NTupleSvc
+    void setTreeOutputName(const std::string name);
 
   protected:
     /// Creates a ROOT object to be stored.
@@ -110,12 +113,8 @@ namespace xTRT {
     template <typename T>
     T* grab(const std::string& name);
 
-  public:
     /// const pointer access to the configuration class
     const xTRT::Config* config() const;
-
-    /// Sets the treeOutput name for the EL::NTupleSvc
-    void setTreeOutputName(const std::string name);
 
   protected:
     /// creates and sets up the InDetTrackSelectionTool
@@ -195,12 +194,6 @@ namespace xTRT {
     xAOD::TStore* store();
     /// get const pointer to the current event's xAOD::EventInfo
     const xAOD::EventInfo* eventInfo() const;
-
-  public:
-    /// get a hit summary object based on the track, surface measurement, and drift circle
-    static xTRT::HitSummary getHitSummary(const xAOD::TrackParticle* track,
-                                          const xAOD::TrackStateValidation* msos,
-                                          const xAOD::TrackMeasurementValidation* driftCircle);
 
   protected:
     /// check for a nullptr and print a debug message
@@ -282,6 +275,11 @@ namespace xTRT {
     /// return the d0 significance of the track
     static double d0signif(const xAOD::TrackParticle* track, const xAOD::EventInfo* evtinfo);
 
+    /// get a hit summary object based on the track, surface measurement, and drift circle
+    static xTRT::HitSummary getHitSummary(const xAOD::TrackParticle* track,
+                                          const xAOD::TrackStateValidation* msos,
+                                          const xAOD::TrackMeasurementValidation* driftCircle);
+
   protected:
     /// get reference to the InDetTrackSelectionTool handle for tracks
     const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelToolHandle()     const;
@@ -294,7 +292,7 @@ namespace xTRT {
     /// get reference not class const Trigger Matching Tool
     const asg::AnaToolHandle<Trig::IMatchingTool>& trigMatchingToolHandle();
 
-  protected:
+  public:
     /// grab aux data by using ConstAccessor and some object
     /**
      *  Using a ConstAccessor, look to see if the object has the

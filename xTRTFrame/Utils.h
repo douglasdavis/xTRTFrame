@@ -36,7 +36,7 @@ inline auto xTRT::stringSplit(const std::string &s, char delim) {
   return elems;
 }
 
-/*! \def SETUP_TREE
+/*! \def SETUP_OUTPUT_TREE
   initializes a TTree to be saved to xTRTFrame algorithm output
 */
 #define SETUP_OUTPUT_TREE(TREE,NAME)                            \
