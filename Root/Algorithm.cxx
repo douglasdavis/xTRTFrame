@@ -83,9 +83,10 @@ EL::StatusCode xTRT::Algorithm::finalize() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_MSG_INFO("Done after " << m_eventCounter << " events.");
   if ( config()->useIDTS() ) {
-    ANA_CHECK(m_trackSelToolHandle->finalize());
-    ANA_CHECK(m_trackSelElecToolHandle->finalize());
-    ANA_CHECK(m_trackSelMuonToolHandle->finalize());
+    ANA_CHECK(m_idtsTightPrimary->finalize());
+    ANA_CHECK(m_idtsLoosePrimary->finalize());
+    ANA_CHECK(m_idtsLooseElectron->finalize());
+    ANA_CHECK(m_idtsLooseMuon->finalize());
   }
   return EL::StatusCode::SUCCESS;
 }

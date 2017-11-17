@@ -60,12 +60,15 @@ namespace xTRT {
     m_trigDecToolHandle{"Trig::TrigDecisionTool/TrigDecisionTool",this}; //!
     asg::AnaToolHandle<Trig::IMatchingTool>
     m_trigMatchingToolHandle{"Trig::MatchingTool/TrigMatchingTool",this}; //!
+
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>
-    m_trackSelToolHandle{"InDet::InDetTrackSelectionTool/IDTSTracks",this}; //!
+    m_idtsTightPrimary{"InDet::InDetTrackSelectionTool/idtsTightPrimary",this}; //!
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>
-    m_trackSelElecToolHandle{"InDet::InDetTrackSelectionTool/IDTSElecs",this}; //!
+    m_idtsLoosePrimary{"InDet::InDetTrackSelectionTool/idtsLoosePrimary",this}; //!
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>
-    m_trackSelMuonToolHandle{"InDet::InDetTrackSelectionTool/IDTSMuons",this}; //!
+    m_idtsLooseElectron{"InDet::InDetTrackSelectionTool/idtsLooseElectron",this}; //!
+    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>
+    m_idtsLooseMuon{"InDet::InDetTrackSelectionTool/idtsLooseMuon",this}; //!
 
   protected:
     std::string m_outputName{"xTRTFrameOutput"};
@@ -163,6 +166,10 @@ namespace xTRT {
     const xAOD::ElectronContainer*      selectedElectrons();
     /// applies selectedContainer on muons
     const xAOD::MuonContainer*          selectedMuons();
+
+    /// Use the InDetTrackSeletionTool with the given cut (see xTRT::IDTSCut enum) to get tracks that pass.
+    const xAOD::TrackParticleContainer* selectedTracksFromCut(const xTRT::IDTSCut cut, const std::string& name);
+
 
   public:
     /// retrieves the TruthParticle associated with the input track particle
@@ -279,18 +286,6 @@ namespace xTRT {
     static xTRT::HitSummary getHitSummary(const xAOD::TrackParticle* track,
                                           const xAOD::TrackStateValidation* msos,
                                           const xAOD::TrackMeasurementValidation* driftCircle);
-
-  protected:
-    /// get reference to the InDetTrackSelectionTool handle for tracks
-    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelToolHandle()     const;
-    /// get reference to the InDetTrackSelectionTool handle for electrons
-    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelElecToolHandle() const;
-    /// get reference to the InDetTrackSelectionTool handle for muons
-    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelMuonToolHandle() const;
-    /// get reference to the Trigger Matching Tool
-    const asg::AnaToolHandle<Trig::IMatchingTool>& trigMatchingToolHandle() const;
-    /// get reference not class const Trigger Matching Tool
-    const asg::AnaToolHandle<Trig::IMatchingTool>& trigMatchingToolHandle();
 
   public:
     /// grab aux data by using ConstAccessor and some object

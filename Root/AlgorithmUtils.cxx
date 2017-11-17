@@ -47,6 +47,56 @@ const xAOD::MuonContainer* xTRT::Algorithm::selectedMuons() {
     (muonContainer(),passMuonSelection,"xTRT_GoodMuons");
 }
 
+const xAOD::TrackParticleContainer* xTRT::Algorithm::selectedTracksFromCut(const xTRT::IDTSCut cut,
+                                                                           const std::string& name) {
+  if ( not config()->useIDTS() ) {
+    ANA_MSG_ERROR("You're trying to use InDetTrackSelectionTools without asking to have them set up!");
+  }
+  auto tracks            = trackContainer();
+  auto selectedTracks    = std::make_unique<xAOD::TrackParticleContainer>();
+  auto selectedTracksAux = std::make_unique<xAOD::AuxContainerBase>();
+  selectedTracks->setStore(selectedTracksAux.get());
+  for ( const auto trk : *tracks ) {
+    auto vtx = trk->vertex();
+    if ( vtx == nullptr ) continue;
+    switch ( cut ) {
+    case xTRT::IDTSCut::TightPrimary:
+      if ( not m_idtsTightPrimary->accept(*trk,vtx) ) continue;
+      break;
+    case xTRT::IDTSCut::LoosePrimary:
+      if ( not m_idtsLoosePrimary->accept(*trk,vtx) ) continue;
+      break;
+    case xTRT::IDTSCut::LooseElectron:
+      if ( not m_idtsLooseElectron->accept(*trk,vtx) ) continue;
+      break;
+    case xTRT::IDTSCut::LooseMuon:
+      if ( not m_idtsLooseMuon->accept(*trk,vtx) ) continue;
+      break;
+    default:
+      ANA_MSG_FATAL("You asked for a track selection cut that we don't have");
+      std::exit(EXIT_FAILURE);
+      break;
+    }
+    auto newtrk = new xAOD::TrackParticle();
+    selectedTracks->push_back(newtrk);
+    *newtrk = *trk;
+  }
+  if ( evtStore()->record(selectedTracks.release(),name).isFailure() ) {
+    ANA_MSG_ERROR("Couldn't record " << name << ", returning nullptr");
+    return nullptr;
+  }
+  if ( evtStore()->record(selectedTracksAux.release(),name+"Aux.").isFailure() ) {
+    ANA_MSG_ERROR("Couldn't record " << name << "Aux., returning nullptr");
+    return nullptr;
+  }
+  const xAOD::TrackParticleContainer* retcont = nullptr;
+  if ( evtStore()->retrieve(retcont,name).isFailure() ) {
+    ANA_MSG_ERROR("Couldn't retrieve " << name << ", returning nullptr");
+    return nullptr;
+  }
+  return retcont;
+}
+
 const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* track) {
   const xAOD::TruthParticle* truthParticle = nullptr;
   if ( xTRT::Acc::truthParticleLink.isAvailable(*track) ) {
@@ -187,6 +237,16 @@ bool xTRT::Algorithm::passTrackSelection(const xAOD::TrackParticle* track, const
 bool xTRT::Algorithm::passElectronSelection(const xAOD::Electron* electron, const xTRT::Config* conf) {
   auto trk = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
 
+  if ( conf->elec_truthMatched() ) {
+    if ( not truthMatched(electron) ) return false;
+    bool fromZ   = isFromZ(electron);
+    if ( conf->elec_fromZ() && (not fromZ) ) return false;
+    bool fromJ   = isFromJPsi(electron);
+    if ( conf->elec_fromJPsi() && (not fromJ) ) return false;
+    bool fromZoJ = (fromZ || fromJ);
+    if ( conf->elec_fromZorJPsi() && (not fromZoJ) ) return false;
+  }
+
   if ( conf->elec_UTC() ) {
     if ( trk == nullptr ) {
       XTRT_WARNING("No track from electron! failing selection");
@@ -211,16 +271,6 @@ bool xTRT::Algorithm::passElectronSelection(const xAOD::Electron* electron, cons
   if ( electron->p4().P()*toGeV < conf->elec_p() ) return false;
   if ( std::abs(electron->eta()) > conf->elec_eta() ) return false;
 
-  if ( conf->elec_truthMatched() ) {
-    if ( not truthMatched(electron) ) return false;
-    bool fromZ   = isFromZ(electron);
-    if ( conf->elec_fromZ() && (not fromZ) ) return false;
-    bool fromJ   = isFromJPsi(electron);
-    if ( conf->elec_fromJPsi() && (not fromJ) ) return false;
-    bool fromZoJ = (fromZ || fromJ);
-    if ( conf->elec_fromZorJPsi() && (not fromZoJ) ) return false;
-  }
-
   return true;
 }
 
@@ -228,6 +278,16 @@ bool xTRT::Algorithm::passMuonSelection(const xAOD::Muon* muon, const xTRT::Conf
   auto idtl = muon->inDetTrackParticleLink();
   if ( not idtl.isValid() ) return false;
   auto trk = *idtl;
+
+  if ( conf->muon_truthMatched() ) {
+    if ( not truthMatched(muon) ) return false;
+    bool fromZ   = isFromZ(muon);
+    if ( conf->muon_fromZ() && (not fromZ) ) return false;
+    bool fromJ   = isFromJPsi(muon);
+    if ( conf->muon_fromJPsi() && (not fromJ) ) return false;
+    bool fromZoJ = (fromZ || fromJ);
+    if ( conf->muon_fromZorJPsi() && (not fromZoJ) ) return false;
+  }
 
   if ( conf->muon_UTC() ) {
     if ( trk == nullptr ) {
@@ -252,16 +312,6 @@ bool xTRT::Algorithm::passMuonSelection(const xAOD::Muon* muon, const xTRT::Conf
   if ( muon->pt()*toGeV < conf->muon_pT() ) return false;
   if ( muon->p4().P()*toGeV < conf->muon_p() ) return false;
   if ( std::abs(muon->eta()) > conf->muon_eta() ) return false;
-
-  if ( conf->muon_truthMatched() ) {
-    if ( not truthMatched(muon) ) return false;
-    bool fromZ   = isFromZ(muon);
-    if ( conf->muon_fromZ() && (not fromZ) ) return false;
-    bool fromJ   = isFromJPsi(muon);
-    if ( conf->muon_fromJPsi() && (not fromJ) ) return false;
-    bool fromZoJ = (fromZ || fromJ);
-    if ( conf->muon_fromZorJPsi() && (not fromZoJ) ) return false;
-  }
 
   return true;
 }

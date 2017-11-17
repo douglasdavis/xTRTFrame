@@ -292,28 +292,3 @@ xTRT::Algorithm::retrieve(const T2* xobj, const std::string adn) {
     return 0;
   }
 }
-
-inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>&
-xTRT::Algorithm::trackSelToolHandle() const {
-  return m_trackSelToolHandle;
-}
-
-inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>&
-xTRT::Algorithm::trackSelElecToolHandle() const {
-  return m_trackSelElecToolHandle;
-}
-
-inline const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>&
-xTRT::Algorithm::trackSelMuonToolHandle() const {
-  return m_trackSelMuonToolHandle;
-}
-
-inline const asg::AnaToolHandle<Trig::IMatchingTool>&
-xTRT::Algorithm::trigMatchingToolHandle() const {
-  return m_trigMatchingToolHandle;
-}
-
-inline const asg::AnaToolHandle<Trig::IMatchingTool>&
-xTRT::Algorithm::trigMatchingToolHandle() {
-  return m_trigMatchingToolHandle;
-}
