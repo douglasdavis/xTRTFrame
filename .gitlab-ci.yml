@@ -1,5 +1,3 @@
-image: atlas/analysisbase:latest
-
 before_script:
   - mkdir -p ../ci/build ../ci/run ../ci/source/xTRTFrame
   - cp -r `pwd`/* ../ci/source/xTRTFrame/.
