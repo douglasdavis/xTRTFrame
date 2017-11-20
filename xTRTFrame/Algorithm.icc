@@ -101,6 +101,117 @@ xTRT::Algorithm::selectedContainer(const C* raw,
   return retObjs;
 }
 
+template <class T> inline const DataVector<T>*
+xTRT::Algorithm::selectedFromIDTScuts(const DataVector<T>* rawContainer,
+                                      const std::initializer_list<xTRT::IDTSCut> cuts,
+                                      const std::string& name) {
+  if ( not config()->useIDTS() ) {
+    ANA_MSG_ERROR("You're trying to use InDetTrackSelectionTools without asking to have them set up!");
+  }
+  auto selectedContainer    = std::make_unique<DataVector<T>>();
+  auto selectedContainerAux = std::make_unique<xAOD::AuxContainerBase>();
+  selectedContainer->setStore(selectedContainerAux.get());
+  for ( const auto& particle : *rawContainer ) {
+    auto trk = getTrack(particle);
+    if ( trk == nullptr ) continue;
+    auto vtx = trk->vertex();
+    if ( vtx == nullptr ) continue;
+
+    bool failed_one = false;
+    for ( auto cut : cuts ) {
+      switch ( cut ) {
+      case xTRT::IDTSCut::TightPrimary:
+        if ( not m_idtsTightPrimary->accept(*trk,vtx) ) {
+          failed_one = true;
+          continue;
+        }
+        break;
+      case xTRT::IDTSCut::LoosePrimary:
+        if ( not m_idtsLoosePrimary->accept(*trk,vtx) ) {
+          failed_one = true;
+          continue;
+        }
+        break;
+      case xTRT::IDTSCut::LooseElectron:
+        if ( not m_idtsLooseElectron->accept(*trk,vtx) ) {
+          failed_one = true;
+          continue;
+        }
+        break;
+      case xTRT::IDTSCut::LooseMuon:
+        if ( not m_idtsLooseMuon->accept(*trk,vtx) ) {
+          failed_one = true;
+          continue;
+        }
+        break;
+      default:
+        ANA_MSG_FATAL("You asked for a track selection cut that we don't have");
+        std::exit(EXIT_FAILURE);
+        break;
+      }
+    }
+    if ( failed_one ) continue;
+    auto newparticle = new T();
+    selectedContainer->push_back(newparticle);
+    *newparticle = *particle;
+  }
+  if ( evtStore()->record(selectedContainer.release(),name).isFailure() ) {
+    ANA_MSG_ERROR("Couldn't record " << name << ", returning nullptr");
+    return nullptr;
+  }
+  if ( evtStore()->record(selectedContainerAux.release(),name+"Aux.").isFailure() ) {
+    ANA_MSG_ERROR("Couldn't record " << name << "Aux., returning nullptr");
+    return nullptr;
+  }
+  const DataVector<T>* retcont = nullptr;
+  if ( evtStore()->retrieve(retcont,name).isFailure() ) {
+    ANA_MSG_ERROR("Couldn't retrieve " << name << ", returning nullptr");
+    return nullptr;
+  }
+  return retcont;
+}
+
+inline const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* track) {
+  const xAOD::TruthParticle* truthParticle = nullptr;
+  if ( xTRT::Acc::truthParticleLink.isAvailable(*track) ) {
+    const auto truthLink = xTRT::Acc::truthParticleLink(*track);
+    if ( truthLink.isValid() ) {
+      truthParticle = *truthLink;
+    }
+    else {
+      return nullptr;
+    }
+  }
+  else {
+    return nullptr;
+  }
+  return truthParticle;
+}
+
+inline const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Electron* electron) {
+  const xAOD::TrackParticle* track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
+  if ( not track )  return nullptr;
+  return track;
+}
+
+inline const xAOD::TrackParticle* xTRT::Algorithm::getGSFTrack(const xAOD::Electron* electron) {
+  const xAOD::TrackParticle* track = electron->trackParticle();
+  if ( not track ) return nullptr;
+  return track;
+}
+
+inline const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Muon* muon) {
+  auto idtl = muon->inDetTrackParticleLink();
+  if ( not idtl.isValid() ) return nullptr;
+  auto trk = *idtl;
+  if ( not trk )  return nullptr;
+  return trk;
+}
+
+inline const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::TrackParticle* track) {
+  return track;
+}
+
 inline int xTRT::Algorithm::nTRT(const xAOD::TrackParticle* track) {
   uint8_t nTRThits = -1;
   uint8_t nTRTouts = -1;

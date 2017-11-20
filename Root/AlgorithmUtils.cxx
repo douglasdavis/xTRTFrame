@@ -47,6 +47,7 @@ const xAOD::MuonContainer* xTRT::Algorithm::selectedMuons() {
     (muonContainer(),passMuonSelection,"xTRT_GoodMuons");
 }
 
+/*
 const xAOD::TrackParticleContainer* xTRT::Algorithm::selectedTracksFromCut(const xTRT::IDTSCut cut,
                                                                            const std::string& name) {
   if ( not config()->useIDTS() ) {
@@ -96,43 +97,7 @@ const xAOD::TrackParticleContainer* xTRT::Algorithm::selectedTracksFromCut(const
   }
   return retcont;
 }
-
-const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* track) {
-  const xAOD::TruthParticle* truthParticle = nullptr;
-  if ( xTRT::Acc::truthParticleLink.isAvailable(*track) ) {
-    const auto truthLink = xTRT::Acc::truthParticleLink(*track);
-    if ( truthLink.isValid() ) {
-      truthParticle = *truthLink;
-    }
-    else {
-      return nullptr;
-    }
-  }
-  else {
-    return nullptr;
-  }
-  return truthParticle;
-}
-
-const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Electron* electron) {
-  const xAOD::TrackParticle* track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
-  if ( not track )  return nullptr;
-  return track;
-}
-
-const xAOD::TrackParticle* xTRT::Algorithm::getGSFTrack(const xAOD::Electron* electron) {
-  const xAOD::TrackParticle* track = electron->trackParticle();
-  if ( not track ) return nullptr;
-  return track;
-}
-
-const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Muon* muon) {
-  auto idtl = muon->inDetTrackParticleLink();
-  if ( not idtl.isValid() ) return nullptr;
-  auto trk = *idtl;
-  if ( not trk )  return nullptr;
-  return trk;
-}
+*/
 
 bool xTRT::Algorithm::triggerPassed(const std::string trigName) const {
   auto chainGroup = m_trigDecToolHandle->getChainGroup(trigName);
