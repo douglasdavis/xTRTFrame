@@ -60,12 +60,15 @@ namespace xTRT {
     m_trigDecToolHandle{"Trig::TrigDecisionTool/TrigDecisionTool",this}; //!
     asg::AnaToolHandle<Trig::IMatchingTool>
     m_trigMatchingToolHandle{"Trig::MatchingTool/TrigMatchingTool",this}; //!
+
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>
-    m_trackSelToolHandle{"InDet::InDetTrackSelectionTool/IDTSTracks",this}; //!
+    m_idtsTightPrimary{"InDet::InDetTrackSelectionTool/idtsTightPrimary",this}; //!
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>
-    m_trackSelElecToolHandle{"InDet::InDetTrackSelectionTool/IDTSElecs",this}; //!
+    m_idtsLoosePrimary{"InDet::InDetTrackSelectionTool/idtsLoosePrimary",this}; //!
     asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>
-    m_trackSelMuonToolHandle{"InDet::InDetTrackSelectionTool/IDTSMuons",this}; //!
+    m_idtsLooseElectron{"InDet::InDetTrackSelectionTool/idtsLooseElectron",this}; //!
+    asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>
+    m_idtsLooseMuon{"InDet::InDetTrackSelectionTool/idtsLooseMuon",this}; //!
 
   protected:
     std::string m_outputName{"xTRTFrameOutput"};
@@ -149,20 +152,42 @@ namespace xTRT {
      *  after applying the selection defined in the selector function.
      *
      *  @param raw the raw container
-     *  @param selector the function which applies the selection
+     *  @param selector the (static) function which applies the selection
      *  @param contName the name of the new deep copy container
      */
-    template<class C, class T>
+    template <class C, class T>
     const C* selectedContainer(const C* raw,
                                std::function<bool(const T*,const xTRT::Config*)> selector,
                                const std::string& contName);
 
-    /// applies selectedContainer on tracks
+    /// applies selectedContainer on tracks using config file settings
     const xAOD::TrackParticleContainer* selectedTracks();
-    /// applies selectedContainer on electrons
+    /// applies selectedContainer on electrons using config file settings
     const xAOD::ElectronContainer*      selectedElectrons();
-    /// applies selectedContainer on muons
+    /// applies selectedContainer on muons using config file settings
     const xAOD::MuonContainer*          selectedMuons();
+
+    /// get a new container of TrackParticles, Electrons, or Muons passing some IDTS cuts
+    /**
+     *  This will create and return a deep copy of selected objects
+     *   living in a raw container after applying the set of cuts fed
+     *   to this function. The cuts can be any combination of the four
+     *   InDetTrackSelectionTool levels, defined in the enum
+     *   xTRT::IDTSCut.
+     *
+     *  example:
+     *
+     *  auto tightPrimLooseMuons = selectedFromIDTScuts<xAOD::Muon>
+     *     (muonContainer(),{xTRT::IDTSCut::LooseMuon,xTRT::IDTSCut::TightPrimary},"NewTightLooseMuons");
+     *
+     *  @param raw the raw container
+     *  @param cuts the list (in braced-init-list form)
+     *  @param contName the name of the new deep copy container
+     */
+    template <class T>
+    const DataVector<T>* selectedFromIDTScuts(const DataVector<T>* raw,
+                                              const std::initializer_list<xTRT::IDTSCut> cuts,
+                                              const std::string& contName);
 
   public:
     /// retrieves the TruthParticle associated with the input track particle
@@ -173,6 +198,10 @@ namespace xTRT {
     static const xAOD::TrackParticle* getGSFTrack(const xAOD::Electron* electron);
     /// retrieve the xAOD::TrackParticle pointer from the muon
     static const xAOD::TrackParticle* getTrack(const xAOD::Muon* muon);
+
+  private:
+    /// dummy function for templated selector xTRT::Algorithm::selectedFromIDTSCut
+    static const xAOD::TrackParticle* getTrack(const xAOD::TrackParticle* track);
 
   protected:
     /// check if the sample is MC
@@ -279,18 +308,6 @@ namespace xTRT {
     static xTRT::HitSummary getHitSummary(const xAOD::TrackParticle* track,
                                           const xAOD::TrackStateValidation* msos,
                                           const xAOD::TrackMeasurementValidation* driftCircle);
-
-  protected:
-    /// get reference to the InDetTrackSelectionTool handle for tracks
-    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelToolHandle()     const;
-    /// get reference to the InDetTrackSelectionTool handle for electrons
-    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelElecToolHandle() const;
-    /// get reference to the InDetTrackSelectionTool handle for muons
-    const asg::AnaToolHandle<InDet::IInDetTrackSelectionTool>& trackSelMuonToolHandle() const;
-    /// get reference to the Trigger Matching Tool
-    const asg::AnaToolHandle<Trig::IMatchingTool>& trigMatchingToolHandle() const;
-    /// get reference not class const Trigger Matching Tool
-    const asg::AnaToolHandle<Trig::IMatchingTool>& trigMatchingToolHandle();
 
   public:
     /// grab aux data by using ConstAccessor and some object

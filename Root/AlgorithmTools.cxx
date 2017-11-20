@@ -12,17 +12,21 @@ EL::StatusCode xTRT::Algorithm::setupTrackSelectionTools() {
   ANA_CHECK_SET_TYPE(EL::StatusCode);
   ANA_MSG_INFO("Setting up track selections tools");
 
-  ANA_CHECK(m_trackSelToolHandle.setProperty("CutLevel","TightPrimary"));
-  ANA_CHECK(m_trackSelToolHandle.retrieve());
-  ANA_MSG_INFO("Set up InDetTrackSelectionTool for Tracks");
+  ANA_CHECK(m_idtsTightPrimary.setProperty("CutLevel","TightPrimary"));
+  ANA_CHECK(m_idtsTightPrimary.retrieve());
+  ANA_MSG_INFO("Set upt InDetTrackSelectionTool for TightPrimary");
 
-  ANA_CHECK(m_trackSelElecToolHandle.setProperty("CutLevel","LooseElectron"));
-  ANA_CHECK(m_trackSelElecToolHandle.retrieve());
-  ANA_MSG_INFO("Set up InDetTrackSelectionTool for Electrons");
+  ANA_CHECK(m_idtsLoosePrimary.setProperty("CutLevel","LoosePrimary"));
+  ANA_CHECK(m_idtsLoosePrimary.retrieve());
+  ANA_MSG_INFO("Set upt InDetTrackSelectionTool for LoosePrimary");
 
-  ANA_CHECK(m_trackSelMuonToolHandle.setProperty("CutLevel","LooseMuon"));
-  ANA_CHECK(m_trackSelMuonToolHandle.retrieve());
-  ANA_MSG_INFO("Set up InDetTrackSelectionTool for Muons");
+  ANA_CHECK(m_idtsLooseElectron.setProperty("CutLevel","LooseElectron"));
+  ANA_CHECK(m_idtsLooseElectron.retrieve());
+  ANA_MSG_INFO("Set upt InDetTrackSelectionTool for LooseElectron");
+
+  ANA_CHECK(m_idtsLooseMuon.setProperty("CutLevel","LooseMuon"));
+  ANA_CHECK(m_idtsLooseMuon.retrieve());
+  ANA_MSG_INFO("Set upt InDetTrackSelectionTool for LooseMuon");
 
   return EL::StatusCode::SUCCESS;
 }
