@@ -53,9 +53,9 @@ inline auto xTRT::stringSplit(const std::string &s, char delim) {
 /*! \def SETUP_OUTPUT_TREE
   initializes a TTree to be saved to xTRTFrame algorithm output
 */
-#define SETUP_OUTPUT_TREE(TREE,NAME)                            \
-  { TREE = new TTree(NAME,NAME);                                \
-    TREE->SetDirectory(wk()->getOutputFile(m_outputName)); }
+#define SETUP_OUTPUT_TREE(TREE,NAME)                                    \
+  { TREE = new TTree(NAME,NAME);                                        \
+    TREE->SetDirectory((TDirectory*)(wk()->getOutputFile(m_outputName))); }
 
 /*! \def XTRT_WARNING
   Print warning message for non Algorithm class warnings
