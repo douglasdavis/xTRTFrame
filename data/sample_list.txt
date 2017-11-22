@@ -1,0 +1,2 @@
+/eos/atlas/user/d/ddavis/TRTxAOD/rel21/Zmumu/group.det-indet.361107.PowhegPythia8EvtGen_AZNLOCTEQ6L1_Zmumu.simul.TRTxAOD.e3601_s2876_r7886_trt099-02_EXT0/group.det-indet.12179430.EXT0._022738.InDetDxAOD.pool.root
+/eos/atlas/user/d/ddavis/TRTxAOD/rel21/Zmumu/group.det-indet.361107.PowhegPythia8EvtGen_AZNLOCTEQ6L1_Zmumu.simul.TRTxAOD.e3601_s2876_r7886_trt099-02_EXT0/group.det-indet.12179430.EXT0._026145.InDetDxAOD.pool.root
