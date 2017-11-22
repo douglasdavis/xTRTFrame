@@ -15,6 +15,11 @@
 
 namespace xTRT {
 
+  /** \addtogroup HitHelpers Hit Helpers
+   *  \brief Classes/functions to help dealing with hits
+   *  @{
+   */
+
   struct HitSummary {
 
     int   HTMB;
@@ -39,6 +44,7 @@ namespace xTRT {
 
   };
 
+  /** @}*/
 }
 
 #endif

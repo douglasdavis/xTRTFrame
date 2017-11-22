@@ -31,6 +31,7 @@
 #include <xTRTFrame/Accessors.h>
 #include <xTRTFrame/HitSummary.h>
 #include <xTRTFrame/Config.h>
+#include <xTRTFrame/Helpers.h>
 
 // ROOT
 #include <TTree.h>
@@ -138,6 +139,12 @@ namespace xTRT {
     static bool passMuonSelection(const xAOD::Muon* muon, const xTRT::Config* conf);
 
   protected:
+
+    /** \addtogroup ContainerGetters Container Getters
+     *  \brief functions to easily grab (and define) different xAOD containers.
+     *  @{
+     */
+
     /// returns the raw track container (no selection applied)
     const xAOD::TrackParticleContainer* trackContainer();
     /// returns the raw electron container (no selection applied)
@@ -188,6 +195,8 @@ namespace xTRT {
     const DataVector<T>* selectedFromIDTScuts(const DataVector<T>* raw,
                                               const std::initializer_list<xTRT::IDTSCut> cuts,
                                               const std::string& contName);
+
+    /** @}*/
 
   public:
     /// retrieves the TruthParticle associated with the input track particle
@@ -261,6 +270,12 @@ namespace xTRT {
     bool singleMuonTrigMatched(const xAOD::Muon* muon);
 
   public:
+
+    /** \addtogroup ParticlePropGetters Particle Property Getters
+        \brief functions to easily get track/lepton properties
+     *  @{
+     */
+
     /// return the number of TRT hits on the track (all)
     static int nTRT(const xAOD::TrackParticle* track);
     /// return the number of TRT prec+tube (non outlier)
@@ -304,12 +319,25 @@ namespace xTRT {
     /// return the d0 significance of the track
     static double d0signif(const xAOD::TrackParticle* track, const xAOD::EventInfo* evtinfo);
 
+    /** @}*/
+
+    /** \addtogroup HitHelpers Hit Helpers
+     *  @{
+     */
+
     /// get a hit summary object based on the track, surface measurement, and drift circle
     static xTRT::HitSummary getHitSummary(const xAOD::TrackParticle* track,
                                           const xAOD::TrackStateValidation* msos,
                                           const xAOD::TrackMeasurementValidation* driftCircle);
+    /** @}*/
 
   public:
+
+    /** \addtogroup AuxHelp Aux Helpers
+     *  \brief helpers for dealing with auxiliary data
+     *  @{
+     */
+
     /// grab aux data by using ConstAccessor and some object
     /**
      *  Using a ConstAccessor, look to see if the object has the
@@ -335,6 +363,8 @@ namespace xTRT {
      */
     template <typename T1, typename T2 = SG::AuxElement>
     static T1 retrieve(const T2* xobj, const std::string adn);
+
+    /** @}*/
 
   public:
     /// EventLoop API function

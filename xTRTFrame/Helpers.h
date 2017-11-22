@@ -13,6 +13,18 @@
 namespace xTRT {
 
   /*!
+    \enum IDTSCut
+    One can look at the definitions here
+    https://twiki.cern.ch/twiki/bin/view/AtlasProtected/InDetTrackSelectionTool
+  */
+  enum IDTSCut {
+    TightPrimary  = 0, ///< self explanatory
+    LoosePrimary  = 1, ///< self explanatory
+    LooseElectron = 2, ///< self explanatory
+    LooseMuon     = 3  ///< self explanatory
+  };
+
+  /*!
     \enum StrawRegion
     Enum for different straw regions of the TRT
   */
@@ -36,9 +48,8 @@ namespace xTRT {
     NONTRT = 3  ///< not in TRT
   };
 
-
-  /** @defgroup Helpers Helper Functions
-   *  Set of helper functions
+  /** \addtogroup GenHelpers Generic Helper Functions
+   *  \brief Some misc. functions to make life easier
    *  @{
    */
 

@@ -13,7 +13,7 @@ Table of "Chapters" (individual markdown files):
 
 | Chapter                                                       | Description                                                |
 |---------------------------------------------------------------|------------------------------------------------------------|
-| (Prologue) [ATLAS SW Lecture](tutorial/ATLASSW.md)            | A tiny "lecture" about ATLAS SW                            |
+| [ATLAS SW Lecture](tutorial/ATLASSW.md) (Prologue)            | A tiny "lecture" about ATLAS SW                            |
 | [Intro](tutorial/Intro.md)                                    | Setting up an Analysis Environment, intro to the framework |
 | [Algorithm Development (Part 1)](tutorial/AlgDevelopment1.md) | Starting to construct an algorithm                         |
 | [Algorithm Development (Part 2)](tutorial/AlgDevelopment2.md) | Diving further, more TRT related development               |

@@ -17,20 +17,6 @@
 #define toGeV 0.0010
 
 namespace xTRT {
-  /// enum for defining different InDetTrackSelectionTool Cuts
-  /**
-   * One can look at the definitions here
-   * https://twiki.cern.ch/twiki/bin/view/AtlasProtected/InDetTrackSelectionTool
-   */
-  enum IDTSCut {
-    TightPrimary  = 0, ///< self explanatory
-    LoosePrimary  = 1, ///< self explanatory
-    LooseElectron = 2, ///< self explanatory
-    LooseMuon     = 3  ///< self explanatory
-  };
-}
-
-namespace xTRT {
   auto stringSplit(const std::string &s, char delim, std::vector<std::string> &elems);
   auto stringSplit(const std::string &s, char delim);
 }
