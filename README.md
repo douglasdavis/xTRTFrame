@@ -7,6 +7,7 @@ To use this repository (which is the framework), add it as a submodule
 to your existing git repository.
 
 
-More extensive documenation and how-to's to come.
+More extensive documenation can be found in the [docs](docs) folder.
+
 
 API documentation can be found [here](http://webhome.phy.duke.edu/~ddavis/xTRTFrame/index.html)
