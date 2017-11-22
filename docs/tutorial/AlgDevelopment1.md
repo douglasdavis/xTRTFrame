@@ -183,7 +183,8 @@ EL::StatusCode::execute() {
 }
 ```
 
-Run you job again, and now you'll find the new ntuple:
+Run your job again (now with `-o your_output`), and now you'll find
+the new ntuple:
 
 ```sh
 $ root -l your_output/data-xTRTFrameTreeOutput/sample.root

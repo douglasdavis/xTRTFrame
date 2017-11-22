@@ -18,4 +18,5 @@ Table of "Chapters" (individual markdown files):
 | [Algorithm Development (Part 1)](tutorial/AlgDevelopment1.md) | Starting to construct an algorithm                         |
 | [Algorithm Development (Part 2)](tutorial/AlgDevelopment2.md) | Diving further, more TRT related development               |
 | [Config](tutorial/Config.md)                                  | More detailed information about the configuration file     |
+| [Grid](tutorial/grid.md)                                      | Running your algorithm on the grid                         |
 | [Advanced Features](tutorial/AdvancedFeatures.md)             | Diving deeper into `xTRTFrame`'s more advanced features    |
