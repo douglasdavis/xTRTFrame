@@ -47,58 +47,6 @@ const xAOD::MuonContainer* xTRT::Algorithm::selectedMuons() {
     (muonContainer(),passMuonSelection,"xTRT_GoodMuons");
 }
 
-/*
-const xAOD::TrackParticleContainer* xTRT::Algorithm::selectedTracksFromCut(const xTRT::IDTSCut cut,
-                                                                           const std::string& name) {
-  if ( not config()->useIDTS() ) {
-    ANA_MSG_ERROR("You're trying to use InDetTrackSelectionTools without asking to have them set up!");
-  }
-  auto tracks            = trackContainer();
-  auto selectedTracks    = std::make_unique<xAOD::TrackParticleContainer>();
-  auto selectedTracksAux = std::make_unique<xAOD::AuxContainerBase>();
-  selectedTracks->setStore(selectedTracksAux.get());
-  for ( const auto trk : *tracks ) {
-    auto vtx = trk->vertex();
-    if ( vtx == nullptr ) continue;
-    switch ( cut ) {
-    case xTRT::IDTSCut::TightPrimary:
-      if ( not m_idtsTightPrimary->accept(*trk,vtx) ) continue;
-      break;
-    case xTRT::IDTSCut::LoosePrimary:
-      if ( not m_idtsLoosePrimary->accept(*trk,vtx) ) continue;
-      break;
-    case xTRT::IDTSCut::LooseElectron:
-      if ( not m_idtsLooseElectron->accept(*trk,vtx) ) continue;
-      break;
-    case xTRT::IDTSCut::LooseMuon:
-      if ( not m_idtsLooseMuon->accept(*trk,vtx) ) continue;
-      break;
-    default:
-      ANA_MSG_FATAL("You asked for a track selection cut that we don't have");
-      std::exit(EXIT_FAILURE);
-      break;
-    }
-    auto newtrk = new xAOD::TrackParticle();
-    selectedTracks->push_back(newtrk);
-    *newtrk = *trk;
-  }
-  if ( evtStore()->record(selectedTracks.release(),name).isFailure() ) {
-    ANA_MSG_ERROR("Couldn't record " << name << ", returning nullptr");
-    return nullptr;
-  }
-  if ( evtStore()->record(selectedTracksAux.release(),name+"Aux.").isFailure() ) {
-    ANA_MSG_ERROR("Couldn't record " << name << "Aux., returning nullptr");
-    return nullptr;
-  }
-  const xAOD::TrackParticleContainer* retcont = nullptr;
-  if ( evtStore()->retrieve(retcont,name).isFailure() ) {
-    ANA_MSG_ERROR("Couldn't retrieve " << name << ", returning nullptr");
-    return nullptr;
-  }
-  return retcont;
-}
-*/
-
 bool xTRT::Algorithm::triggerPassed(const std::string trigName) const {
   auto chainGroup = m_trigDecToolHandle->getChainGroup(trigName);
   auto passed = chainGroup->isPassed();

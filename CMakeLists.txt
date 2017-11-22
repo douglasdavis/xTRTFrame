@@ -13,6 +13,7 @@ atlas_depends_on_subdirs(PUBLIC
   Event/xAOD/xAODTracking
   Event/xAOD/xAODEgamma
   Event/xAOD/xAODMuon
+  Event/xAOD/xAODTruth
   InnerDetector/InDetRecTools/InDetTrackSelectionTool
   PhysicsAnalysis/AnalysisCommon/PileupReweighting
   PhysicsAnalysis/MCTruthClassifier
@@ -27,7 +28,7 @@ atlas_depends_on_subdirs(PUBLIC
 find_package(ROOT REQUIRED COMPONENTS Core Gpad Tree Hist RIO MathCore Graf)
 
 # Custom definitions needed for this package:
-add_definitions(-g -O3 -std=c++14)
+add_definitions(-O3 -std=c++14)
 
 # Generate a CINT dictionary source file:
 atlas_add_root_dictionary(xTRTFrame _cintDictSource
@@ -52,6 +53,7 @@ atlas_add_library(xTRTFrame Root/*.cxx xTRTFrame/*.h xTRTFrame/*.icc xTRTFrame/*
   xAODTracking
   xAODEgamma
   xAODMuon
+  xAODTruth
   InDetTrackSelectionToolLib
   TrigConfxAODLib
   TrigDecisionToolLib

@@ -172,25 +172,12 @@ xTRT::Algorithm::selectedFromIDTScuts(const DataVector<T>* rawContainer,
 }
 
 inline const xAOD::TruthParticle* xTRT::Algorithm::getTruth(const xAOD::TrackParticle* track) {
-  const xAOD::TruthParticle* truthParticle = nullptr;
-  if ( xTRT::Acc::truthParticleLink.isAvailable(*track) ) {
-    const auto truthLink = xTRT::Acc::truthParticleLink(*track);
-    if ( truthLink.isValid() ) {
-      truthParticle = *truthLink;
-    }
-    else {
-      return nullptr;
-    }
-  }
-  else {
-    return nullptr;
-  }
-  return truthParticle;
+  return xAOD::TruthHelpers::getTruthParticle(*track);
 }
 
 inline const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Electron* electron) {
   const xAOD::TrackParticle* track = xAOD::EgammaHelpers::getOriginalTrackParticle(electron);
-  if ( not track )  return nullptr;
+  if ( not track ) return nullptr;
   return track;
 }
 
@@ -204,7 +191,7 @@ inline const xAOD::TrackParticle* xTRT::Algorithm::getTrack(const xAOD::Muon* mu
   auto idtl = muon->inDetTrackParticleLink();
   if ( not idtl.isValid() ) return nullptr;
   auto trk = *idtl;
-  if ( not trk )  return nullptr;
+  if ( not trk ) return nullptr;
   return trk;
 }
 
@@ -321,13 +308,10 @@ inline float xTRT::Algorithm::trackIso_pTcone20(const xAOD::Electron* electron) 
 }
 
 inline bool xTRT::Algorithm::truthMatched(const xAOD::Electron* electron) {
-  static const SG::AuxElement::ConstAccessor<int> truthType      {"truthType"};
-  static const SG::AuxElement::ConstAccessor<int> truthOrigin    {"truthOrigin"};
   static const SG::AuxElement::ConstAccessor<int> bkgTruthOrigin {"bkgTruthOrigin"};
-
   int true_type = 0, true_origin = 0, true_originbkg = 0;
-  if ( truthType.isAvailable(*electron)      ) true_type      = truthType(*electron);
-  if ( truthOrigin.isAvailable(*electron)    ) true_origin    = truthOrigin(*electron);
+  true_type   = xAOD::TruthHelpers::getParticleTruthType(*electron);
+  true_origin = xAOD::TruthHelpers::getParticleTruthOrigin(*electron);
   if ( bkgTruthOrigin.isAvailable(*electron) ) true_originbkg = bkgTruthOrigin(*electron);
 
   bool istruthmatched = ( true_type == MCTruthPartClassifier::ParticleType::IsoElectron ||
@@ -340,23 +324,13 @@ inline bool xTRT::Algorithm::truthMatched(const xAOD::Electron* electron) {
 }
 
 inline bool xTRT::Algorithm::truthMatched(const xAOD::Muon* muon) {
-  static const SG::AuxElement::ConstAccessor<int> truthType {"truthType"};
-  if ( not truthType.isAvailable(*muon) ) {
-    return false;
-  }
-  else {
-    int true_type = truthType(*muon);
-    return (true_type == MCTruthPartClassifier::ParticleType::IsoMuon);
-  }
+  int true_type = xAOD::TruthHelpers::getParticleTruthType(*muon);
+  return (true_type == MCTruthPartClassifier::ParticleType::IsoMuon);
 }
 
 inline bool xTRT::Algorithm::isFrom(const xAOD::IParticle* particle,
                                     const MCTruthPartClassifier::ParticleOrigin origin) {
-  static const SG::AuxElement::ConstAccessor<int> truthOrigin{"truthOrigin"};
-  int truthOrig = 0;
-  if ( truthOrigin.isAvailable(*particle) ) {
-    truthOrig = truthOrigin(*particle);
-  }
+  int truthOrig = xAOD::TruthHelpers::getParticleTruthOrigin(*particle);
   return (truthOrig == origin);
 }
 
