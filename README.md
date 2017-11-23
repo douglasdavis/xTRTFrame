@@ -1,13 +1,15 @@
 # xTRTFrame
 
-A framework for TRT analysis projects using the ATLAS Run 2 Data
-Model (for analyzing (D)(x)AOD's).
+A framework for TRT analysis projects using the ATLAS Run 2 Data Model
+(for analyzing (D)(x)AOD's).
 
 To use this repository (which is the framework), add it as a submodule
 to your existing git repository.
 
 
-More extensive documenation can be found in the [docs](docs) folder.
+A tutorial/walkthrough for getting started can be found at [this
+gitbook!](https://drdavis.gitbooks.io/xtrtframe/)
 
 
-API documentation can be found [here](http://webhome.phy.duke.edu/~ddavis/xTRTFrame/index.html)
+API documentation can be found
+[here](http://phy.duke.edu/~ddavis/xTRTFrame/)
