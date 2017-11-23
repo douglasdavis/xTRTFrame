@@ -108,7 +108,7 @@ $ source $AnalysisBase_PLATFORM/setup.sh
 The `cmake` command generates the files required for the build, and
 then we compile with `make`. CMake also generates a setup script that
 we source (this sets up the necessary environment variables to use our
-now compiled library and executable). You shoud now have a new
+now compiled library and executable). You should now have a new
 executable at your disposal. Mine is called
 `runAnaProjectLooperAlg`. If you run it, you'll get a message telling
 you that you're missing some command line arguments, specifically a
